@@ -45,7 +45,7 @@ public class Test : NetworkedMonoBehavior
         {
             StartServer();
             isServer = true;
-            StartCoroutine(RunMatchmakingCoroutine(5.0F));
+            StartCoroutine(RunMatchmakingCoroutine(10F));
         }
         if (worker == null && GUI.Button(new Rect(Screen.width - 200, 70, 190, 50), "Start Client"))
         {
@@ -66,17 +66,41 @@ public class Test : NetworkedMonoBehavior
 
     private void RunMatchmaking()
     {
+        AddToLog(string.Format("RunMatchmaking: {0} players waiting for match", players.Count));
+
         if (players.Count < 2)
             return;
 
         matchmakingUniqueID++;
-        AddToLog("RunMatchmaking()");
         ulong timeInSeconds = (ulong) Time.realtimeSinceStartup;
 
+        int maxPlayers = 2;
+        List<NetworkingPlayer> playersForMatch = new List<NetworkingPlayer>();
         for (int i = 0; i < players.Count; i++)
         {
+            if (true)
+            {
+                playersForMatch.Add(players[i]);
+            }
+            if (playersForMatch.Count >= maxPlayers)
+                break;
+        }
+
+        AddToLog("RunMatchmaking: made a match");
+        for (int i = 0; i < playersForMatch.Count; i++)
+        {
+            AddToLog(string.Format("\tplayer {0}", playersForMatch[i].NetworkId));
+        }
+        for (int i = 0; i < playersForMatch.Count; i++)
+        {
+            players.Remove(playersForMatch[i]);
+        }
+        AddToLog(string.Format("RunMatchmaking: {0} players still waiting for match", players.Count));
+
+        for (int i = 0; i < playersForMatch.Count; i++)
+        {
             string message = string.Format("MM {0}: Game:{1}  Port: {2}", matchmakingUniqueID, i % 2, 12345);
-            AuthoritativeRPC("MatchMakingRPC", worker, players[i], true, message);
+            AuthoritativeRPC("MatchMakingRPC", worker, playersForMatch[i], true, message);
         }
     }
 
@@ -86,7 +110,15 @@ public class Test : NetworkedMonoBehavior
         if (!isServer)
         {
             AddToLog("MM Response:" + message);
+            StartCoroutine(Client_RunAMatch(2f));
         }
+    }
+
+    IEnumerator Client_RunAMatch(float waitTime)
+    {
+        AddToLog("Client_RunAMatch Start");
+        yield return new WaitForSeconds(waitTime);
+        AddToLog("Client_RunAMatch End");
     }
 
     void StartServer()
