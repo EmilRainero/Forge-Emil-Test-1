@@ -78,15 +78,15 @@ public class Test : NetworkedMonoBehavior
         List<NetworkingPlayer> playersForMatch = new List<NetworkingPlayer>();
         for (int i = 0; i < players.Count; i++)
         {
-            if (true)
+            if (true) // ok to add this player to the match?
             {
                 playersForMatch.Add(players[i]);
+                if (playersForMatch.Count >= maxPlayers)
+                    break;
             }
-            if (playersForMatch.Count >= maxPlayers)
-                break;
         }
 
-        AddToLog("RunMatchmaking: made a match");
+        AddToLog(string.Format("RunMatchmaking: made a match with {0} players", playersForMatch.Count));
         for (int i = 0; i < playersForMatch.Count; i++)
         {
             AddToLog(string.Format("\tplayer {0}", playersForMatch[i].NetworkId));
