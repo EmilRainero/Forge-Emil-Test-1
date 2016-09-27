@@ -14,10 +14,15 @@ public class Test : NetworkedMonoBehavior
     private NetWorker worker = null;
     private bool isServer = true;
     public Text textLog;
+    public ushort matchStartingPort = 15938;
+    public ushort matchEndingPort = 15980;
+    private Dictionary<ushort, ushort> matchPortsInUse;
+    private ushort currentPort;
 
     private void AddToLog(string message)
     {
         textLog.text = textLog.text + message + "\n";
+        Debug.Log(message);
     }
 
     override protected void OnApplicationQuit()
@@ -28,6 +33,7 @@ public class Test : NetworkedMonoBehavior
     void Start()
     {
         players = new List<NetworkingPlayer>();
+        matchPortsInUse = new Dictionary<ushort, ushort>();
     }
 
     IEnumerator RunMatchmakingCoroutine(float waitTime)
@@ -49,12 +55,12 @@ public class Test : NetworkedMonoBehavior
         }
         if (worker == null && GUI.Button(new Rect(Screen.width - 200, 70, 190, 50), "Start Client"))
         {
-            StartClient();
+            StartClient(PORT);
             isServer = false;
         }
         if (worker != null && !isServer && GUI.Button(new Rect(Screen.width - 200, 10, 190, 50), "Stop Client"))
         {
-            StopClient();
+            StopClient(PORT);
         }
         if (worker != null && isServer && GUI.Button(new Rect(Screen.width - 200, 10, 190, 50), "Run Matchmaking"))
         {
@@ -68,12 +74,10 @@ public class Test : NetworkedMonoBehavior
     {
         AddToLog(string.Format("RunMatchmaking: {0} players waiting for match", players.Count));
 
-        if (players.Count < 2)
+        if (players.Count < 1)
             return;
 
-        matchmakingUniqueID++;
-        ulong timeInSeconds = (ulong) Time.realtimeSinceStartup;
-
+ 
         int maxPlayers = 2;
         List<NetworkingPlayer> playersForMatch = new List<NetworkingPlayer>();
         for (int i = 0; i < players.Count; i++)
@@ -89,18 +93,71 @@ public class Test : NetworkedMonoBehavior
         AddToLog(string.Format("RunMatchmaking: made a match with {0} players", playersForMatch.Count));
         for (int i = 0; i < playersForMatch.Count; i++)
         {
-            AddToLog(string.Format("\tplayer {0}", playersForMatch[i].NetworkId));
-        }
-        for (int i = 0; i < playersForMatch.Count; i++)
-        {
             players.Remove(playersForMatch[i]);
         }
         AddToLog(string.Format("RunMatchmaking: {0} players still waiting for match", players.Count));
 
-        for (int i = 0; i < playersForMatch.Count; i++)
+        StartAMatch(playersForMatch);
+    }
+
+
+    private ushort assignMatchPort()
+    {
+        ushort port;
+
+        for (port= matchStartingPort; port <= matchEndingPort; port+=2)
         {
-            string message = string.Format("MM {0}: Game:{1}  Port: {2}", matchmakingUniqueID, i % 2, 12345);
-            AuthoritativeRPC("MatchMakingRPC", worker, playersForMatch[i], true, message);
+            if (!matchPortsInUse.ContainsKey(port))
+            {
+                matchPortsInUse.Add(port, port);
+                return port;
+            }
+        }
+        return 0; // no ports available
+    }
+
+    private void releaseMatchPort(ushort port)
+    {
+        if (matchPortsInUse.ContainsKey(port))
+        {
+            matchPortsInUse.Remove(port);
+        }
+    }
+
+    private void StartAMatch(List<NetworkingPlayer> playersForMatch)
+    {
+        ushort assignedPort = assignMatchPort();
+        if (assignedPort != 0)
+        {
+            matchmakingUniqueID++;
+            StartMatchServer(assignedPort, playersForMatch);
+        }
+        else
+        {
+            // no more ports available for matches
+            AddToLog("No more ports available for matches. Players have to wait.");
+            foreach (NetworkingPlayer player in playersForMatch)
+            {
+                players.Add(player);
+            }
+        }
+    }
+
+    [BRPC]
+    private void StartGameRPC(string message)
+    {
+        if (!isServer)
+        {
+            AddToLog("StartGameRPC");
+        }
+    }
+
+    [BRPC]
+    private void EndGameRPC(string message)
+    {
+        if (!isServer)
+        {
+            AddToLog("EndGameRPC");
         }
     }
 
@@ -110,7 +167,12 @@ public class Test : NetworkedMonoBehavior
         if (!isServer)
         {
             AddToLog("MM Response:" + message);
-            StartCoroutine(Client_RunAMatch(2f));
+            string[] args = message.Split(':');
+            AddToLog(string.Format("client got port {0}", args[3]));
+            StopClient(currentPort);
+            currentPort = ushort.Parse(args[3]);
+            StartClient(currentPort);
+            //StartCoroutine(Client_RunAMatch(2f));
         }
     }
 
@@ -121,56 +183,136 @@ public class Test : NetworkedMonoBehavior
         AddToLog("Client_RunAMatch End");
     }
 
+    void ServerConnected()
+    {
+        AddToLog("Connected");
+    }
+
+    void ServerDisconnected()
+    {
+        AddToLog("Disconnected");
+    }
+    
+    void PlayerConnected(NetworkingPlayer player)
+    {
+        AddToLog("PlayerConnected");
+        players.Add(player);
+        AddToLog(string.Format("{0} players", players.Count));
+    }
+
+    void PlayerDisconnected(NetworkingPlayer player)
+    {
+        AddToLog("PlayerDisconnected");
+        players.Remove(player);
+        AddToLog(string.Format("{0} players", players.Count));
+    }
+
     void StartServer()
     {
         AddToLog("Starting Server");
         worker = Networking.Host(PORT, PROTOCOL_TYPE, PLAYER_COUNT);
-        Networking.Sockets[PORT].connected += delegate ()
+        Networking.Sockets[PORT].connected += ServerConnected;
+        Networking.Sockets[PORT].disconnected += ServerDisconnected;
+        Networking.Sockets[PORT].playerConnected += PlayerConnected;
+        Networking.Sockets[PORT].playerDisconnected += PlayerDisconnected;
+    }
+
+    void ErrorCallback(System.Exception exception)
+    {
+        AddToLog("Error: " + exception.Message);
+    }
+
+    void StartMatchServer(ushort port, List<NetworkingPlayer> playersForMatch)
+    {
+        AddToLog("Starting Match Server");
+
+        string message = string.Format("MM:{0}:Port:{1}", matchmakingUniqueID, port);
+        AddToLog("Starting match: " + message);
+
+        for (int i = 0; i < playersForMatch.Count; i++)
         {
-            AddToLog("Connected");
+            AddToLog(string.Format("\tplayer {0}", playersForMatch[i].NetworkId));
+        }
+
+        AddToLog(string.Format("Starting Match Server on port {0}", port));
+
+        worker = Networking.Host(port, PROTOCOL_TYPE, PLAYER_COUNT, false, null, false, true, false, ErrorCallback);
+        Debug.Log(worker);
+        Networking.Sockets[port].connected += delegate ()
+        {
+            AddToLog("Match Server Connected");
+
+            for (int i = 0; i < playersForMatch.Count; i++)
+            {
+                AuthoritativeRPC("MatchMakingRPC", worker, playersForMatch[i], false, message);
+            }
+
+            StartCoroutine(BroadcastMatchStartCoroutine(port, 10F));
         };
-        Networking.Sockets[PORT].disconnected += delegate ()
+        Networking.Sockets[port].disconnected += delegate ()
         {
-            AddToLog("Disconnected");
+            AddToLog("Match Server Disconnected");
         };
-        Networking.Sockets[PORT].playerConnected += delegate (NetworkingPlayer player)
+        Networking.Sockets[port].playerConnected += delegate (NetworkingPlayer player)
         {
-            AddToLog("PlayerConnected");
-            players.Add(player);
-            AddToLog(string.Format("{0} players", players.Count));
+            AddToLog(string.Format("Match Player Connected on port {0}", port));
         };
-        Networking.Sockets[PORT].playerDisconnected += delegate (NetworkingPlayer player)
+        Networking.Sockets[port].playerDisconnected += delegate (NetworkingPlayer player)
         {
-            AddToLog("PlayerDisconnected");
-            players.Remove(player);
-            AddToLog(string.Format("{0} players", players.Count));
+            AddToLog(string.Format("Match Player Disconnected on port {0}", port));
         };
     }
 
-    void StartClient()
+    IEnumerator BroadcastMatchStartCoroutine(ushort port, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        AddToLog(string.Format("broadcastMatchStart port: {0}", port));
+        URPC("StartGameRPC", Networking.Sockets[port], NetworkReceivers.All, "");
+
+        yield return new WaitForSeconds(waitTime);
+        URPC("EndGameRPC", Networking.Sockets[port], NetworkReceivers.All, "");
+    }
+
+    void StopServer()
+    {
+        AddToLog("Stopping Server");
+    }
+
+    private void ClientConnected()
+    {
+        AddToLog("Connected");
+    }
+
+    private void ClientDisconnected()
+    {
+        AddToLog("Disconnected");
+    }
+
+    private void ServerDisconnected(string reason)
+    {
+        AddToLog("The server has disconnected you because of: " + reason);
+    }
+
+    void StartClient(ushort port)
     {
         AddToLog("Start Client");
 
-        worker = Networking.Connect(HOST, PORT, PROTOCOL_TYPE, true);
-        Networking.Sockets[PORT].connected += delegate ()
-        {
-            AddToLog("Connected");
-        };
-        Networking.Sockets[PORT].disconnected += delegate ()
-        {
-            AddToLog("Disconnected");
-        };
-        Networking.Sockets[PORT].serverDisconnected += delegate (string reason)
-        {
-            AddToLog("The server has disconnected you because of: " + reason);
-        };
+        worker = Networking.Connect(HOST, port, PROTOCOL_TYPE, true);
+        Networking.Sockets[port].connected += ClientConnected;
+        Networking.Sockets[port].disconnected += ClientDisconnected;
+        Networking.Sockets[port].serverDisconnected += ServerDisconnected;
+        currentPort = port;
     }
 
-    void StopClient()
+    void StopClient(ushort port)
     {
         AddToLog("Stop Client");
         if (worker != null)
         {
+            Networking.Sockets[port].connected -= ClientConnected;
+            Networking.Sockets[port].disconnected -= ClientDisconnected;
+            Networking.Sockets[port].serverDisconnected -= ServerDisconnected;
+
             Networking.Disconnect(worker);
             worker = null;
         }
