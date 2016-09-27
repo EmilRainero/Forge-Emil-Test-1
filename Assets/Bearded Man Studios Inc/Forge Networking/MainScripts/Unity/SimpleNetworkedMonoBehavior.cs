@@ -1250,6 +1250,7 @@ namespace BeardedManStudios.Network
 		/// </remarks>
 		public void RPC(string methodName, NetWorker socket, NetworkReceivers receivers, params object[] arguments)
 		{
+            Debug.Log("SimpleNetworkedMonoBehavior RPC " + socket.Port.ToString());
 			_RPC(methodName, socket, receivers, true, arguments);
 		}
 

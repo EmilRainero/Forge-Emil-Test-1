@@ -18,6 +18,7 @@ public class Test : NetworkedMonoBehavior
     public ushort matchEndingPort = 15980;
     private Dictionary<ushort, ushort> matchPortsInUse;
     private ushort currentPort;
+    public GameObject player;
 
     private void AddToLog(string message)
     {
@@ -72,13 +73,13 @@ public class Test : NetworkedMonoBehavior
 
     private void RunMatchmaking()
     {
-        AddToLog(string.Format("RunMatchmaking: {0} players waiting for match", players.Count));
 
         if (players.Count < 1)
             return;
 
- 
-        int maxPlayers = 2;
+        AddToLog(string.Format("RunMatchmaking: {0} players waiting for match", players.Count));
+
+        int maxPlayers = 3;
         List<NetworkingPlayer> playersForMatch = new List<NetworkingPlayer>();
         for (int i = 0; i < players.Count; i++)
         {
@@ -149,6 +150,11 @@ public class Test : NetworkedMonoBehavior
         if (!isServer)
         {
             AddToLog("StartGameRPC");
+            AddToLog(string.Format("StartGameRPC   worker: {0}  OwningNetWorker: {1}", worker.Port, OwningNetWorker.Port));
+            //SimpleNetworkedMonoBehavior snmb = player.GetComponent<SimpleNetworkedMonoBehavior>();
+            //AddToLog(string.Format("player port: {0}", snmb.OwningNetWorker.Port));
+
+            Networking.Instantiate(player, NetworkReceivers.AllBuffered);
         }
     }
 
@@ -247,7 +253,7 @@ public class Test : NetworkedMonoBehavior
                 AuthoritativeRPC("MatchMakingRPC", worker, playersForMatch[i], false, message);
             }
 
-            StartCoroutine(BroadcastMatchStartCoroutine(port, 10F));
+            StartCoroutine(BroadcastMatchStartCoroutine(port, 3F));
         };
         Networking.Sockets[port].disconnected += delegate ()
         {
@@ -281,6 +287,9 @@ public class Test : NetworkedMonoBehavior
     private void ClientConnected()
     {
         AddToLog("Connected");
+        AddToLog(string.Format("ClientConnected   worker: {0}", worker.Port));
+
+        //Networking.Instantiate(player, NetworkReceivers.AllBuffered);
     }
 
     private void ClientDisconnected()
@@ -298,6 +307,7 @@ public class Test : NetworkedMonoBehavior
         AddToLog("Start Client");
 
         worker = Networking.Connect(HOST, port, PROTOCOL_TYPE, true);
+        AddToLog(string.Format("StartClient   port: {0}", port));
         Networking.Sockets[port].connected += ClientConnected;
         Networking.Sockets[port].disconnected += ClientDisconnected;
         Networking.Sockets[port].serverDisconnected += ServerDisconnected;
@@ -314,6 +324,8 @@ public class Test : NetworkedMonoBehavior
             Networking.Sockets[port].serverDisconnected -= ServerDisconnected;
 
             Networking.Disconnect(worker);
+            NetworkDisconnect();
+            //Networking.NetworkingReset();
             worker = null;
         }
     }

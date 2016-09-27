@@ -468,6 +468,7 @@ namespace BeardedManStudios.Network
 
 					for (; ; port++)
 					{
+                        UnityEngine.Debug.Log("trying port " + port);
 						try
 						{
 							ReadClient = new CachedUdpClient(port);
@@ -478,9 +479,11 @@ namespace BeardedManStudios.Network
 							hostEndpoint = new IPEndPoint(IPAddress.Parse(hostAddress), serverPort);
 							break;
 						}
-						catch
+						catch (Exception ex)
 						{
-							if (triedOnce && port == serverPort)
+                            UnityEngine.Debug.Log(ex.Message);
+
+                            if (triedOnce && port == serverPort)
 								throw new Exception("Running UDP locally, the system looped all the way around and back to port " + serverPort + " and found no open ports to run on.");
 
 							triedOnce = true;

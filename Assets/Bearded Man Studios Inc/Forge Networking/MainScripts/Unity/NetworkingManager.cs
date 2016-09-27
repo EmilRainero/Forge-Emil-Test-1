@@ -430,7 +430,9 @@ namespace BeardedManStudios.Network
 		[BRPC]
 		public void NetworkInstantiate(ulong ownerId, ulong startNetworkId, string name, Vector3 position, Quaternion rotation, int callbackId = 0)
 		{
-			lock (NetworkedBehaviorsMutex)
+            Debug.Log("Receiveed NetworkInstantiate");
+
+            lock (NetworkedBehaviorsMutex)
 			{
 				if (NetworkedBehaviors.ContainsKey(startNetworkId))
 					return;

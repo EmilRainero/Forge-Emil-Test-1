@@ -749,6 +749,7 @@ namespace BeardedManStudios.Network
 
 		private static void CallInstantiate(string obj, NetworkReceivers receivers, Action<SimpleNetworkedMonoBehavior> callback = null)
 		{
+            Debug.Log("CallInstantiate");
 			SimpleNetworkedMonoBehavior NetBehavior;
 			if (ValidateNetworkedObject(obj, out NetBehavior))
 			{
@@ -769,7 +770,8 @@ namespace BeardedManStudios.Network
 				else
 				{
 #if !BARE_METAL
-					NetworkingManager.Instantiate(receivers, obj, NetBehavior.transform.position, NetBehavior.transform.rotation, 0);
+                    Debug.Log("CallInstantiate 2");
+                    NetworkingManager.Instantiate(receivers, obj, NetBehavior.transform.position, NetBehavior.transform.rotation, 0);
 #else
 					// TODO:  Put the position and rotation of the object in the scene JSON data
 					NetworkingManager.Instantiate(receivers, obj, Vector3.zero, Quaternion.identity, 0);
@@ -927,14 +929,18 @@ namespace BeardedManStudios.Network
 
 			if (NetworkingManager.Instance == null || !NetworkingManager.Instance.IsSetup)
 			{
+                Debug.Log("Instantiate 1");
 				NetworkingManager.setupActions.Add(() =>
 				{
 					Instantiate(obj, receivers, callback);
 				});
 			}
 			else
-				CallInstantiate(obj.name, receivers, callback: callback);
-		}
+            {
+                Debug.Log("Instantiate 2");
+                CallInstantiate(obj.name, receivers, callback: callback);
+            }
+        }
 
 		/// <summary>
 		/// Instantiate an object on the Network
