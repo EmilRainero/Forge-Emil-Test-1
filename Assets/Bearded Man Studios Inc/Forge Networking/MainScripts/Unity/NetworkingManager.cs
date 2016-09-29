@@ -1,3 +1,5 @@
+#if false
+
 /*-----------------------------+------------------------------\
 |                                                             |
 |                        !!!NOTICE!!!                         |
@@ -741,3 +743,5 @@ namespace BeardedManStudios.Network
 		}
 	}
 }
+
+#endif

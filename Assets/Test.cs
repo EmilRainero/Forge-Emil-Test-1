@@ -9,7 +9,7 @@ public class Test : NetworkedMonoBehavior
     private List<NetworkingPlayer> players;
     public string HOST = "127.0.0.1";
     public ushort PORT = 15937;
-    public Networking.TransportationProtocolType PROTOCOL_TYPE = Networking.TransportationProtocolType.UDP;
+    public Networking.TransportationProtocolType PROTOCOL_TYPE = Networking.TransportationProtocolType.TCP;
     public int PLAYER_COUNT = 31;
     private NetWorker worker = null;
     private bool isServer = true;
