@@ -6,20 +6,16 @@ using System;
 
 public class GameInstanceManagerNetworked {
 
-    public GameInstanceManager GameInstanceManager { get; set; }
-    public string Host { get; set; }
     public ushort Port { get; set; }
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     private NetWorker NetWorker { get; set; }
 
-    public GameInstanceManagerNetworked(GameInstanceManager gameInstanceManager)
+    public GameInstanceManagerNetworked()
     {
-        this.GameInstanceManager = gameInstanceManager;
     }
 
-    public void Connect(string host, ushort port, Networking.TransportationProtocolType protocolType)
+    public void Connect(ushort port, Networking.TransportationProtocolType protocolType)
     {
-        this.Host = host;
         this.Port = port;
         this.ProtocolType = protocolType;
 

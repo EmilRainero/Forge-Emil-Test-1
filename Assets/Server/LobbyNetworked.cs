@@ -80,7 +80,7 @@ public class LobbyNetworked
         }
         else
         {
-            DebugLog.Log("Duplicate player disconnect");
+            //DebugLog.Log("Duplicate player disconnect");
         }
     }
 
