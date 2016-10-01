@@ -6,6 +6,7 @@ using System;
 
 public class GameInstanceNetworked {
 
+    public string Host { get; set; }
     public ushort Port { get; set; }
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     public NetWorker NetWorker { get; set; }
@@ -14,14 +15,26 @@ public class GameInstanceNetworked {
     {
     }
 
-    public void Connect(ushort port, Networking.TransportationProtocolType protocolType)
+    void ClientConnected()
     {
+        DebugLog.Log("Game Instance Connected");
+    }
+
+    void ClientDisconnected()
+    {
+        DebugLog.Log("Game Instance Disconnected");
+    }
+
+    public void Connect(string host, ushort port, Networking.TransportationProtocolType protocolType)
+    {
+        this.Host = host;
         this.Port = port;
         this.ProtocolType = protocolType;
 
-        Networking.InitializeFirewallCheck(port);
-
-        this.NetWorker = Networking.Host(this.Port, this.ProtocolType, 100);
+        DebugLog.Log(string.Format("Game Instance try to connect to {0}:{1}", host, port));
+        this.NetWorker = Networking.Connect(this.Host, this.Port, this.ProtocolType);
+        Networking.Sockets[this.Port].connected += ClientConnected;
+        Networking.Sockets[this.Port].disconnected += ClientDisconnected;
     }
 
     public void Disconnect()

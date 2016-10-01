@@ -59,7 +59,7 @@ public class TestNetworking : MonoBehaviour
             {
                 Debug.Log("Start GI");
                 started = "GI";
-                StartGameInstance(lobbyIpAddress, ushort.Parse(giPort));
+                StartGameInstance(gimIpAddress, ushort.Parse(gimPort));
             }
             giPort = GUI.TextField(new Rect(Screen.width - 210, 190, 90, 20), giPort);
             GUI.Label(new Rect(Screen.width - 110, 190, 100, 20), "Port", guiStyle);
@@ -98,7 +98,7 @@ public class TestNetworking : MonoBehaviour
     private void StartGameInstance(string lobbyIpAddress, ushort port)
     {
         GameInstanceNetworked gameInstanceNetworked = new GameInstanceNetworked();
-        gameInstanceNetworked.Connect(port, Networking.TransportationProtocolType.TCP);
+        gameInstanceNetworked.Connect(lobbyIpAddress, port, Networking.TransportationProtocolType.TCP);
     }
 
     private void StartClient(string lobbyIpAddress, ushort lobbyPort)
