@@ -7,10 +7,10 @@ namespace BeardedManStudios.Network
 		public const uint MASTER_SERVER_UNREGISTER_SERVER = 1;
 		public const uint MASTER_SERVER_UPDATE_SERVER = 2;
 		public const uint MASTER_SERVER_GET_HOSTS = 3;
-		public const uint NetWORKING_MANAGER_PLAYER_LOADED_LEVEL = 4;
-		public const uint NetWORKING_MANAGER_POLL_PLAYERS = 5;
+		public const uint NETWORKING_MANAGER_PLAYER_LOADED_LEVEL = 4;
+		public const uint NETWORKING_MANAGER_POLL_PLAYERS = 5;
 
-		public const uint NetWORKED_MONO_BEHAVIOR_MANUAL_PROPERTIES = 6;
+		public const uint NETWORKED_MONO_BEHAVIOR_MANUAL_PROPERTIES = 6;
 
 		public const uint ROOM_MANAGER_READ_IN_ROOM = 7;
 		public const uint ROOM_MANAGER_ENTER_ROOM = 8;

@@ -193,7 +193,7 @@ MonoBehaviour:
   destroyOnDisconnect: 1
   allowOwnershipChange: 1
   MaxRPCBatch: 10000
-  proximityBehaviors: 
+  proximityBehaviors: []
   serializePosition: 7
   lerpPosition: 1
   serializeRotation: 7
@@ -205,7 +205,7 @@ MonoBehaviour:
   lerpT: 0.25
   lerpStopOffset: 0.01
   lerpAngleStopOffset: 1
-  NetworkTimeDelay: 0.1
+  networkTimeDelay: 0.1
   isPlayer: 1
   serverIsAuthority: 0
   clientSidePrediction: 0

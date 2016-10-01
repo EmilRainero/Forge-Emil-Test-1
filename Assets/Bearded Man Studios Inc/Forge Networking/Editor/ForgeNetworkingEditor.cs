@@ -17,7 +17,7 @@
 |                                                             |
 \------------------------------+-----------------------------*/
 
-#if !UNITY_WEBGL
+
 
 using BeardedManStudios.Network;
 using System;
@@ -27,7 +27,7 @@ using UnityEngine;
 
 public class ForgeNetworkingEditor : EditorWindow
 {
-	public const float CURRENT_VERSION = 19.1f;
+	public const float CURRENT_VERSION = 19.21f;
 
 	private static ForgeNetworkingEditor Instance;
 	//private Texture2D ForgeIcon;
@@ -221,7 +221,7 @@ public class ForgeNetworkingEditor : EditorWindow
 		}
 	}
 
-	//Disabled until we re-implement it back in
+    //Disabled until we re-implement it back in
 	//[MenuItem("Window/Forge Networking/Forge Editor %G")]
 	public static void Init()
 	{
@@ -481,4 +481,3 @@ public class ForgeNetworkingEditor : EditorWindow
 		}
 	}
 }
-#endif

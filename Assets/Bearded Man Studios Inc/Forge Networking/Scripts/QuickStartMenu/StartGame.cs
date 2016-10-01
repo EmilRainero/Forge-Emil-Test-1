@@ -21,13 +21,9 @@
 
 using BeardedManStudios.Network;
 using BeardedManStudios.Network.Unity;
-#if !UNITY_WEBGL
-using System.Net;
-#endif
 using UnityEngine;
 using UnityEngine.UI;
-
-#pragma warning disable 0414 //Disable is busy finding player on lan warning
+using System.Net;
 
 namespace BeardedManStudios.Forge.Examples
 {
@@ -46,24 +42,24 @@ namespace BeardedManStudios.Forge.Examples
 
 		public InputField ipAddressInput = null;                                                                // The input label for the ip address for the client to connect to directly
 
-		/// <summary>
-		/// The percentage change each packet will be dropped in the Network simulation.
-		/// </summary>
-		/// <remarks>
-		/// A number between 0 and 1 where 0 is 0% and 1 is 100%, the percentage is the chance that each Network
-		/// message being sent, will be lost. This can be used to test what happens to your game when Network packets
-		/// are being sent unreliably and are being lost.
-		/// </remarks>
+        /// <summary>
+        /// The percentage change each packet will be dropped in the network simulation.
+        /// </summary>
+        /// <remarks>
+        /// A number between 0 and 1 where 0 is 0% and 1 is 100%, the percentage is the chance that each network
+        /// message being sent, will be lost. This can be used to test what happens to your game when network packets
+        /// are being sent unreliably and are being lost.
+        /// </remarks>
 		public float packetDropSimulationChance = 0.0f;
 
-		/// <summary>
-		/// The amount of time in milliseconds to simulate Network latency.
-		/// </summary>
-		/// <remarks>
-		/// All messages being sent across the Network will be delayed by this amount of time, including RPCs and NetSyncs.
-		/// This can be used to test how your game reacts or just feels with higher latencies.
-		/// </remarks>
-		public int NetworkLatencySimulationTime = 0;
+        /// <summary>
+        /// The amount of time in milliseconds to simulate network latency.
+        /// </summary>
+        /// <remarks>
+        /// All messages being sent across the network will be delayed by this amount of time, including RPCs and NetSyncs.
+        /// This can be used to test how your game reacts or just feels with higher latencies.
+        /// </remarks>
+        public int networkLatencySimulationTime = 0;
 
 		public string masterServerIp = string.Empty;                                                            // If this has a value then it will register itself on the master server at this location
 		public bool useNatHolePunching = false;
@@ -132,19 +128,13 @@ namespace BeardedManStudios.Forge.Examples
 		{
 			// Create a host connection
 			socket = Networking.Host((ushort)port, protocolType, playerCount, IsWinRT, useNat: useNatHolePunching);
-
-            if (socket == null)
-            {
-                Debug.LogError("Socket failed to initialize");
-                return;
-            }
 			socket.TrackBandwidth = showBandwidth;
 
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 			if (socket is CrossPlatformUDP)
 			{
 				((CrossPlatformUDP)socket).packetDropSimulationChance = packetDropSimulationChance;
-				((CrossPlatformUDP)socket).NetworkLatencySimulationTime = NetworkLatencySimulationTime;
+				((CrossPlatformUDP)socket).networkLatencySimulationTime = networkLatencySimulationTime;
 			}
 #endif
 
@@ -189,9 +179,9 @@ namespace BeardedManStudios.Forge.Examples
 				socket.connectTimeout += ConnectTimeout;
 			}
 
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 			if (socket is CrossPlatformUDP)
-				((CrossPlatformUDP)socket).NetworkLatencySimulationTime = NetworkLatencySimulationTime;
+				((CrossPlatformUDP)socket).networkLatencySimulationTime = networkLatencySimulationTime;
 #endif
 
 			Go();
@@ -209,7 +199,6 @@ namespace BeardedManStudios.Forge.Examples
 			Go();
 		}
 
-#if !UNITY_WEBGL
 		public void StartClientLan()
 		{
 			if (isBusyFindingLan)
@@ -233,29 +222,28 @@ namespace BeardedManStudios.Forge.Examples
 			string ipAddress = string.Empty;
 			ushort targetPort = 0;
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 			ipAddress = endpoint.Address.ToString();
 			targetPort = (ushort)endpoint.Port;
 #else
 						ipAddress = endpoint.ipAddress;
 						targetPort = (ushort)endpoint.port;
 #endif
-			MainThreadManager.Run(() => {
-				socket = Networking.Connect(ipAddress, targetPort, protocolType, IsWinRT, useNatHolePunching);
-				Go();
-			});
+            MainThreadManager.Run(() => {
+                socket = Networking.Connect(ipAddress, targetPort, protocolType, IsWinRT, useNatHolePunching);
+                Go();
+            });
 		}
-#endif
 
 		private void RemoveSocketReference()
 		{
 			socket = null;
-			Networking.NetworkReset -= RemoveSocketReference;
+			Networking.networkReset -= RemoveSocketReference;
 		}
 
 		private void Go()
 		{
-			Networking.NetworkReset += RemoveSocketReference;
+			Networking.networkReset += RemoveSocketReference;
 
 			if (proximityBasedUpdates)
 				socket.MakeProximityBased(proximityDistance);

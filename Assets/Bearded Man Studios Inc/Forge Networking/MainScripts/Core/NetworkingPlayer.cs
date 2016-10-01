@@ -21,22 +21,22 @@
 
 using System;
 
-#if NetFX_CORE && !UNITY_EDITOR
+#if NETFX_CORE && !UNITY_EDITOR
 
 namespace System.Net
 {
    public class IPEndPoint
    {
-	  public IPEndPoint(string address, int port)
-	  {
-		 ipAddress = address ?? string.Empty;
-		 this.port = port;
-	  }
+      public IPEndPoint(string address, int port)
+      {
+         ipAddress = address ?? string.Empty;
+         this.port = port;
+      }
 
-	  public string ipAddress = string.Empty;
-	  public string Address { get { return ipAddress; } }
-	  public int port = 0;
-	  public int Port { get { return port; } }
+      public string ipAddress = string.Empty;
+      public string Address { get { return ipAddress; } }
+      public int port = 0;
+      public int Port { get { return port; } }
    }
 }
 #endif
@@ -64,16 +64,6 @@ namespace BeardedManStudios.Network
 		/// Name of the NetworkingPlayer
 		/// </summary>
 		public string Name { get; private set; }
-
-		/// <summary>
-		/// Determines if the player has been sent the websocket headers
-		/// </summary>
-		public bool WebsocketHeaderPrepared { get; set; }
-
-		/// <summary>
-		/// Determines if the player is currently connected
-		/// </summary>
-		public bool Connected { get; set; }
 
 		/// <summary>
 		/// This is the message group that this particular player is a part of

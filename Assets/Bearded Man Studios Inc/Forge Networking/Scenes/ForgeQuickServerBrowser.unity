@@ -955,7 +955,7 @@ MonoBehaviour:
   PasswordField: {fileID: 774447293}
   ErrorResponseLabel: {fileID: 578234006}
   Grid: {fileID: 67600337}
-  masterServerIp: 127.0.0.1
+  masterServerIp: 3132372e302e302e31
 --- !u!4 &509756173
 Transform:
   m_ObjectHideFlags: 0

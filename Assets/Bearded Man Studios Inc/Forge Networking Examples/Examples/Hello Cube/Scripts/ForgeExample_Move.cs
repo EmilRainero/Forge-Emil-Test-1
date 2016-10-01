@@ -56,7 +56,7 @@ namespace BeardedManStudios.Forge.Examples
 			if (!IsOwner)
 				return;
 
-			// Read raw data from the Network
+			// Read raw data from the network
 			OwningNetWorker.rawDataRead += OwningNetWorker_rawDataRead;
 		}
 
@@ -64,9 +64,9 @@ namespace BeardedManStudios.Forge.Examples
 		{
 			base.NetworkStart();
 
-			if (OwningNetWorker.IsServer) // Fired whenever a client says that they are ready on the Network
+			if (OwningNetWorker.IsServer) // Fired whenever a client says that they are ready on the network
 				OwningNetWorker.clientReady += (player) => { Debug.Log("The player with id " + player.NetworkId + " is ready to go!"); };
-			else // Tell the server that we are ready on the Network, this can be called at any time
+			else // Tell the server that we are ready on the network, this can be called at any time
 				Networking.ClientReady(OwningNetWorker);
 
 			enteredProximity += (mine, other) => { Debug.Log(other.name + " entered my (" + mine.name + ") proximity"); };
@@ -81,12 +81,12 @@ namespace BeardedManStudios.Forge.Examples
 		protected override void NetworkInitialized()
 		{
 			base.NetworkInitialized();
-			Debug.Log("The variables have been initially replicated across the Network");
+			Debug.Log("The variables have been initially replicated across the network");
 		}
 
 		private void OwningNetWorker_rawDataRead(NetworkingPlayer sender, BMSByte data)
 		{
-			// In this test we are just writing a string across the Network
+			// In this test we are just writing a string across the network
 			string message = System.Text.Encoding.UTF8.GetString(data.byteArr, data.StartIndex(), data.Size);
 
 			Debug.Log("Hello " + message);
@@ -221,7 +221,7 @@ namespace BeardedManStudios.Forge.Examples
 			Network.Unity.MainThreadManager.Run(() =>
 			{
 				// Note:  This is not optimal, it is just for the idea
-				foreach (KeyValuePair<ulong, SimpleNetworkedMonoBehavior> kv in NetworkedBehaviors)
+				foreach (KeyValuePair<ulong, SimpleNetworkedMonoBehavior> kv in networkedBehaviors)
 				{
 					if (kv.Value is ForgeExample_Move)
 					{
@@ -247,7 +247,7 @@ namespace BeardedManStudios.Forge.Examples
 
 			// The server NetworkingManager object controls how fast the client's times are updated
 			GUILayout.Label("The current server time is: " + NetworkingManager.Instance.ServerTime);
-			GUILayout.Label("Press B or F to assign your name across the Network.");
+			GUILayout.Label("Press B or F to assign your name across the network.");
 			GUILayout.Label("This will also updated get the latest list of players");
 
 			GUILayout.Label("Bytes In: " + NetWorker.BandwidthIn);

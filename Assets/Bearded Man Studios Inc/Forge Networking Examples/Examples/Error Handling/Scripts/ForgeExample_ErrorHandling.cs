@@ -20,10 +20,6 @@
 
 
 using BeardedManStudios.Network;
-using System;
-#if !UNITY_WEBGL
-using System.Net.Sockets;
-#endif
 using UnityEngine;
 
 namespace BeardedManStudios.Forge.Examples
@@ -35,14 +31,14 @@ namespace BeardedManStudios.Forge.Examples
 			Networking.PrimarySocket.error += PrimarySocket_error;
 		}
 
-		private void PrimarySocket_error(Exception exception)
+		private void PrimarySocket_error(System.Exception exception)
 		{
-			if (exception is Exception)
+			if (exception is System.Exception)
 				Debug.Log("It is a system exception");
 			else if (exception is NetworkException)
 				Debug.Log("This is a Forge Networking specific exception");
-#if !NetFX_CORE && !UNITY_WEBGL
-			else if (exception is SocketException)
+#if !NETFX_CORE
+			else if (exception is System.Net.Sockets.SocketException)
 				Debug.Log("This is somekind of socket exception, could be that the port is already in use?");
 #endif
 			else

@@ -19,22 +19,16 @@
 
 
 
-
-
 using UnityEngine;
 
 using System;
 using System.Linq;
 
-#if !NetFX_CORE
-#if !UNITY_WEBGL
+#if !NETFX_CORE
 using System.Net;
 using System.Threading;
 #endif
-#endif
 using System.Collections.Generic;
-
-#pragma warning disable 0414 //Disable player count warning
 
 namespace BeardedManStudios.Network
 {
@@ -48,23 +42,18 @@ namespace BeardedManStudios.Network
 
 		private static Action<HostInfo[]> requestHostsCallback = null;
 
-		private int playerCount = 1024;                                                                         // Maximum player count -- excluding this server
+		private int playerCount = 1024;																			// Maximum player count -- excluding this server
 
-#if !UNITY_WEBGL
 		private CrossPlatformUDP socket = null;																	// The initial connection socket
-#else
-		// TODO:  The master server should support TCP
-		NetWorker socket = null;
-#endif
 
 		private List<HostInfo> hosts = new List<HostInfo>();
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 		private Dictionary<string, Dictionary<ushort, IPEndPoint>> natHosts = new Dictionary<string, Dictionary<ushort, IPEndPoint>>();
 #endif
 
 		public static bool natComplete = false;
 
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 		private Thread pingThread = null;
 #endif
 
@@ -77,7 +66,7 @@ namespace BeardedManStudios.Network
 			MasterServerIp = ip;
 		}
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 		private void PingHosts()
 		{
 			while (true)
@@ -88,9 +77,7 @@ namespace BeardedManStudios.Network
 						hosts.RemoveAt(i--);
 				}
 
-#if !UNITY_WEBGL
 				Thread.Sleep(sleepTime);
-#endif
 			}
 		}
 #endif
@@ -129,11 +116,9 @@ namespace BeardedManStudios.Network
 			Networking.PrimarySocket.AddCustomDataReadEvent(WriteCustomMapping.MASTER_SERVER_UPDATE_SERVER, UpdateServerRequest);
 			Networking.PrimarySocket.AddCustomDataReadEvent(WriteCustomMapping.MASTER_SERVER_GET_HOSTS, GetHostsRequestToServer);
 
-#if !UNITY_WEBGL
 			((CrossPlatformUDP)Networking.PrimarySocket).pingEvent += PingRecieved;
-#endif
 
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 			pingThread = new Thread(PingHosts);
 			pingThread.Start();
 #endif
@@ -361,25 +346,23 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		private void StartServer()
 		{
-#if !UNITY_WEBGL
 			// Create a host connection
 			socket = Networking.Host(PORT, Networking.TransportationProtocolType.UDP, playerCount, false) as CrossPlatformUDP;
 			Networking.SetPrimarySocket(socket);
-#endif
 		}
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 		private void OnApplicationQuit()
 		{
 #if UNITY_IOS
 			pingThread.Interrupt();
-#elif !UNITY_WEBGL
+#else
 			pingThread.Abort();
 #endif
 		}
 #endif
 
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 		public void RegisterNatRequest(string ip, ushort port, ushort internalPort)
 		{
 			IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(ip), port);
@@ -405,7 +388,7 @@ namespace BeardedManStudios.Network
 		/// <param name="requestPort">This is the client port number that this server is trying to communicate with</param>
 		public void PullNatRequest(string ip, ushort port, ushort internalPort, string requestHost, ushort requestPort)
 		{
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 			IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(ip), port);
 
 			if (!natHosts.ContainsKey(requestHost))
@@ -456,9 +439,9 @@ namespace BeardedManStudios.Network
 		/// <param name="proxyHost">This is the NAT hole punch server host address</param>
 		/// <param name="proxyPort">This is the NAT hole punch server port number</param>
 		/// <returns></returns>
-		public static bool RequestNat(NetWorker socket, ushort port, string requestHost, ushort requestPort, string proxyHost, ushort proxyPort = PORT)
+		public static bool RequestNat(CrossPlatformUDP socket, ushort port, string requestHost, ushort requestPort, string proxyHost, ushort proxyPort = PORT)
 		{
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 			IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(proxyHost), proxyPort);
 
 			List<byte> data = new List<byte>(new byte[] { 4, 4, 2 });
@@ -469,9 +452,9 @@ namespace BeardedManStudios.Network
 			try
 			{
 				int tryCount = 10;
-				while (((CrossPlatformUDP)socket).ReadClient.Available == 0)
+				while (socket.ReadClient.Available == 0)
 				{
-					((CrossPlatformUDP)socket).ReadClient.Send(data.ToArray(), data.Count, endpoint);
+					socket.ReadClient.Send(data.ToArray(), data.Count, endpoint);
 					Thread.Sleep(500);
 
 					if (--tryCount <= 0)
@@ -479,7 +462,7 @@ namespace BeardedManStudios.Network
 				}
 
 				string endpointStr = "";
-				BMSByte otherBytes = ((CrossPlatformUDP)socket).ReadClient.Receive(ref endpoint, ref endpointStr);
+				BMSByte otherBytes = socket.ReadClient.Receive(ref endpoint, ref endpointStr);
 
 				BMSByte found = new BMSByte();
 				found.Clone(otherBytes);
@@ -493,9 +476,9 @@ namespace BeardedManStudios.Network
 				IPEndPoint targetEndpoint = new IPEndPoint(IPAddress.Parse(targetHost), targetPort);
 
 				tryCount = 20;
-				while (((CrossPlatformUDP)socket).ReadClient.Available == 0)
+				while (socket.ReadClient.Available == 0)
 				{
-					((CrossPlatformUDP)socket).ReadClient.Send(new byte[] { 4, 4, 0 }, 3, targetEndpoint);
+					socket.ReadClient.Send(new byte[] { 4, 4, 0 }, 3, targetEndpoint);
 					Thread.Sleep(500);
 
 					if (--tryCount <= 0)
@@ -526,9 +509,9 @@ namespace BeardedManStudios.Network
 		/// <param name="port">The port number that is being used for this server</param>
 		/// <param name="proxyHost">The ip address of the the NAT hole punching (router) server</param>
 		/// <param name="proxyPort">The port number for the NAT hole punch server</param>
-		public static void RegisterNat(NetWorker socket, ushort port, string proxyHost, ushort proxyPort = PORT)
+		public static void RegisterNat(CrossPlatformUDP socket, ushort port, string proxyHost, ushort proxyPort = PORT)
 		{
-#if !NetFX_CORE && !UNITY_WEBGL
+#if !NETFX_CORE
 			IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(proxyHost), proxyPort);
 
 			List<byte> data = new List<byte>(new byte[] { 4, 4, 1 });
@@ -537,9 +520,9 @@ namespace BeardedManStudios.Network
 			try
 			{
 				int tryCount = 10;
-				while (((CrossPlatformUDP)socket).ReadClient.Available == 0)
+				while (socket.ReadClient.Available == 0)
 				{
-					((CrossPlatformUDP)socket).ReadClient.Send(data.ToArray(), data.Count, endpoint);
+					socket.ReadClient.Send(data.ToArray(), data.Count, endpoint);
 					Thread.Sleep(500);
 
 					if (--tryCount <= 0)

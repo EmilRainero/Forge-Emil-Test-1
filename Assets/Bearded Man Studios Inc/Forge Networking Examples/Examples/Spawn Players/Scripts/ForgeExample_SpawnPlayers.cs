@@ -28,7 +28,7 @@ public class ForgeExample_SpawnPlayers : MonoBehaviour
 
 	private void Start()
 	{
-		// This will buffer spawn the cube across the Network for each client
+		// This will buffer spawn the cube across the network for each client
 		if (Networking.PrimarySocket.Connected)
 			Networking.Instantiate(objectToSpawn, NetworkReceivers.AllBuffered);
 		else

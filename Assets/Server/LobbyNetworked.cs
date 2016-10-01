@@ -56,25 +56,32 @@ public class LobbyNetworked
 
     void ServerConnected()
     {
-        DebugLog.Log("Connected");
+        DebugLog.Log("Server Connected");
     }
 
     void ServerDisconnected()
     {
-        DebugLog.Log("Disconnected");
+        DebugLog.Log("Server Disconnected");
     }
 
     void PlayerConnected(NetworkingPlayer player)
     {
-        DebugLog.Log("PlayerConnected-- " + player.NetworkId);
+        DebugLog.Log("PlayerConnected");
         this.players.Add(player);
     }
 
     void PlayerDisconnected(NetworkingPlayer player)
     {
-        Debug.Log("CALLED PlayerDisconnected " + this.players.Count);
         //DebugLog.Log("PlayerDisconnected-- " + player.NetworkId);
-        this.players.Remove(player);
+        if (this.players.Contains(player))
+        {
+            DebugLog.Log("PlayerDisconnected");
+            this.players.Remove(player);
+        }
+        else
+        {
+            DebugLog.Log("Duplicate player disconnect");
+        }
     }
 
     public void Connect(string host, ushort port, Networking.TransportationProtocolType protocolType)

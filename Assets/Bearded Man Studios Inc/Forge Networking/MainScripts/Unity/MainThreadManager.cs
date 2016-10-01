@@ -85,7 +85,7 @@ namespace BeardedManStudios.Network.Unity
 #else
 
 			// Only create this object on the main thread
-#if NetFX_CORE || UNITY_WEBGL
+#if NETFX_CORE
 			if (ReferenceEquals(Instance, null))
 #else
 			if (ReferenceEquals(Instance, null) && Threading.ThreadManagement.IsMainThread)

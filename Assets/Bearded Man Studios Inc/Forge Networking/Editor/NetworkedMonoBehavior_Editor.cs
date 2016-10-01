@@ -29,7 +29,7 @@ using BeardedManStudios.Network;
 public class NetworkedMonoBehavior_Editor : SNMB_Parent_Editor
 {
 	private NetworkedMonoBehavior Target { get { return (NetworkedMonoBehavior)target; } }
-	private AnimBool NetworkingFoldout;
+	private AnimBool networkingFoldout;
 	//private AnimBool lerpFoldout;
 	//private AnimBool authoritativeFoldout;
 	private AnimBool easyControls;
@@ -42,7 +42,7 @@ public class NetworkedMonoBehavior_Editor : SNMB_Parent_Editor
 
 		//lerpFoldout = new AnimBool(true);
 		//authoritativeFoldout = new AnimBool(true);
-		NetworkingFoldout = new AnimBool(false);
+		networkingFoldout = new AnimBool(false);
 		easyControls = new AnimBool(true);
 		easyControls.target = true;
 
@@ -80,14 +80,14 @@ public class NetworkedMonoBehavior_Editor : SNMB_Parent_Editor
 
 		buttonStyle = new ForgeButtonStyle("Networking Throttle", btnUp, btnUp, null, 100);
 
-		NetworkThrottleButton NetworkingThrottleButton = new NetworkThrottleButton(buttonStyle);
-		NetworkingThrottleButton.Initialize(Target.NetworkTimeDelay, "This controls how long (in seconds) to wait before updating across the Network (priority can be emulated here), this includes [NetSync] vars.",
+		NetworkThrottleButton networkingThrottleButton = new NetworkThrottleButton(buttonStyle);
+		networkingThrottleButton.Initialize(Target.networkTimeDelay, "This controls how long (in seconds) to wait before updating across the network (priority can be emulated here), this includes [NetSync] vars.",
 		(throttle)=>
 		{
-			Target.NetworkTimeDelay = throttle;
+			Target.networkTimeDelay = throttle;
 		});
 
-		_editorButtons.Add(NetworkingThrottleButton);
+		_editorButtons.Add(networkingThrottleButton);
 
 		buttonStyle = new ForgeButtonStyle("Interpolation", btnUp, btnUp, null, 175);
 
@@ -176,22 +176,22 @@ public class NetworkedMonoBehavior_Editor : SNMB_Parent_Editor
 		_editorButtons.Add(miscButton);
 
 		//lerpFoldout.valueChanged.AddListener(Repaint);
-		//NetworkingFoldout.valueChanged.AddListener(Repaint);
+		//networkingFoldout.valueChanged.AddListener(Repaint);
 		//easyControls.valueChanged.AddListener(Repaint);
 	}
 
 	public override void OnInspectorGUI()
 	{
 		EditorGUILayout.HelpBox("Open the menu below for Network Related Options", MessageType.None, true);
-		NetworkingFoldout.target = EditorGUILayout.Foldout(NetworkingFoldout.target, "Network Controls");
+		networkingFoldout.target = EditorGUILayout.Foldout(networkingFoldout.target, "Network Controls");
 
-		if (!NetworkingFoldout.target)
+		if (!networkingFoldout.target)
 		{
 			DrawDefaultInspector();
 			return;
 		}
 
-		if (EditorGUILayout.BeginFadeGroup(NetworkingFoldout.faded))
+		if (EditorGUILayout.BeginFadeGroup(networkingFoldout.faded))
 		{
 			foreach (ForgeEditorDisplayButton button in _editorButtons)
 			{
@@ -202,15 +202,15 @@ public class NetworkedMonoBehavior_Editor : SNMB_Parent_Editor
 			}
 
 			//GUI.color = Color.yellow;
-			//EditorGUILayout.HelpBox("This controls how long (in seconds) to wait before updating across the Network (priority can be emulated here), this includes [NetSync] vars.", MessageType.None, true);
+			//EditorGUILayout.HelpBox("This controls how long (in seconds) to wait before updating across the network (priority can be emulated here), this includes [NetSync] vars.", MessageType.None, true);
 			//GUI.color = Color.white;
-			//if (Target.NetworkTimeDelay >= 0.03f)
+			//if (Target.networkTimeDelay >= 0.03f)
 			//	GUI.color = Color.green;
-			//else if (Target.NetworkTimeDelay > 0.00f)
+			//else if (Target.networkTimeDelay > 0.00f)
 			//	GUI.color = Color.yellow;
 			//else
 			//	GUI.color = Color.red;
-			//Target.NetworkTimeDelay = EditorGUILayout.FloatField("Network Throttle", Target.NetworkTimeDelay);
+			//Target.networkTimeDelay = EditorGUILayout.FloatField("Network Throttle", Target.networkTimeDelay);
 			//GUI.color = Color.white;
 
 			//EditorGUILayout.Space();

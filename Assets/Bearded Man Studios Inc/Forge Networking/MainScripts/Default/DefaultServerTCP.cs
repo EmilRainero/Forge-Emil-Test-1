@@ -19,26 +19,20 @@
 
 
 
-#if !UNITY_WEBGL
-#if !NetFX_CORE
+#if !NETFX_CORE
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 #endif
-
-#pragma warning disable 0219 //disables the bytes read warning
 
 namespace BeardedManStudios.Network
 {
 	public class DefaultServerTCP : TCPProcess
 	{
-#if NetFX_CORE
+#if NETFX_CORE
 		public bool RelayToAll { get; set; }
 		public DefaultServerTCP(int maxConnections) : base(maxConnections) { }
 		public override void Connect(string hostAddress, ushort port) { }
@@ -50,14 +44,10 @@ namespace BeardedManStudios.Network
 		public override void Write(NetworkingPlayer player, NetworkingStream stream) { }
 		public override void Send(byte[] data, int length, object endpoint = null) { }
 #else
-		private TcpListener listener = null;
+		private TcpListener tcpListener = null;
 		private IPAddress ipAddress = null;
-
-		private object clientMutex = new object();
-		private Thread connectionThread = null;
-		private Thread readThread = null;
-		private bool readThreadCancel = false;
-
+		private BackgroundWorker listenWorker = null;
+		private BackgroundWorker readWorker = null;
 
 		private NetworkingStream staticWriteStream = new NetworkingStream();
 
@@ -73,21 +63,14 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		/// <param name="maxConnections">The Maximum connections allowed</param>
 		public DefaultServerTCP(int maxConnections) : base(maxConnections) { RelayToAll = true; }
-		~DefaultServerTCP() { }
+		~DefaultServerTCP() { Disconnect(); }
 
 		private Thread connector;
 
 		public override void Send(byte[] data, int length, object endpoint = null)
 		{
-			if (endpoint == null)
-				return;
-
-			byte[] send = EncodeMessageToSend(data, length);
-			
-			lock (endpoint)
-			{
-				((TcpClient)endpoint).GetStream().Write(send, 0, send.Length);
-			}
+			if (endpoint != null)
+				((TcpClient)endpoint).GetStream().Write(data, 0, length);
 		}
 
 		/// <summary>
@@ -109,8 +92,8 @@ namespace BeardedManStudios.Network
 			ushort port = (ushort)((object[])hostAndPort)[1];
 
 			// Create an instance of the TcpListener class.
-			server = null;
-			if (string.IsNullOrEmpty(hostAddress) || hostAddress == "0.0.0.0" || hostAddress == "127.0.0.1" || hostAddress == "localhost")
+			tcpListener = null;
+			if (string.IsNullOrEmpty(hostAddress) || hostAddress == "127.0.0.1" || hostAddress == "localhost")
 				ipAddress = IPAddress.Any;
 			else
 				ipAddress = IPAddress.Parse(hostAddress);
@@ -119,17 +102,26 @@ namespace BeardedManStudios.Network
 			{
 				// Set the listener on the local IP address 
 				// and specify the port.
-				listener = new TcpListener(ipAddress, port);
-				listener.Start();
+				tcpListener = new TcpListener(ipAddress, (int)port);
+				tcpListener.Start();
 
 				Players = new List<NetworkingPlayer>();
-				Me = new NetworkingPlayer(ServerPlayerCounter++, "127.0.0.1", listener, "SERVER");
+				Me = new NetworkingPlayer(ServerPlayerCounter++, "127.0.0.1", tcpListener, "SERVER");
 
-				connectionThread = new Thread(new ParameterizedThreadStart(ConnectionLoop));
-				readThread = new Thread(new ThreadStart(ReadClients));
+				listenWorker = new BackgroundWorker();
+				listenWorker.WorkerSupportsCancellation = true;
+				listenWorker.WorkerReportsProgress = true;
+				listenWorker.DoWork += Listen;
+				listenWorker.ProgressChanged += listenWorker_ProgressChanged;
+				listenWorker.RunWorkerCompleted += WorkCompleted;
+				listenWorker.RunWorkerAsync(tcpListener);
 
-				connectionThread.Start(listener);
-				readThread.Start();
+				readWorker = new BackgroundWorker();
+				readWorker.WorkerSupportsCancellation = true;
+				//readWorker.WorkerReportsProgress = true;
+				//readWorker.ProgressChanged += StreamReceived;
+				readWorker.DoWork += ReadAsync;
+				readWorker.RunWorkerAsync();
 
 				OnConnected();
 			}
@@ -143,7 +135,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// DisconNet a player from the server
+		/// Disconnet a player from the server
 		/// </summary>
 		/// <param name="player">Player to be removed from the server</param>
 		public override void Disconnect(NetworkingPlayer player, string reason = null)
@@ -173,11 +165,13 @@ namespace BeardedManStudios.Network
 				}
 			}
 
-			if (connectionThread != null)
-				connectionThread.Abort();
+			if (listenWorker != null)
+				listenWorker.CancelAsync();
 
-			readThreadCancel = true;
-			listener.Stop();
+			if (readWorker != null)
+				readWorker.CancelAsync();
+
+			tcpListener.Stop();
 
 			OnDisconnected();
 		}
@@ -219,9 +213,6 @@ namespace BeardedManStudios.Network
 			byte[] sendData = stream.Bytes.Compress().byteArr;
 			for (int i = 0; i < Players.Count; i++)
 			{
-				if (!Players[i].Connected)
-					continue;
-
 				if ((stream.Receivers == NetworkReceivers.Others || stream.Receivers == NetworkReceivers.OthersBuffered) && Players[i] == stream.Sender)
 					continue;
 
@@ -230,105 +221,47 @@ namespace BeardedManStudios.Network
 					Disconnect(Players[i]);
 					continue;
 				}
-				
+
 				Send(sendData, sendData.Length, Players[i].SocketEndpoint);
 			}
 		}
 
-		private void ReadClients()
+		private void ReadAsync(object sender, DoWorkEventArgs e)
 		{
 			while (true)
 			{
 				try
 				{
-					if (readThreadCancel)
-						return;
-
-					try
+					if (readWorker.CancellationPending)
 					{
-						lock (clientMutex)
+						e.Cancel = true;
+						break;
+					}
+
+					lock (removalMutex)
+					{
+						for (int i = 0; i < Players.Count; i++)
 						{
-							for (int i = 0; i < Players.Count; i++)
+							if (!((TcpClient)Players[i].SocketEndpoint).Connected)
 							{
-								if (readThreadCancel)
-									return;
+								Disconnect(Players[i]);
 
-								TcpClient playerClient = (TcpClient)Players[i].SocketEndpoint;
-								NetworkStream playerStream = playerClient.GetStream();
+								Thread.Sleep(ThreadSpeed);
 
-								if (!playerClient.Connected)
+								continue;
+							}
+
+							if (((TcpClient)Players[i].SocketEndpoint).GetStream().DataAvailable)
+							{
+								do
 								{
-									Disconnect(Players[i--]);
-									continue;
-								}
+									readBuffer = ReadBuffer(((TcpClient)Players[i].SocketEndpoint).GetStream());
 
-								if (!playerStream.DataAvailable)
-									continue;
-
-								if (!Players[i].Connected)
-								{
-									if (!Players[i].WebsocketHeaderPrepared)
-									{
-										byte[] bytes = new byte[playerClient.Available];
-										playerStream.Read(bytes, 0, bytes.Length);
-
-										string data = Encoding.UTF8.GetString(bytes);
-
-										if (new Regex("^GET").IsMatch(data))
-										{
-											byte[] response = Encoding.UTF8.GetBytes("HTTP/1.1 101 Switching Protocols" + Environment.NewLine
-												+ "Connection: Upgrade" + Environment.NewLine
-												+ "Upgrade: websocket" + Environment.NewLine
-												+ "Sec-WebSocket-Accept: " + Convert.ToBase64String((new SHA1CryptoServiceProvider()).ComputeHash(Encoding.UTF8.GetBytes(
-															new Regex("Sec-WebSocket-Key: (.*)").Match(data).Groups[1].Value.Trim() + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-												))) + Environment.NewLine + Environment.NewLine);
-
-											playerStream.Write(response, 0, response.Length);
-										}
-
-										Players[i].WebsocketHeaderPrepared = true;
-									}
-									else
-									{
-										int length = 0;
-										byte[] bytes = DecodeMessage(GetNextBytes(playerClient, playerStream, out length));
-
-										lock (writeMutex)
-										{
-											writeBuffer.Clear();
-											ObjectMapper.MapBytes(writeBuffer, Players[i].NetworkId);
-
-											writeStream.SetProtocolType(Networking.ProtocolType.TCP);
-											Write(Players[i], writeStream.Prepare(this,
-												NetworkingStream.IdentifierType.Player, 0, writeBuffer, noBehavior: true));
-
-											OnPlayerConnected(Players[i]);
-										}
-									}
-								}
-								else
-								{
-									int length = 0;
-									byte[] bytes = DecodeMessage(GetNextBytes(playerClient, playerStream, out length));
-
-									if (bytes[0] == 136)
-									{
-										Disconnect(Players[i--]);
-										continue;
-									}
-
-									readBuffer.Clear();
-									readBuffer.Clone(bytes);
-									StreamReceived(Players[i], readBuffer);
-								}
+									if (readBuffer != null && readBuffer.Size > 0)
+										StreamReceived(Players[i], readBuffer);
+								} while (backBuffer.Size > 0);
 							}
 						}
-					}
-					catch (Exception ex)
-					{
-#if !BARE_METAL
-						UnityEngine.Debug.LogException(ex);
-#endif
 					}
 
 					Thread.Sleep(ThreadSpeed);
@@ -336,7 +269,7 @@ namespace BeardedManStudios.Network
 				catch (Exception ex)
 				{
 #if !BARE_METAL
-						UnityEngine.Debug.LogException(ex);
+					UnityEngine.Debug.LogException(ex);
 #endif
 				}
 			}
@@ -344,13 +277,29 @@ namespace BeardedManStudios.Network
 
 		private BMSByte writeBuffer = new BMSByte();
 
-		private void ConnectionLoop(object server)
+		private void Listen(object sender, DoWorkEventArgs e)
 		{
 			while (true)
 			{
+				if (listenWorker.CancellationPending)
+				{
+					e.Cancel = true;
+					break;
+				}
+
+				TcpListener tcpListener = (TcpListener)e.Argument;
+
 				try
 				{
-					TcpClient client = ((TcpListener)server).AcceptTcpClient();
+					for (int i = 0; i < Players.Count; i++)
+						if (!((TcpClient)Players[i].SocketEndpoint).Connected)
+							Players.RemoveAt(i--);
+
+					// Create a TCP socket.
+					// If you ran this server on the desktop, you could use 
+					// Socket socket = tcpListener.AcceptSocket()
+					// for greater flexibility.
+					TcpClient tcpClient = tcpListener.AcceptTcpClient();
 
 					if (Connections >= MaxConnections)
 					{
@@ -360,7 +309,7 @@ namespace BeardedManStudios.Network
 							ObjectMapper.MapBytes(writeBuffer, "Max Players Reached On Server");
 
 							staticWriteStream.SetProtocolType(Networking.ProtocolType.TCP);
-							WriteAndClose(client, staticWriteStream.Prepare(
+							WriteAndClose(tcpClient, staticWriteStream.Prepare(
 								this, NetworkingStream.IdentifierType.Disconnect, 0, writeBuffer, noBehavior: true));
 						}
 
@@ -370,14 +319,16 @@ namespace BeardedManStudios.Network
 					// TODO:  Set the name
 					string name = string.Empty;
 
-					NetworkingPlayer player = new NetworkingPlayer(ServerPlayerCounter++, client.Client.RemoteEndPoint.ToString(), client, name);
+					NetworkingPlayer player = new NetworkingPlayer(ServerPlayerCounter++, tcpClient.Client.RemoteEndPoint.ToString(), tcpClient, name);
 
-					lock (clientMutex)
+					lock (Players)
 					{
 						Players.Add(player);
 					}
+
+					listenWorker.ReportProgress(0, player);
 				}
-				catch (Exception exception)
+				catch (NetworkException exception)
 				{
 #if !BARE_METAL
 					UnityEngine.Debug.LogException(exception);
@@ -386,114 +337,26 @@ namespace BeardedManStudios.Network
 				}
 			}
 		}
+
+		private void listenWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			lock (writeMutex)
+			{
+				writeBuffer.Clear();
+				ObjectMapper.MapBytes(writeBuffer, ((NetworkingPlayer)e.UserState).NetworkId);
+
+				writeStream.SetProtocolType(Networking.ProtocolType.TCP);
+				Write((NetworkingPlayer)e.UserState, writeStream.Prepare(this,
+					NetworkingStream.IdentifierType.Player, 0, writeBuffer, noBehavior: true));
+
+				OnPlayerConnected((NetworkingPlayer)e.UserState);
+			}
+		}
+
+		private void WorkCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			Disconnect();
+		}
 #endif
-
-		private byte[] GetNextBytes(TcpClient playerClient, NetworkStream NetStream, out int length)
-		{
-			byte[] bytes = new byte[playerClient.Available];
-			NetStream.Read(bytes, 0, 2);
-
-			int dataLength = bytes[1] & 127;
-			int indexFirstMask = 2;
-			if (dataLength == 126)
-				indexFirstMask = 4;
-			else if (dataLength == 127)
-				indexFirstMask = 10;
-
-			length = dataLength;
-			if (indexFirstMask != 2)
-			{
-				NetStream.Read(bytes, 2, indexFirstMask - 2);
-
-				// Need to reverse the endien order
-				if (indexFirstMask == 4)
-					length = BitConverter.ToUInt16(bytes, 2);
-				else
-					length = (int)BitConverter.ToUInt32(bytes, 2);
-			}
-
-			// Read the mask
-			NetStream.Read(bytes, indexFirstMask, 4);
-			NetStream.Read(bytes, indexFirstMask + 4, length);
-
-			return bytes;
-		}
-
-		protected byte[] DecodeMessage(byte[] bytes)
-		{
-			int dataLength = bytes[1] & 127;
-			int indexFirstMask = 2;
-			if (dataLength == 126)
-				indexFirstMask = 4;
-			else if (dataLength == 127)
-				indexFirstMask = 10;
-
-			IEnumerable<byte> keys = bytes.Skip(indexFirstMask).Take(4);
-			int indexFirstDataByte = indexFirstMask + 4;
-			
-			byte[] decoded = new byte[bytes.Length - indexFirstDataByte];
-			for (int i = indexFirstDataByte, j = 0; i < bytes.Length; i++, j++)
-				decoded[j] = (byte)(bytes[i] ^ keys.ElementAt(j % 4));
-
-			return decoded;
-		}
-
-		private byte[] EncodeMessageToSend(byte[] bytesRaw, int length = -1)
-		{
-			byte[] response;
-			byte[] frame = new byte[10];
-
-			int indexStartRawData = -1;
-			length = length == -1 ? bytesRaw.Length : length;
-
-			frame[0] = 130;
-			if (length <= 125)
-			{
-				frame[1] = (byte)length;
-				indexStartRawData = 2;
-			}
-			else if (length >= 126 && length <= 65535)
-			{
-				frame[1] = 126;
-				frame[2] = (byte)((length >> 8) & 255);
-				frame[3] = (byte)(length & 255);
-				indexStartRawData = 4;
-			}
-			else
-			{
-				frame[1] = 127;
-				frame[2] = (byte)((length >> 56) & 255);
-				frame[3] = (byte)((length >> 48) & 255);
-				frame[4] = (byte)((length >> 40) & 255);
-				frame[5] = (byte)((length >> 32) & 255);
-				frame[6] = (byte)((length >> 24) & 255);
-				frame[7] = (byte)((length >> 16) & 255);
-				frame[8] = (byte)((length >> 8) & 255);
-				frame[9] = (byte)(length & 255);
-
-				indexStartRawData = 10;
-			}
-
-			response = new byte[indexStartRawData + length];
-
-			int i, reponseIdx = 0;
-
-			// Add the frame bytes to the reponse
-			for (i = 0; i < indexStartRawData; i++)
-			{
-				response[reponseIdx] = frame[i];
-				reponseIdx++;
-			}
-
-			// Add the data bytes to the response
-			for (i = 0; i < length; i++)
-			{
-				response[reponseIdx] = bytesRaw[i];
-				reponseIdx++;
-			}
-
-			return response;
-		}
 	}
 }
-#endif

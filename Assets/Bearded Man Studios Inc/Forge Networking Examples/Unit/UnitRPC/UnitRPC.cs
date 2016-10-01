@@ -1,4 +1,4 @@
-﻿#if !NetFX_CORE && !UNITY_IPHONE && !UNITY_ANDROID && !UNITY_WEBGL
+﻿#if !NETFX_CORE && !UNITY_IPHONE && !UNITY_ANDROID
 
 using BeardedManStudios.Threading;
 using System;
@@ -36,7 +36,7 @@ namespace BeardedManStudios.Network.Unit
 
 	public class UnitRPC : SimpleNetworkedMonoBehavior
 	{
-		private Task NetworkCallTask = null;
+		private Task networkCallTask = null;
 
 		private sbyte tSbyte = -9;
 		private byte tByte = 9;
@@ -98,9 +98,9 @@ namespace BeardedManStudios.Network.Unit
 		private void NetworkCall(Action overrideCall = null)
 		{
 			if (overrideCall == null)
-				NetworkCallTask = Task.Run(CallFailed);
+				networkCallTask = Task.Run(CallFailed);
 			else
-				NetworkCallTask = Task.Run(overrideCall);
+				networkCallTask = Task.Run(overrideCall);
 		}
 
 		private void KillNetworkCall(Action nextCall = null, Action overrideCall = null)
@@ -108,7 +108,7 @@ namespace BeardedManStudios.Network.Unit
 			if (OwningNetWorker.IsServer && OwningNetWorker.Players.Count > 0)
 				return;
 
-			NetworkCallTask.Kill();
+			networkCallTask.Kill();
 
 			if (nextCall != null)
 			{

@@ -1,10 +1,8 @@
-﻿#if !UNITY_WEBGL
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 
-#if NetFX_CORE
+#if NETFX_CORE
 using System.Runtime.InteropServices.WindowsRuntime;
 #endif
 
@@ -16,7 +14,7 @@ namespace BeardedManStudios.Threading
 
 		public static int GetCurrentThreadId()
 		{
-#if NetFX_CORE
+#if NETFX_CORE
 			return System.Threading.Tasks.Task.CurrentId.GetValueOrDefault();
 #else
 			return Thread.CurrentThread.ManagedThreadId;
@@ -36,7 +34,7 @@ namespace BeardedManStudios.Threading
 		private static List<Task> tasks = new List<Task>();
 		private static object taskMutex = new Object();
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 		public Thread TrackedThread { get; private set; }
 #endif
 
@@ -44,7 +42,7 @@ namespace BeardedManStudios.Threading
 
 		private void SetExpression(Action expression)
 		{
-#if !NetFX_CORE
+#if !NETFX_CORE
 			TrackedThread = new Thread(new ThreadStart(expression));
 			TrackedThread.IsBackground = true;
 #endif
@@ -52,7 +50,7 @@ namespace BeardedManStudios.Threading
 
 		public void Kill()
 		{
-#if !NetFX_CORE
+#if !NETFX_CORE
 			TrackedThread.Abort();
 #endif
 
@@ -64,7 +62,7 @@ namespace BeardedManStudios.Threading
 
 		public void Wait()
 		{
-#if !NetFX_CORE
+#if !NETFX_CORE
 			while (TrackedThread.IsAlive) { }
 #endif
 		}
@@ -75,7 +73,7 @@ namespace BeardedManStudios.Threading
 				tasks[i].Kill();
 		}
 		
-#if NetFX_CORE
+#if NETFX_CORE
 		public static System.Threading.Tasks.Task Run(Action expression, int delayOrSleep = 0)
 #else
 		public static Task Run(Action expression, int delayOrSleep = 0)
@@ -85,7 +83,7 @@ namespace BeardedManStudios.Threading
 
 			Action inline = () =>
 			{
-#if !NetFX_CORE
+#if !NETFX_CORE
 				Thread.Sleep(delayOrSleep);
 #endif
 
@@ -99,7 +97,7 @@ namespace BeardedManStudios.Threading
 
 			task.SetExpression(inline);
 
-#if NetFX_CORE
+#if NETFX_CORE
 			return System.Threading.Tasks.Task.Run(async () =>
 			{
 				await System.Threading.Tasks.Task.Delay(delayOrSleep);
@@ -120,4 +118,3 @@ namespace BeardedManStudios.Threading
 		}
 	}
 }
-#endif

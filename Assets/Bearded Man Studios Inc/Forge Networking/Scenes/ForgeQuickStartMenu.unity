@@ -58,9 +58,9 @@ LightmapSettings:
     m_BakeResolution: 50
     m_TextureWidth: 1024
     m_TextureHeight: 1024
-    m_AO: 0
+    m_AO: 1
     m_AOMaxDistance: 1
-    m_CompAOExponent: 0
+    m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
     m_Padding: 2
     m_LightmapParameters: {fileID: 0}
@@ -69,7 +69,7 @@ LightmapSettings:
     m_DirectLightInLightProbes: 1
     m_FinalGather: 0
     m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 1024
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
   m_LightingDataAsset: {fileID: 0}
   m_RuntimeCPUUsage: 25
@@ -347,7 +347,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -5, y: 5}
-  m_SizeDelta: {x: 190, y: 78}
+  m_SizeDelta: {x: 190, y: 60}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &789685931
 MonoBehaviour:
@@ -383,7 +383,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Forge Networking
 
-    Version 20'
+    Version 19.22'
 --- !u!222 &789685932
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1534,17 +1534,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b7ba29101f8bc24cb23df6d1addb701, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: 127.0.0.1
+  host: 3132372e302e302e31
   port: 15937
   protocolType: 3
   playerCount: 31
-  sceneName: ForgeZombies
-  serverBrowserScene: ForgeQuickServerBrowser
+  sceneName: 466f7267655a6f6d62696573
+  serverBrowserScene: 466f726765517569636b53657276657242726f77736572
   proximityBasedUpdates: 0
   proximityDistance: 5
   ipAddressInput: {fileID: 978742726}
   packetDropSimulationChance: 0
-  NetworkLatencySimulationTime: 0
+  networkLatencySimulationTime: 0
   masterServerIp: 
   useNatHolePunching: 0
   showBandwidth: 0

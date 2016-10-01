@@ -17,16 +17,13 @@
 |                                                             |
 \------------------------------+-----------------------------*/
 
-#if !UNITY_WEBGL
 
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 using System;
 using System.IO;
 using System.Net;
-#if !UNITY_WEBGL
 using System.Net.Sockets;
-#endif
 using System.Text;
 using System.Threading;
 
@@ -288,5 +285,4 @@ namespace BeardedManStudios.Network
 		}
 	}
 }
-#endif
 #endif

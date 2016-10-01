@@ -18,12 +18,11 @@
 \------------------------------+-----------------------------*/
 
 
-#if !UNITY_WEBGL
 
 using System;
 using System.Collections.Generic;
 using System.Net;
-#if NetFX_CORE
+#if NETFX_CORE
 using Windows.Networking.Sockets;
 using System.Threading.Tasks;
 using Windows.Networking;
@@ -31,9 +30,7 @@ using Windows.Storage.Streams;
 using Windows.Foundation;
 using System.Runtime.InteropServices.WindowsRuntime;
 #else
-#if !UNITY_WEBGL
 using System.Net.Sockets;
-#endif
 using System.ComponentModel;
 using System.Threading;
 #endif
@@ -47,7 +44,7 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		public int MINIMUM_PING_WAIT_TIME = 50;
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 		/// <summary>
 		/// This is a percentage (between 0 and 1) to drop packets for testing
 		/// </summary>
@@ -56,7 +53,7 @@ namespace BeardedManStudios.Network
 		/// <summary>
 		/// This is a time in milliseconds to delay packet reads on the server by for testing
 		/// </summary>
-		public int NetworkLatencySimulationTime = 0;
+		public int networkLatencySimulationTime = 0;
 
 		/// <summary>
 		/// This is a list of the packets that are currently being delayed for testing
@@ -69,13 +66,13 @@ namespace BeardedManStudios.Network
 		private Thread latencyThread = null;
 #endif
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private DatagramSocket ReadClient = null;
 #else
 		public CachedUdpClient ReadClient { get; private set; }
 #endif
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private Task reliableWorker = null;
 #elif UNITY_IOS || UNITY_IPHONE
 		private Thread readWorker = null;
@@ -155,7 +152,7 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		private static Dictionary<string, uint> updateidentifiers = new Dictionary<string, uint>();
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 #if UNITY_IOS || UNITY_IPHONE
 		private Thread reliableWorker = null;
 #else
@@ -169,6 +166,11 @@ namespace BeardedManStudios.Network
 		private NetworkingStream readStream = new NetworkingStream();
 
 		/// <summary>
+		/// The cached write stream
+		/// </summary>
+		private NetworkingStream writeStream = new NetworkingStream();
+
+		/// <summary>
 		/// A list of players who currently timed out
 		/// </summary>
 		private List<NetworkingPlayer> timeoutDisconnects = new List<NetworkingPlayer>();
@@ -180,7 +182,7 @@ namespace BeardedManStudios.Network
 		private readonly List<NetworkingPlayer> disconnectedPlayers = new List<NetworkingPlayer>();
 
 		/// <summary>
-		/// The primary Network write buffer cache
+		/// The primary network write buffer cache
 		/// </summary>
 		private BMSByte writeBuffer = new BMSByte();
 
@@ -207,7 +209,7 @@ namespace BeardedManStudios.Network
 
 		// TODO:  Modify write to support one cached packet
 		private List<BMSByte> breakDown = new List<BMSByte>(1);
-#if NetFX_CORE
+#if NETFX_CORE
 		private async void ResendReliableWorker()
 #elif UNITY_IOS || UNITY_IPHONE
 		private void ResendReliableWorker()
@@ -221,12 +223,12 @@ namespace BeardedManStudios.Network
 #endif
 			while (true)
 			{
-#if !NetFX_CORE
-				if (NetworkLatencySimulationTime > 0)
-					Thread.Sleep(NetworkLatencySimulationTime * 3);
+#if !NETFX_CORE
+				if (networkLatencySimulationTime > 0)
+					Thread.Sleep(networkLatencySimulationTime * 3);
 #endif
 
-#if NetFX_CORE
+#if NETFX_CORE
 				if (!Connected)
 					return;
 #elif UNITY_IOS || UNITY_IPHONE
@@ -289,7 +291,7 @@ namespace BeardedManStudios.Network
 					return true;
 				});
 
-#if NetFX_CORE
+#if NETFX_CORE
 				await Task.Delay(ThreadSpeed);
 #else
 #if UNITY_IOS || UNITY_IPHONE
@@ -320,7 +322,7 @@ namespace BeardedManStudios.Network
 #endif
 		}
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private Task timeoutTask = null;
 #endif
 
@@ -328,14 +330,14 @@ namespace BeardedManStudios.Network
 
 		private NetworkingPlayer CreatePlayer(ulong playerId, object endpoint, string name = "")
 		{
-#if !NetFX_CORE
+#if !NETFX_CORE
 			endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), Port);
 #endif
 
 			return new NetworkingPlayer(playerId, "127.0.0.1", endpoint, name);
 		}
 
-#if NetFX_CORE
+#if NETFX_CORE
 		/// <summary>
 		/// Connect with the CrossPlatformUDP (NetWorker) to a ip and port
 		/// </summary>
@@ -383,8 +385,8 @@ namespace BeardedManStudios.Network
 						string endpoint = (string)((object[])latencySimulationPackets[0])[1];
 						BMSByte bytes = (BMSByte)((object[])latencySimulationPackets[0])[2];
 
-						if (Math.Round(NetworkLatencySimulationTime - time) > 0)
-							Thread.Sleep((int)Math.Round(NetworkLatencySimulationTime - time));
+						if (Math.Round(networkLatencySimulationTime - time) > 0)
+							Thread.Sleep((int)Math.Round(networkLatencySimulationTime - time));
 
 						lastReadTime = DateTime.Now;
 
@@ -404,13 +406,13 @@ namespace BeardedManStudios.Network
 			}
 		}
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private void ThreadedConnect(object hostAndPort)
 #else
 		private void ThreadedConnect(object hostAndPort)
 #endif
 		{
-#if NetFX_CORE
+#if NETFX_CORE
 			await System.Threading.Tasks.Task.Delay(System.TimeSpan.FromMilliseconds(50));
 #else
 			Thread.Sleep(50);
@@ -423,7 +425,7 @@ namespace BeardedManStudios.Network
 			{
 				if (IsServer)
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					ReadClient = new DatagramSocket();
 					await ReadClient.BindServiceNameAsync(port.ToString());
 #else
@@ -447,7 +449,7 @@ namespace BeardedManStudios.Network
 				{
 					ushort serverPort = port;
 
-#if NetFX_CORE
+#if NETFX_CORE
 					ReadClient = new DatagramSocket();
 					ReadClient.MessageReceived += ReadAsync;
 
@@ -468,7 +470,6 @@ namespace BeardedManStudios.Network
 
 					for (; ; port++)
 					{
-                        UnityEngine.Debug.Log("trying port " + port);
 						try
 						{
 							ReadClient = new CachedUdpClient(port);
@@ -479,11 +480,9 @@ namespace BeardedManStudios.Network
 							hostEndpoint = new IPEndPoint(IPAddress.Parse(hostAddress), serverPort);
 							break;
 						}
-						catch (Exception ex)
+						catch
 						{
-                            UnityEngine.Debug.Log(ex.Message);
-
-                            if (triedOnce && port == serverPort)
+							if (triedOnce && port == serverPort)
 								throw new Exception("Running UDP locally, the system looped all the way around and back to port " + serverPort + " and found no open ports to run on.");
 
 							triedOnce = true;
@@ -499,13 +498,13 @@ namespace BeardedManStudios.Network
 
 				if (PreviousServerPing == 0)
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					// TODO:  Do a correct ping for this platform
 					PreviousServerPing = 75;
 #endif
 				}
 
-#if NetFX_CORE
+#if NETFX_CORE
 				reliableWorker = Task.Run((Action)ResendReliableWorker);
 #elif UNITY_IOS || UNITY_IPHONE
 				readWorker = new Thread(ReadAsync);
@@ -527,8 +526,8 @@ namespace BeardedManStudios.Network
 
 				if (!IsServer)
 				{
-#if NetFX_CORE
-					hostEndpoint = new IPEndPoint(hostAddress, port);
+#if NETFX_CORE
+                    hostEndpoint = new IPEndPoint(hostAddress, port);
 #endif
 
 					server = new NetworkingPlayer(0, hostEndpoint.Address.ToString() + "+" + hostEndpoint.Port, hostEndpoint, "SERVER");
@@ -551,16 +550,16 @@ namespace BeardedManStudios.Network
 					// JM: uncommented out timeout code
 					Threading.Task.Run(() =>
 					{
-#if !NetFX_CORE
-						Thread.Sleep(ConnectTimeout);
+#if !NETFX_CORE
+                        Thread.Sleep(ConnectTimeout);
 #endif
 						if (!Connected)
 							OnConnectTimeout();
 					}, ConnectTimeout);
 				}
 
-#if !NetFX_CORE
-				if (NetworkLatencySimulationTime > 0.0f)
+#if !NETFX_CORE
+				if (networkLatencySimulationTime > 0.0f)
 				{
 					latencyThread = new Thread(LatencySimulator);
 					latencyThread.IsBackground = true;
@@ -592,7 +591,7 @@ namespace BeardedManStudios.Network
 			}
 		}
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private void Disconnect(string id, DatagramSocket player, string reason = null)
 #else
 		private void Disconnect(string id, IPEndPoint endpoint, string reason = null)
@@ -607,7 +606,7 @@ namespace BeardedManStudios.Network
 
 					writeStream.SetProtocolType(Networking.ProtocolType.UDP);
 					writeStream.Prepare(this, NetworkingStream.IdentifierType.Disconnect, 0, tmp, noBehavior: true);
-#if NetFX_CORE
+#if NETFX_CORE
 					WriteAndClose(id, player, writeStream);
 #else
 					WriteAndClose(id, endpoint, writeStream);
@@ -624,7 +623,7 @@ namespace BeardedManStudios.Network
 		{
 			if (!string.IsNullOrEmpty(reason))
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				Disconnect("BMS_INTERNAL_Udp_DC_Player_Reason", (DatagramSocket)player.SocketEndpoint, reason);
 #else
 				Disconnect("BMS_INTERNAL_Udp_DC_Player_Reason", (IPEndPoint)player.SocketEndpoint, reason);
@@ -650,7 +649,7 @@ namespace BeardedManStudios.Network
 			//if (IsServer)
 			//	NatHolePunch.DeRegisterNat();
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 			if (connector != null)
 			{
 #if UNITY_IOS || UNITY_IPHONE
@@ -687,7 +686,7 @@ namespace BeardedManStudios.Network
 
 			if (reliableWorker != null)
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				// TODO:  Make sure this is properly killed
 				reliableWorker.Wait();
 #elif UNITY_IOS || UNITY_IPHONE
@@ -698,7 +697,7 @@ namespace BeardedManStudios.Network
 #endif
 			}
 
-#if NetFX_CORE
+#if NETFX_CORE
 			//if (!IsServer)
 			//{
 			//	if (writeClient != null)
@@ -708,7 +707,7 @@ namespace BeardedManStudios.Network
 
 			if (ReadClient != null)
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				ReadClient.Dispose();
 #else
 				ReadClient.Close();
@@ -902,7 +901,7 @@ namespace BeardedManStudios.Network
 
 		public override void Send(byte[] data, int length, object endpoint = null)
 		{
-#if !NetFX_CORE
+#if !NETFX_CORE
 			// TODO:  Skip if sending to itself
 #else
 			// Don't have machine write to itself
@@ -915,7 +914,7 @@ namespace BeardedManStudios.Network
 
 			try
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				Task tWrite = Task.Run(async () =>
 				{
 					DataWriter writer = null;
@@ -945,7 +944,7 @@ namespace BeardedManStudios.Network
 			}
 		}
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private void WriteAndClose(string id, DatagramSocket targetSocket, NetworkingStream stream, bool reliable = false, List<BMSByte> packets = null)
 #else
 		private void WriteAndClose(string id, IPEndPoint endpoint, NetworkingStream stream, bool reliable = false, List<BMSByte> packets = null)
@@ -958,7 +957,7 @@ namespace BeardedManStudios.Network
 			{
 				try
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					Task tWrite = Task.Run(async () =>
 					{
 						DataWriter writer = new DataWriter(targetSocket.OutputStream);
@@ -978,7 +977,7 @@ namespace BeardedManStudios.Network
 				}
 				catch
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					targetSocket.Dispose();
 #endif
 				}
@@ -1107,7 +1106,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id, player, Networking stream and reliability
+		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id, player, networking stream and reliability
 		/// </summary>
 		/// <param name="updateidentifier">Unique update identifier to be used</param>
 		/// <param name="player">Player to be written to server</param>
@@ -1150,7 +1149,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id and Networking stream
+		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id and networking stream
 		/// </summary>
 		/// <param name="updateidentifier">Unique update identifier to be used</param>
 		/// <param name="stream">The stream of data to be written</param>
@@ -1198,8 +1197,8 @@ namespace BeardedManStudios.Network
 								// If the receiver is out of range, do not update them with the message
 								if (UnityEngine.Vector3.Distance(stream.Sender.Position, player.Position) > ProximityMessagingDistance)
 								{
-									if (!ReferenceEquals(player, null) && !ReferenceEquals(player.PlayerObject, null))
-										player.PlayerObject.ProximityOutCheck(stream.Sender.PlayerObject);
+                                    if (!ReferenceEquals(player, null) && !ReferenceEquals(player.PlayerObject, null))
+                                        player.PlayerObject.ProximityOutCheck(stream.Sender.PlayerObject);
 									if (reliable) RemoveReliable(updateidentifier, player);
 									return true;
 								}
@@ -1255,7 +1254,7 @@ namespace BeardedManStudios.Network
 					foreach (BMSByte packet in packets)
 					{
 						Send(packet.Compress().byteArr, packet.Size, hostEndpoint);
-#if !NetFX_CORE
+#if !NETFX_CORE
 						Thread.Sleep(1);
 #endif
 					}
@@ -1267,7 +1266,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id, player and Networking stream
+		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id, player and networking stream
 		/// </summary>
 		/// <param name="updateidentifier">Unique update identifier to be used</param>
 		/// <param name="player">Player to be written to server</param>
@@ -1286,7 +1285,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id and Networking stream
+		/// Write the data on a given CrossPlatformUDP(NetWorker) from a id and networking stream
 		/// </summary>
 		/// <param name="updateidentifier">Unique update identifier to be used</param>
 		/// <param name="stream">The stream of data to be written</param>
@@ -1369,7 +1368,7 @@ namespace BeardedManStudios.Network
 			packetManager.PacketSendConfirmed(sender, id, groupId, orderId);
 		}
 
-#region Connection Request
+		#region Connection Request
 		private bool ProcessClientConnection(string endpoint, Header header)
 		{
 			if (!IsServer)
@@ -1377,7 +1376,7 @@ namespace BeardedManStudios.Network
 
 			lock (removalMutex)
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				DatagramSocket newConnection = new DatagramSocket();
 				HostName serverHost = new HostName(endpoint);
 							
@@ -1409,7 +1408,7 @@ namespace BeardedManStudios.Network
 
 				if (Connections >= MaxConnections)
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					Disconnect("BMS_INTERNAL_DC_Max_Players", newConnection, "Max Players Reached On Server");
 #else
 					Disconnect("BMS_INTERNAL_DC_Max_Players", groupEP, "Max Players Reached On Server");
@@ -1419,7 +1418,7 @@ namespace BeardedManStudios.Network
 				}
 				else if (banList.ContainsKey(endpoint.Split('+')[0]))
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					Disconnect("BMS_INTERNAL_DC_Banned", newConnection, "You have been banned from the server for " + Math.Ceiling((banList[endpoint.Split('+')[0]] - DateTime.Now).TotalMinutes) + " more minutes");
 #else
 					Disconnect("BMS_INTERNAL_DC_Banned", groupEP, "You have been banned from the server for " + Math.Ceiling((banList[groupEP.Address.ToString()] - DateTime.Now).TotalMinutes) + " more minutes");
@@ -1429,8 +1428,8 @@ namespace BeardedManStudios.Network
 
 				ClientManager.RunActionOnPlayerEndpoint(endpoint, (player) => { Disconnect(player); });
 
-#if NetFX_CORE
-				sender = new NetworkingPlayer(ServerPlayerCounter++, endpoint, newConnection, "");
+#if NETFX_CORE
+                sender = new NetworkingPlayer(ServerPlayerCounter++, endpoint, newConnection, "");
 #else
 				sender = new NetworkingPlayer(ServerPlayerCounter++, endpoint, new IPEndPoint(groupEP.Address, groupEP.Port), "");
 #endif
@@ -1454,9 +1453,9 @@ namespace BeardedManStudios.Network
 				return true;
 			}
 		}
-#endregion
+		#endregion
 
-#region Timeouts
+		#region Timeouts
 		private void ProcessTimeouts()
 		{
 			foreach (NetworkingPlayer player in timeoutDisconnects)
@@ -1464,7 +1463,7 @@ namespace BeardedManStudios.Network
 
 			timeoutDisconnects.Clear();
 		}
-#endregion
+		#endregion
 
 		private void PacketReceived(string endpoint, BMSByte bytes)
 		{
@@ -1513,14 +1512,14 @@ namespace BeardedManStudios.Network
 				{
 					if (!Connected)
 						OnConnected();
-				}
-			} else {
-				packetManager.PacketRead(sender, header);
-				return;
-			}
+                }
+            } else {
+                packetManager.PacketRead(sender, header);
+                return;
+            }
 
-			// Something went wrong with the read stream
-			if (!readStream.Ready)
+            // Something went wrong with the read stream
+            if (!readStream.Ready)
 				return;
 
 			if (!IsServer)
@@ -1603,10 +1602,10 @@ namespace BeardedManStudios.Network
 			packetManager.PacketRead(sender, header);
 		}
 
-#region Initial Data Read In
+		#region Initial Data Read In
 		private string incomingEndpoint = string.Empty;
 		private BMSByte readBuffer = new BMSByte();
-#if NetFX_CORE
+#if NETFX_CORE
 		byte[] readBytes = new byte[0];
 		private void ReadAsync(DatagramSocket sender, DatagramSocketMessageReceivedEventArgs args)
 #elif UNITY_IOS || UNITY_IPHONE
@@ -1615,7 +1614,7 @@ namespace BeardedManStudios.Network
 		private void ReadAsync(object eventSender, DoWorkEventArgs e)
 #endif
 		{
-#if NetFX_CORE
+#if NETFX_CORE
 			DataReader reader = args.GetDataReader();
 
 			readBytes = new byte[reader.UnconsumedBufferLength];
@@ -1667,7 +1666,7 @@ namespace BeardedManStudios.Network
 								continue;
 						}
 
-						if (NetworkLatencySimulationTime > 0)
+						if (networkLatencySimulationTime > 0)
 						{
 							BMSByte tmp = new BMSByte().Clone(readBuffer);
 							tmp.ResetPointer();
@@ -1734,19 +1733,18 @@ namespace BeardedManStudios.Network
 #else
 					UnityEngine.Debug.LogException(ex);
 #if UNITY_STANDALONE
-					string file = "Forge-" + (IsServer ? "Server" : "Client-" + Me.NetworkId) + "-error.txt";
-					string message = ex.Message + "\r\n" + ex.StackTrace;
-					if (!System.IO.File.Exists(file))
-						System.IO.File.WriteAllText(file, message);
-					else
-						System.IO.File.AppendAllText(file, message);
+                    string file = "Forge-" + (IsServer ? "Server" : "Client-" + Me.NetworkId) + "-error.txt";
+                    string message = ex.Message + "\r\n" + ex.StackTrace;
+                    if (!System.IO.File.Exists(file))
+                        System.IO.File.WriteAllText(file, message);
+                    else
+                        System.IO.File.AppendAllText(file, message);
 #endif
 #endif
 				}
 			} while (ignoreError);
 #endif
 		}
-#endregion
+		#endregion
 	}
 }
-#endif

@@ -24,6 +24,7 @@
 #endif
 
 using System;
+using System.Collections.Generic;
 
 namespace BeardedManStudios.Network
 {
@@ -47,7 +48,7 @@ namespace BeardedManStudios.Network
 		/// <summary>
 		/// Identifier of a NetworkedBehavior
 		/// </summary>
-		public const char identifier_NetWORKED_BEHAVIOR = 'b';
+		public const char identifier_NETWORKED_BEHAVIOR = 'b';
 
 		/// <summary>
 		/// Identifier of a disconnect
@@ -142,7 +143,7 @@ namespace BeardedManStudios.Network
 
 		public byte FrameIndex { get; private set; }
 
-		private object NetworkedObjectMutex = new Object();
+		private object networkedObjectMutex = new Object();
 
 		/// <summary>
 		/// Basic Constructor of the NetworkingStream
@@ -152,7 +153,7 @@ namespace BeardedManStudios.Network
 		/// <summary>
 		/// Constructor of the NetworkingStream with a given protocol type
 		/// </summary>
-		/// <param name="protocolType">The type of protocol being usedo n this Networking stream</param>
+		/// <param name="protocolType">The type of protocol being usedo n this networking stream</param>
 		public NetworkingStream(Networking.ProtocolType protocolType) { Bytes = new BMSByte(); this.ProtocolType = protocolType; }
 
 		public bool Ready { get; private set; }
@@ -165,30 +166,30 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		/// <param name="socket">The NetWorker socket to be used</param>
 		/// <param name="identifierType">The type of Identifier it is going to prepare</param>
-		/// <param name="NetworkedBehavior">NetworkedBehavior to use</param>
+		/// <param name="networkedBehavior">NetworkedBehavior to use</param>
 		/// <param name="extra">Extra parameters to prepare</param>
 		/// <param name="receivers">Who shall be receiving this NetworkingStream</param>
 		/// <param name="bufferedRPC">To know if this is a Buffered RPC</param>
 		/// <param name="customidentifier">A custom Identifier to be passed through</param>
 		/// <returns></returns>
-		public NetworkingStream Prepare(NetWorker socket, IdentifierType identifierType, ulong NetworkBehaviorId, BMSByte extra = null, NetworkReceivers receivers = NetworkReceivers.All, bool bufferedRPC = false, uint customidentifier = 0, ulong senderId = 0, bool noBehavior = false)
+		public NetworkingStream Prepare(NetWorker socket, IdentifierType identifierType, ulong networkBehaviorId, BMSByte extra = null, NetworkReceivers receivers = NetworkReceivers.All, bool bufferedRPC = false, uint customidentifier = 0, ulong senderId = 0, bool noBehavior = false)
 		{
 			if (noBehavior)
 				NetworkedBehavior = null;
 			else
 			{
-				lock (NetworkedObjectMutex)
+				lock (networkedObjectMutex)
 				{
-					NetworkedBehavior = SimpleNetworkedMonoBehavior.Locate(NetworkBehaviorId);
+					NetworkedBehavior = SimpleNetworkedMonoBehavior.Locate(networkBehaviorId);
 				}
 			}
 
 			if (ReferenceEquals(NetworkedBehavior, null) && (extra == null || extra.Size == 0))
 				throw new NetworkException(9, "Prepare was called but nothing was sent to write");
 
-			NetworkedBehaviorId = NetworkBehaviorId;
+			NetworkedBehaviorId = networkBehaviorId;
 			
-			return PrepareFinal(socket, identifierType, NetworkBehaviorId, extra, receivers, bufferedRPC, customidentifier, senderId);
+			return PrepareFinal(socket, identifierType, networkBehaviorId, extra, receivers, bufferedRPC, customidentifier, senderId);
 		}
 
 		/// <summary>
@@ -204,7 +205,7 @@ namespace BeardedManStudios.Network
 		/// <returns></returns>
 		public NetworkingStream PrepareFinal(NetWorker socket, IdentifierType identifierType, ulong behaviorNetworkId, BMSByte extra = null, NetworkReceivers receivers = NetworkReceivers.All, bool bufferedRPC = false, uint customidentifier = 0, ulong senderId = 0)
 		{
-			lock (NetworkedObjectMutex)
+			lock (networkedObjectMutex)
 			{
 				if (senderId == 0)
 					senderId = socket.Me != null ? socket.Me.NetworkId : 0;
@@ -216,9 +217,6 @@ namespace BeardedManStudios.Network
 				BufferedRPC = Receivers == NetworkReceivers.AllBuffered || Receivers == NetworkReceivers.OthersBuffered;
 
 				Bytes.Clear();
-
-				if (ProtocolType == Networking.ProtocolType.TCP)
-					ObjectMapper.MapBytes(bytes, (byte)0);
 
 				ObjectMapper.MapBytes(bytes, (int)ProtocolType);
 
@@ -239,7 +237,7 @@ namespace BeardedManStudios.Network
 					else if (identifierType == IdentifierType.Player)
 						Bytes.BlockCopy<byte>(((byte)identifier_PLAYER), 1);
 					else if (identifierType == IdentifierType.NetworkedBehavior)
-						Bytes.BlockCopy<byte>(((byte)identifier_NetWORKED_BEHAVIOR), 1);
+						Bytes.BlockCopy<byte>(((byte)identifier_NETWORKED_BEHAVIOR), 1);
 					else if (identifierType == IdentifierType.Disconnect)
 						Bytes.BlockCopy<byte>(((byte)identifier_DISCONNECT), 1);
 					else if (identifierType == IdentifierType.Custom)
@@ -259,6 +257,13 @@ namespace BeardedManStudios.Network
 				else
 					ObjectMapper.MapBytes(Bytes, (byte)0);
 
+				if (ProtocolType == Networking.ProtocolType.TCP)
+				{
+					List<byte> head = new List<byte>(BitConverter.GetBytes(Bytes.Size + 1));
+					head.Add(0);
+					Bytes.InsertRange(0, head.ToArray());
+				}
+
 				Ready = true;
 				return this;
 			}
@@ -273,7 +278,7 @@ namespace BeardedManStudios.Network
 		/// <returns></returns>
 		public NetworkingStream Consume(NetWorker socket, NetworkingPlayer sender, BMSByte message)
 		{
-			lock (NetworkedObjectMutex)
+			lock (networkedObjectMutex)
 			{
 				Sender = sender;
 
@@ -303,14 +308,12 @@ namespace BeardedManStudios.Network
 				}
 				else if (identifier == identifier_PLAYER)
 					identifierType = IdentifierType.Player;
-				else if (identifier == identifier_NetWORKED_BEHAVIOR)
+				else if (identifier == identifier_NETWORKED_BEHAVIOR)
 					identifierType = IdentifierType.NetworkedBehavior;
 				else if (identifier == identifier_DISCONNECT)
 					identifierType = IdentifierType.Disconnect;
 				else if (identifier == identifier_CUSTOM)
 					identifierType = IdentifierType.Custom;
-				else
-					return null;
 
 				NetworkedBehaviorId = ObjectMapper.Map<ulong>(this);
 
@@ -353,7 +356,7 @@ namespace BeardedManStudios.Network
 					if (NetworkedBehavior is NetworkedMonoBehavior)
 						((NetworkedMonoBehavior)NetworkedBehavior).PrepareDeserialize(this);
 					else
-						throw new Exception("Only NetworkedMonoBehaviors can be used for serialization and deserialization across the Network, object with id " + NetworkedBehavior.NetworkedId + " is not a \"NetworkedMonoBehavior\"");
+						throw new Exception("Only NetworkedMonoBehaviors can be used for serialization and deserialization across the network, object with id " + NetworkedBehavior.NetworkedId + " is not a \"NetworkedMonoBehavior\"");
 				}
 
 				if (identifierType == IdentifierType.Custom)
@@ -395,7 +398,7 @@ namespace BeardedManStudios.Network
 
 		public void AssignBehavior(SimpleNetworkedMonoBehavior targetBehavior)
 		{
-			lock (NetworkedObjectMutex)
+			lock (networkedObjectMutex)
 			{
 				if (!ReferenceEquals(targetBehavior, null))
 				{

@@ -19,7 +19,7 @@
 
 
 
-#if NetFX_CORE
+#if NETFX_CORE
 using System;
 using System.Threading.Tasks;
 using Windows.Networking;
@@ -32,7 +32,7 @@ namespace BeardedManStudios.Network
 {
 	public class WinMobileServer : WinMobileWorker
 	{
-#if !NetFX_CORE
+#if !NETFX_CORE
 		public WinMobileServer(int maxConnections) : base(maxConnections) { }
 		public override void Connect(string hostAddress, ushort port) { }
 		public override void Disconnect() { }

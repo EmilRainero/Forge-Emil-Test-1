@@ -4,7 +4,7 @@ using BeardedManStudios.Network;
 using ScalableServer;
 using System;
 
-public class GameInstanceNetworked : NetworkedMonoBehavior {
+public class GameInstanceNetworked {
 
     public GameInstance GameInstance { get; set; }
     public string Host { get; set; }

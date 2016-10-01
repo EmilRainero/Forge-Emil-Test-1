@@ -189,8 +189,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a49412bdda17274f94d14c676a7365b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneNetworkedId: 0
   dontDestroyOnLoad: 0
-  destroyOnDisconnect: 0
-  allowOwnershipChange: 1
-  MaxRPCBatch: 10000

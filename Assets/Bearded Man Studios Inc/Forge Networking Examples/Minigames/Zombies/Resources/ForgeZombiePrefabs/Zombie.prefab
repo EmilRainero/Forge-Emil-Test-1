@@ -107,12 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf9ec2b96eb7ba941bec35daf0625594, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneNetworkedId: 0
-  dontDestroyOnLoad: 0
-  destroyOnDisconnect: 0
-  allowOwnershipChange: 1
-  MaxRPCBatch: 10000
-  proximityBehaviors: 
+  proximityBehaviors: []
   serializePosition: 7
   lerpPosition: 1
   serializeRotation: 7
@@ -124,12 +119,12 @@ MonoBehaviour:
   lerpT: 0.25
   lerpStopOffset: 0.01
   lerpAngleStopOffset: 1
-  NetworkTimeDelay: 0.1
+  networkTimeDelay: 0.1
   isPlayer: 0
+  destroyOnDisconnect: 0
   serverIsAuthority: 0
   clientSidePrediction: 0
   authoritativeSyncDistance: 0.25
-  authoritativeTeleportSyncDistance: 3
   authoritativeSyncRotation: 5
   teleportToInitialPositions: 1
   Health: 100

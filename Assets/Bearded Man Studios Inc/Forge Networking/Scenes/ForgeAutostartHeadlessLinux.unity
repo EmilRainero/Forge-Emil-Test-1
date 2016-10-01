@@ -117,11 +117,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a6a1f2318dabd747809bf35e96be818, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: 127.0.0.1
+  host: 3132372e302e302e31
   port: 15937
   protocolType: 3
   playerCount: 31
-  sceneName: ForgeHelloCubeResources
+  sceneName: 466f72676548656c6c6f437562655265736f7572636573
   proximityBasedUpdates: 0
   proximityDistance: 5
 --- !u!4 &215171575

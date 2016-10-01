@@ -200,10 +200,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6295079aae5cd34286f50d3be890007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 4d79436c6173735468696e675f3031
   num: 0
   buul: 0
   money: 3.1
-  first: brent
+  first: 6272656e74
   big: 0.0000004
   v2: {x: 5, y: 13}
   v3: {x: 9, y: 133, z: 123}

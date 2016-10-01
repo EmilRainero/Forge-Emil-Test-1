@@ -1,5 +1,4 @@
-﻿#if !UNITY_WEBGL
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -35,4 +34,3 @@ public class ForgeCreateContext
 		Create(context, "NewNetworkedMonoBehavior");
 	}
 }
-#endif

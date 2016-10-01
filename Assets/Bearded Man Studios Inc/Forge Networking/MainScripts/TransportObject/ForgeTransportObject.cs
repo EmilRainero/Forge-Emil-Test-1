@@ -25,7 +25,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Network {
     /// <summary>
-    /// A serializable class that can be sent across the Network. Only the supported serialization Types (seen in NetSync) can be serialized and sent
+    /// A serializable class that can be sent across the network. Only the supported serialization Types (seen in NetSync) can be serialized and sent
     /// in a ForgeTransportObject. A class must inherit from the ForgeTransportObject to function as one, then you use the Send() method to send the object.
     /// You must subscribe to the event described in the documentation for Send(), you can also specify who receives the object with a parameter in Send().
     /// 
@@ -70,7 +70,7 @@ public class ForgeTransportObject
 		}
 		TransportFinished transportFinishedInvoker;
 
-#if NetFX_CORE
+#if NETFX_CORE
 		IEnumerable<FieldInfo> fields;
 #else
 		FieldInfo[] fields;
@@ -103,7 +103,7 @@ public class ForgeTransportObject
 			if (Networking.PrimarySocket == null)
 				return;
 
-#if NetFX_CORE
+#if NETFX_CORE
 			fields = this.GetType().GetRuntimeFields();
 #else
 			fields = this.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

@@ -10,7 +10,7 @@ namespace BeardedManStudios.Network
    {
       public static bool IsEnum(this Type type)
       {
-#if NetFX_CORE
+#if NETFX_CORE
          return type.GetTypeInfo().IsEnum;
 #else
          return type.IsEnum;

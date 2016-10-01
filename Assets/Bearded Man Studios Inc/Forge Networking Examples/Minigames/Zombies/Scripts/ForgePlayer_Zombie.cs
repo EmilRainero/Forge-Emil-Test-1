@@ -186,7 +186,7 @@ public class ForgePlayer_Zombie : NetworkedMonoBehavior
 //			return;
 //		}
 
-		if (Networking.PrimarySocket == null || !Networking.PrimarySocket.TrackBandwidth)
+        if (Networking.PrimarySocket == null || !Networking.PrimarySocket.TrackBandwidth)
 			return;
 
 		// The server NetworkingManager object controls how fast the client's times are updated

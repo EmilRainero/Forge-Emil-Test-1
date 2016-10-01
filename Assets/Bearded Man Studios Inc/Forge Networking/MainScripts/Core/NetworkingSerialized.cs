@@ -39,14 +39,14 @@ namespace BeardedManStudios.Network
 			if (lightVersion)
 			{
 				Properties = new List<PropertyInfo>();
-#if NetFX_CORE
+#if NETFX_CORE
 				IEnumerable<PropertyInfo> properties = this.GetType().GetRuntimeProperties().OrderBy(x => x.Name);
 #else
 				PropertyInfo[] properties = this.GetType().GetProperties().OrderBy(x => x.Name).ToArray();
 #endif
 				foreach (PropertyInfo property in properties)
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					if (property.GetCustomAttribute<NetworkSerialized>() != null)
 #else
 					if (property.GetCustomAttributes(typeof(NetworkSerialized), true).Length > 0)

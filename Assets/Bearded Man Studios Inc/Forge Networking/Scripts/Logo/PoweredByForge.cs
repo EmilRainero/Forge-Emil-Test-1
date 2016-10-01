@@ -11,7 +11,7 @@ public class PoweredByForge : MonoBehaviour
 
 	public Sprite LightThemeLogo;
 
-	public string SceNetoLoad = "ForgeQuickStartMenu";
+	public string SceneToLoad = "ForgeQuickStartMenu";
 
 	// Use this for initialization
 	IEnumerator Start()
@@ -28,9 +28,9 @@ public class PoweredByForge : MonoBehaviour
 		yield return new WaitForSeconds(1.5f);
 
 #if UNITY_4_6 || UNITY_4_7
-        Application.LoadLevel(SceNetoLoad);
+        Application.LoadLevel(SceneToLoad);
 #else
-		BeardedManStudios.Network.Unity.UnitySceneManager.LoadScene(SceNetoLoad);
+		BeardedManStudios.Network.Unity.UnitySceneManager.LoadScene(SceneToLoad);
 #endif
 	}
 }

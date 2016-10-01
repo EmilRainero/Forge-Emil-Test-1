@@ -46,15 +46,12 @@ namespace BeardedManStudios.Forge.Examples
 
 		private void Update()
 		{
-			if (Input.GetKeyDown(KeyCode.UpArrow))
-				RPC("Move", NetworkReceivers.All, Vector3.up);
-			else if (Input.GetKeyDown(KeyCode.DownArrow))
-				RPC("Move", NetworkReceivers.All, Vector3.down);
-
 			if (!IsOwner)
 				return;
 
-			if (Input.GetKeyDown(KeyCode.A))
+			if (Input.GetKeyDown(KeyCode.Space))
+				RPC("Move", NetworkReceivers.All, Vector3.up);
+			else if (Input.GetKeyDown(KeyCode.A))
 				RPC("ByteData", NetworkReceivers.All, Encryptor.Encoding.GetBytes("Hello World Byte Array!"));
 			else if (Input.GetKeyDown(KeyCode.B))
 				RPC("BMSByteObject", NetworkReceivers.All, ObjectMapper.MapBytes(new BMSByte(), "Hello World BMSByte!"));

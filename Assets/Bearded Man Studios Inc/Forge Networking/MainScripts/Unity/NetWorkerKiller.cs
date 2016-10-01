@@ -25,7 +25,7 @@ using UnityEngine;
 namespace BeardedManStudios.Network.Unity
 {
 	/// <summary>
-	/// This class is responsible for doing any late cleanup of threads and Networked objects
+	/// This class is responsible for doing any late cleanup of threads and networked objects
 	/// </summary>
 	public class NetWorkerKiller : MonoBehaviour
 	{
@@ -39,13 +39,10 @@ namespace BeardedManStudios.Network.Unity
 			if (!ReferenceEquals(instance, null))
 				return;
 
-#if !UNITY_WEBGL
 			if (Threading.ThreadManagement.IsMainThread)
 			{
-#endif
 				instance = new GameObject("NetWorker Authority").AddComponent<NetWorkerKiller>();
 				DontDestroyOnLoad(instance.gameObject);
-#if !UNITY_WEBGL
 			}
 			else
 			{
@@ -55,7 +52,6 @@ namespace BeardedManStudios.Network.Unity
 					DontDestroyOnLoad(instance.gameObject);
 				});
 			}
-#endif
 		}
 
 		/// <summary>
@@ -84,18 +80,18 @@ namespace BeardedManStudios.Network.Unity
 		/// <summary>
 		/// Add a NetWorker to this list
 		/// </summary>
-		/// <param name="NetWorker"></param>
-		public static void AddNetWorker(NetWorker NetWorker)
+		/// <param name="netWorker"></param>
+		public static void AddNetWorker(NetWorker netWorker)
 		{
 			if (ReferenceEquals(Instance, null) || NetWorkers == null)
 				NetWorkers = new List<NetWorker>();
 
-			if (!NetWorkers.Contains(NetWorker))
-				NetWorkers.Add(NetWorker);
+			if (!NetWorkers.Contains(netWorker))
+				NetWorkers.Add(netWorker);
 		}
 
 		/// <summary>
-		/// Clean all the Sockets and connections
+		/// Clean all the sockets and connections
 		/// </summary>
 		private void OnApplicationQuit()
 		{
@@ -105,9 +101,7 @@ namespace BeardedManStudios.Network.Unity
 			Networking.Disconnect();
 
 			UnityEventObject.Cleanup();
-#if !UNITY_WEBGL
 			Threading.Task.KillAll();
-#endif
 
 			NetWorkers.Clear();
 			NetWorkers = null;

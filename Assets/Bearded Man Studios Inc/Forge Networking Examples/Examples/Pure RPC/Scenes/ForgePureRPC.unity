@@ -58,9 +58,9 @@ LightmapSettings:
     m_BakeResolution: 50
     m_TextureWidth: 1024
     m_TextureHeight: 1024
-    m_AO: 0
+    m_AO: 1
     m_AOMaxDistance: 1
-    m_CompAOExponent: 0
+    m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
     m_Padding: 2
     m_LightmapParameters: {fileID: 0}
@@ -69,7 +69,7 @@ LightmapSettings:
     m_DirectLightInLightProbes: 1
     m_FinalGather: 0
     m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 1024
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
   m_LightingDataAsset: {fileID: 0}
   m_RuntimeCPUUsage: 25
@@ -222,17 +222,17 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 03ce823d880e2f5419dbdea247bbfa7b, type: 2}
-  m_RootGameObject: {fileID: 1246199363}
+  m_RootGameObject: {fileID: 703672388}
   m_IsPrefabParent: 0
---- !u!1 &1246199363
+--- !u!1 &703672388
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 113530, guid: 03ce823d880e2f5419dbdea247bbfa7b, type: 2}
   m_PrefabInternal: {fileID: 573079014}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 1246199365}
-  - 114: {fileID: 1246199364}
+  - 4: {fileID: 703672390}
+  - 114: {fileID: 703672389}
   m_Layer: 0
   m_Name: Networking Manager
   m_TagString: Untagged
@@ -240,41 +240,77 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1246199364
+--- !u!114 &703672389
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11420860, guid: 03ce823d880e2f5419dbdea247bbfa7b,
     type: 2}
   m_PrefabInternal: {fileID: 573079014}
-  m_GameObject: {fileID: 1246199363}
+  m_GameObject: {fileID: 703672388}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98643db8660606c46abed6a71ae25bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneNetworkedId: 0
-  dontDestroyOnLoad: 0
-  destroyOnDisconnect: 0
-  allowOwnershipChange: 1
-  MaxRPCBatch: 10000
-  startNetworkedSceneBehaviors: []
-  NetworkInstantiates: []
+  networkInstantiates: []
   resourcesDirectory: 
   frameInterval: 100
   updateTimeInterval: 0
---- !u!4 &1246199365
+--- !u!4 &703672390
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 413530, guid: 03ce823d880e2f5419dbdea247bbfa7b, type: 2}
   m_PrefabInternal: {fileID: 573079014}
-  m_GameObject: {fileID: 1246199363}
+  m_GameObject: {fileID: 703672388}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
+--- !u!1 &1442914349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1442914351}
+  - 114: {fileID: 1442914350}
+  m_Layer: 0
+  m_Name: Console
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1442914350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1442914349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a4179b958ae9424f8a96298da5197c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleKey: 96
+  show: 1
+--- !u!4 &1442914351
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1442914349}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.798458, y: 1.0664062, z: -3.8534336}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
 --- !u!1 &1580483115
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,7 +390,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!114 &1580483120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,8 +402,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb91b2112aaf22a40888ef907dbc2a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneNetworkedId: 0
-  dontDestroyOnLoad: 0
-  destroyOnDisconnect: 0
-  allowOwnershipChange: 1
-  MaxRPCBatch: 10000

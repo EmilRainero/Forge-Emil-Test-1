@@ -238,11 +238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf46146387c1944e92e5a22a8668dd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneNetworkedId: 0
-  dontDestroyOnLoad: 0
-  destroyOnDisconnect: 0
-  allowOwnershipChange: 1
-  MaxRPCBatch: 10000
   Chatbox: {fileID: 11466402}
   ChatInput: {fileID: 11466390}
 --- !u!114 &11466378

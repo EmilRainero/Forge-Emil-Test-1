@@ -8,7 +8,7 @@
  * from the node-tree, or generate a node tree from any valid JSON string.
  * 
  * If you want to use compression when saving to file / stream / B64 you have to include
- * SharpZipLib ( http://www.icsharpcode.Net/opensource/sharpziplib/ ) in your project and
+ * SharpZipLib ( http://www.icsharpcode.net/opensource/sharpziplib/ ) in your project and
  * define "USE_SharpZipLib" at the top of the file
  * 
  * Written by Bunny83 
@@ -34,17 +34,13 @@
  *   Now you can simple reference any item that doesn't exist yet and it will return a JSONLazyCreator
  *   The class determines the required type by it's further use, creates the type and removes itself.
  * - Added binary serialization / deserialization.
- * - Added support for BZip2 zipped binary format. Requires the SharpZipLib ( http://www.icsharpcode.Net/opensource/sharpziplib/ )
+ * - Added support for BZip2 zipped binary format. Requires the SharpZipLib ( http://www.icsharpcode.net/opensource/sharpziplib/ )
  *   The usage of the SharpZipLib library can be disabled by removing or commenting out the USE_SharpZipLib define at the top
  * - The serializer uses different types when it comes to store the values. Since my data values
  *   are all of type string, the serializer will "try" which format fits best. The order is: int, float, double, bool, string.
  *   It's not the most efficient way but for a moderate amount of data it should work on all platforms.
  * 
  * * * * */
-
-#if !UNITY_WEBGL
-
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,7 +67,7 @@ namespace SimpleJSON
 #if BARE_METAL
 	public abstract class JSONNode : MarshalByRefObject
 #else
-	public abstract class JSONNode
+    public abstract class JSONNode
 #endif
 	{
 		#region common interface
@@ -1485,4 +1481,3 @@ namespace SimpleJSON
 		}
 	}
 }
-#endif

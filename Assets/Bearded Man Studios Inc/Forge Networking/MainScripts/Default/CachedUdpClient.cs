@@ -55,8 +55,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if !UNITY_WEBGL
-#if !NetFX_CORE
+#if !NETFX_CORE
 
 using System;
 using System.Collections.Generic;
@@ -164,18 +163,18 @@ namespace BeardedManStudios.Network
 			recBuffer.SetSize(65536);
 		}
 
-#region Close
+		#region Close
 		public void Close()
 		{
 			((IDisposable)this).Dispose();
 		}
-#endregion
-#region Connect
+		#endregion
+		#region Connect
 
 		void DoConnect(IPEndPoint endPoint)
 		{
 			/* Catch EACCES and turn on SO_BROADCAST then,
-			 * as UDP Sockets don't have it set by default
+			 * as UDP sockets don't have it set by default
 			 */
 			try
 			{
@@ -247,8 +246,8 @@ namespace BeardedManStudios.Network
 				}
 			}
 		}
-#endregion
-#region Multicast methods
+		#endregion
+		#region Multicast methods
 		public void DropMulticastGroup(IPAddress multicastAddr)
 		{
 			CheckDisposed();
@@ -344,8 +343,8 @@ namespace BeardedManStudios.Network
 				throw new SocketException((int)SocketError.OperationNotSupported);
 		}
 
-#endregion
-#region Data I/O
+		#endregion
+		#region Data I/O
 		private BMSByte recBuffer = new BMSByte();
 		private EndPoint endPoint = null;
 		private Dictionary<EndPoint, string> connections = new Dictionary<EndPoint, string>();
@@ -377,7 +376,7 @@ namespace BeardedManStudios.Network
 		int DoSend(byte[] dgram, int bytes, IPEndPoint endPoint)
 		{
 			/* Catch EACCES and turn on SO_BROADCAST then,
-			 * as UDP Sockets don't have it set by default
+			 * as UDP sockets don't have it set by default
 			 */
 			try
 			{
@@ -422,7 +421,7 @@ namespace BeardedManStudios.Network
 
 			if (!active)
 				throw new InvalidOperationException("Operation not allowed on " +
-									 "non-connected Sockets.");
+									 "non-connected sockets.");
 
 			return (DoSend(dgram, bytes, null));
 		}
@@ -458,7 +457,7 @@ namespace BeardedManStudios.Network
 
 			return newArray;
 		}
-#endregion
+		#endregion
 
 		IAsyncResult DoBeginSend(byte[] datagram, int bytes,
 					  IPEndPoint endPoint,
@@ -466,7 +465,7 @@ namespace BeardedManStudios.Network
 					  object state)
 		{
 			/* Catch EACCES and turn on SO_BROADCAST then,
-			 * as UDP Sockets don't have it set by default
+			 * as UDP sockets don't have it set by default
 			 */
 			try
 			{
@@ -601,7 +600,7 @@ namespace BeardedManStudios.Network
 			return (buf);
 		}
 
-#region Properties
+		#region Properties
 		protected bool Active
 		{
 			get { return active; }
@@ -682,8 +681,8 @@ namespace BeardedManStudios.Network
 			}
 		}
 
-#endregion
-#region Disposing
+		#endregion
+		#region Disposing
 		void IDisposable.Dispose()
 		{
 			Dispose(true);
@@ -715,9 +714,9 @@ namespace BeardedManStudios.Network
 			if (disposed)
 				throw new ObjectDisposedException(GetType().FullName);
 		}
-#endregion
+		#endregion
 
-#if Net_4_5
+#if NET_4_5
 		
 		public Task<UdpReceiveResult> ReceiveAsync ()
 		{
@@ -751,5 +750,4 @@ namespace BeardedManStudios.Network
 	}
 }
 
-#endif
 #endif

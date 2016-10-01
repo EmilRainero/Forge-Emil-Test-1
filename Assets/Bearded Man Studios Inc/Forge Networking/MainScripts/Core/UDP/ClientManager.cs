@@ -11,7 +11,7 @@ namespace BeardedManStudios.Network
 		public int Count { get { return clientSockets.Count; } }
 
 		/// <summary>
-		/// Dictionary of all the client Sockets on the CrossPlatformUDP (NetWorker)
+		/// Dictionary of all the client sockets on the CrossPlatformUDP (NetWorker)
 		/// </summary>
 		private Dictionary<string, NetworkingPlayer> clientSockets = new Dictionary<string, NetworkingPlayer>();
 

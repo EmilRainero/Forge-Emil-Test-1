@@ -33,7 +33,7 @@ public class ServerListManager : MonoBehaviour
 	public Transform Grid;
 	private HostInfo _lastHost;
 
-#if NetFX_CORE && !UNITY_EDITOR
+#if NETFX_CORE && !UNITY_EDITOR
 	private bool isWinRT = true;
 #else
 	private bool isWinRT = false;
@@ -71,7 +71,7 @@ public class ServerListManager : MonoBehaviour
                     });
 #endif
 
-                    GameObject gO = Instantiate(ServerListItemPrefab) as GameObject;
+					GameObject gO = Instantiate(ServerListItemPrefab) as GameObject;
 					gO.transform.parent = Grid;
 					gO.GetComponent<ServerListItem>().SetupServerListItem(host);
 				}
@@ -103,7 +103,7 @@ public class ServerListManager : MonoBehaviour
 		{
 			Networking.SetPrimarySocket(socket);
 #if UNITY_4_6 || UNITY_4_7
-			Application.LoadLevel(host.sceneName);
+            Application.LoadLevel(host.sceneName);
 #else
 			BeardedManStudios.Network.Unity.UnitySceneManager.LoadScene(host.sceneName);
 #endif
@@ -114,7 +114,7 @@ public class ServerListManager : MonoBehaviour
 			{
 				Networking.SetPrimarySocket(socket);
 #if UNITY_4_6 || UNITY_4_7
-				Application.LoadLevel(host.sceneName);
+                Application.LoadLevel(host.sceneName);
 #else
 				BeardedManStudios.Network.Unity.UnitySceneManager.LoadScene(host.sceneName);
 #endif

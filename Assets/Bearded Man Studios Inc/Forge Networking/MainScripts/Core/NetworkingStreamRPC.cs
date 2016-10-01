@@ -42,9 +42,9 @@ namespace BeardedManStudios.Network
 		public const byte STREAM_UNIQUE_ID = 22;
 
 		/// <summary>
-		/// Default Networking unique identifier
+		/// Default networking unique identifier
 		/// </summary>
-		public const byte NetWORKING_UNIQUE_ID = 38;
+		public const byte NETWORKING_UNIQUE_ID = 38;
 
 		/// <summary>
 		/// The Method name for the NetworkingStream
@@ -81,7 +81,7 @@ namespace BeardedManStudios.Network
 			if (!skipCall && ReferenceEquals(stream.NetworkedBehavior, null))
 				return;
 
-#if NetFX_CORE
+#if NETFX_CORE
 			var properties = stream.GetType().GetRuntimeProperties();
 #else
 			var properties = stream.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

@@ -19,13 +19,9 @@
 
 
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 using System;
-#if !UNITY_WEBGL
 using System.Net.Sockets;
-#endif
-using System.Security.Cryptography;
-using System.Text;
 #endif
 
 namespace BeardedManStudios.Network
@@ -35,16 +31,17 @@ namespace BeardedManStudios.Network
 		public TCPProcess() : base() { }
 		public TCPProcess(int maxConnections) : base(maxConnections) { }
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 		protected int previousSize = 0;
 		protected BMSByte readBuffer = new BMSByte();
 		protected BMSByte backBuffer = new BMSByte();
 
+		protected object writeMutex = new object();
 		protected object rpcMutex = new object();
 
+		protected NetworkingStream writeStream = new NetworkingStream();
 		protected NetworkingStream readStream = new NetworkingStream();
 
-#if !UNITY_WEBGL
 		protected BMSByte ReadBuffer(NetworkStream stream)
 		{
 			int count = 0;
@@ -73,7 +70,6 @@ namespace BeardedManStudios.Network
 
 			return readBuffer;
 		}
-#endif
 
 		private object tmp = new object();
 		protected void StreamReceived(NetworkingPlayer sender, BMSByte bytes)
@@ -94,8 +90,6 @@ namespace BeardedManStudios.Network
 				if (readStream.Consume(this, sender, bytes) == null)
 					return;
 
-				CurrentStreamOwner = sender;
-
 				// Do not process player because it is processed through the listener
 				if (readStream.identifierType == NetworkingStream.IdentifierType.Player)
 				{
@@ -105,27 +99,27 @@ namespace BeardedManStudios.Network
 					return;
 				}
 
-				if (!readStream.Ready)
-					return;
-
-				// TODO:  These need to be done better since there are many of them
-				if (readStream.Bytes.Size < 22)
+				if (readStream.Ready)
 				{
-					try
+					// TODO:  These need to be done better since there are many of them
+					if (readStream.Bytes.Size < 22)
 					{
-						if (ObjectMapper.Compare<string>(readStream, "update"))
-							UpdateNewPlayer(sender);
-
-						if (ObjectMapper.Compare<string>(readStream, "disconnect"))
+						try
 						{
-							// TODO:  If this eventually sends something to the player they will not exist
-							Disconnect(sender);
-							return;
+							if (ObjectMapper.Compare<string>(readStream, "update"))
+								UpdateNewPlayer(sender);
+
+							if (ObjectMapper.Compare<string>(readStream, "disconnect"))
+							{
+								// TODO:  If this eventually sends something to the player they will not exist
+								Disconnect(sender);
+								return;
+							}
 						}
-					}
-					catch
-					{
-						throw new NetworkException(12, "Mal-formed defalut communication");
+						catch
+						{
+							throw new NetworkException(12, "Mal-formed defalut communication");
+						}
 					}
 				}
 
@@ -142,7 +136,11 @@ namespace BeardedManStudios.Network
 			{
 				if (stream.Receivers == NetworkReceivers.MessageGroup && Me.MessageGroup != stream.Sender.MessageGroup)
 					return true;
+
+				OnDataRead(sender, stream);
 			}
+			else
+				OnDataRead(null, stream);
 
 			// Don't execute this logic on the server if the server doesn't own the object
 			if (!ReferenceEquals(stream.NetworkedBehavior, null) && stream.Receivers == NetworkReceivers.Owner)
@@ -158,25 +156,6 @@ namespace BeardedManStudios.Network
 			}
 
 			return true;
-		}
-		
-		protected string HeaderHashKey()
-		{
-			string headerHash = "";
-			Random rand = new Random();
-			char[] availableChars = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
-
-			for (int i = 0; i < 9; i++)
-				headerHash += availableChars[rand.Next(0, availableChars.Length)];
-
-			headerHash = Convert.ToBase64String((new SHA1CryptoServiceProvider()).ComputeHash(Encoding.UTF8.GetBytes(headerHash)));
-
-			return headerHash;
-		}
-
-		protected string HeaderHashKeyCheck(string data)
-		{
-			return Convert.ToBase64String((new SHA1CryptoServiceProvider()).ComputeHash(Encoding.UTF8.GetBytes(data + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
 		}
 
 		abstract public override void Connect(string hostAddress, ushort port);

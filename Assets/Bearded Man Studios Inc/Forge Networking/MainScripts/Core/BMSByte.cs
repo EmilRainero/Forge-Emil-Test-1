@@ -260,7 +260,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Compresses the byte array so that it is sent properly across the Network
+		/// Compresses the byte array so that it is sent properly across the network
 		/// This is often used just as you are sending the message
 		/// </summary>
 		/// <returns>Returns this BMSByte object</returns>

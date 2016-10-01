@@ -25,7 +25,7 @@ using System;
 namespace BeardedManStudios.Network
 {
 	/// <summary>
-	/// This class is responsible for holding references to variables that are going to be serialized across the Network
+	/// This class is responsible for holding references to variables that are going to be serialized across the network
 	/// </summary>
 	/// <typeparam name="T">The type of variable that is being tracked</typeparam>
 	sealed class NetRef<T>

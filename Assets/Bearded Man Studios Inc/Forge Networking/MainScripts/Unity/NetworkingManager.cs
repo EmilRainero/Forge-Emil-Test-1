@@ -24,12 +24,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 #if UNITY_5_3
+using UnityEngine.SceneManagement;
 #endif
 
 namespace BeardedManStudios.Network
 {
 	/// <summary>
-	/// This is a singleton manager for all of the Networked behaviors
+	/// This is a singleton manager for all of the networked behaviors
 	/// </summary>
 	public class NetworkingManager : SimpleNetworkedMonoBehavior
 	{
@@ -62,7 +63,7 @@ namespace BeardedManStudios.Network
 		public static NetworkingManager Instance { get { return instance; } }
 
 		/// <summary>
-		/// This is a list of all of the behaviors in the scene that need to be setup on the Network
+		/// This is a list of all of the behaviors in the scene that need to be setup on the network
 		/// </summary>
 		public SimpleNetworkedMonoBehavior[] startNetworkedSceneBehaviors = null;
 
@@ -73,7 +74,7 @@ namespace BeardedManStudios.Network
 		{
 			get
 			{
-				if (ReferenceEquals(Instance, null) || !Instance.IsSetup || ReferenceEquals(Instance.OwningNetWorker, null))
+                if (ReferenceEquals(Instance, null) || !Instance.IsSetup || ReferenceEquals(Instance.OwningNetWorker, null))
 					return false;
 
 				return true;
@@ -88,7 +89,7 @@ namespace BeardedManStudios.Network
 		/// <summary>
 		/// All game objects to be instantiated whenever necessary
 		/// </summary>
-		public GameObject[] NetworkInstantiates = null;
+		public GameObject[] networkInstantiates = null;
 
 		/// <summary>
 		/// The list of all setup actions for when an object is instantiated
@@ -104,7 +105,7 @@ namespace BeardedManStudios.Network
 		private Action<List<NetworkingPlayer>> pollPlayersCallback = null;
 		private Action loadLevelFireOnConnect = null;
 
-		private Dictionary<string, GameObject> _cachedLoadedObjects = new Dictionary<string, GameObject>();
+        private Dictionary<string, GameObject> _cachedLoadedObjects = new Dictionary<string, GameObject>();
 
 		private float previousTime = 0.0f;
 		private float serverTime = 0.0f;
@@ -127,7 +128,7 @@ namespace BeardedManStudios.Network
 		public float SimulatedServerTime { get; private set; }
 
 		/// <summary>
-		/// This is the resources directory where Network prefabs are to be loaded from
+		/// This is the resources directory where network prefabs are to be loaded from
 		/// </summary>
 		public string resourcesDirectory = string.Empty;
 
@@ -212,11 +213,11 @@ namespace BeardedManStudios.Network
 #if !BARE_METAL
 			CreateUnityEventObject();
 
-			if (NetworkInstantiates != null)
+			if (networkInstantiates != null)
 			{
-				foreach (GameObject obj in NetworkInstantiates)
+				foreach (GameObject obj in networkInstantiates)
 				{
-					foreach (GameObject obj2 in NetworkInstantiates)
+					foreach (GameObject obj2 in networkInstantiates)
 					{
 						if (obj != obj2 && obj.name == obj2.name)
 							Debug.LogError("You have two or more objects in the Network Instantiate array with the name " + obj.name + ", these should be unique");
@@ -224,7 +225,7 @@ namespace BeardedManStudios.Network
 				}
 			}
 
-			foreach (GameObject obj in NetworkInstantiates)
+			foreach (GameObject obj in networkInstantiates)
 			{
 				if (behaviorsAndRefCount.ContainsKey(obj.name))
 					continue;
@@ -260,20 +261,20 @@ namespace BeardedManStudios.Network
 		public bool Populate(NetWorker socket)
 		{
 #if !BARE_METAL
-			
-			List<SimpleNetworkedMonoBehavior> allBehaviors = new List<SimpleNetworkedMonoBehavior>(startNetworkedSceneBehaviors);
+            
+            List<SimpleNetworkedMonoBehavior> allBehaviors = new List<SimpleNetworkedMonoBehavior>(startNetworkedSceneBehaviors);
 			// Find all objects in the scene that have SNMB
 			SimpleNetworkedMonoBehavior[] behaviors = FindObjectsOfType<SimpleNetworkedMonoBehavior>();
-			
-			foreach (SimpleNetworkedMonoBehavior behavior in behaviors)
+            
+            foreach (SimpleNetworkedMonoBehavior behavior in behaviors)
 			{
 				if (!allBehaviors.Contains(behavior))
 					allBehaviors.Add(behavior);
 			}
-			
-			if (Networking.Sockets == null)
+            
+            if (Networking.Sockets == null)
 			{
-				Debug.LogWarning("No connection has been established for this Network scene, preparing offline play...");
+				Debug.LogWarning("No connection has been established for this network scene, preparing offline play...");
 				IsSetup = true;
 
 				foreach (Action execute in setupActions)
@@ -281,8 +282,8 @@ namespace BeardedManStudios.Network
 
 				return false;
 			}
-			
-			ControllingSocket = socket;
+            
+            ControllingSocket = socket;
 			OwningNetWorker = ControllingSocket;
 
 			if (!OwningNetWorker.Connected)
@@ -312,8 +313,8 @@ namespace BeardedManStudios.Network
 			ControllingSocket = socket;
 			OwningNetWorker = ControllingSocket;
 #endif
-			OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.NetWORKING_MANAGER_POLL_PLAYERS, PollPlayersResponse, true);
-			return true;
+            OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.NETWORKING_MANAGER_POLL_PLAYERS, PollPlayersResponse, true);
+            return true;
 		}
 
 		public static bool TryPullIdFromObject(string obj, ref ulong uniqueId)
@@ -329,7 +330,7 @@ namespace BeardedManStudios.Network
 						GenerateUniqueId();
 				}
 #else
-				// If there are multiple Network behaviors on this object then update the ids
+				// If there are multiple network behaviors on this object then update the ids
 				if (behaviorsAndRefCount[obj] > 1)
 				{
 					for (int i = 1; i < behaviorsAndRefCount[obj]; i++)
@@ -371,8 +372,8 @@ namespace BeardedManStudios.Network
 		{
 			base.NetworkStart();
 
-			OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.NetWORKING_MANAGER_PLAYER_LOADED_LEVEL, PlayerLoadedLevel, true);
-			OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.NetWORKED_MONO_BEHAVIOR_MANUAL_PROPERTIES, DeserializeManualProperties, true);
+			OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.NETWORKING_MANAGER_PLAYER_LOADED_LEVEL, PlayerLoadedLevel, true);
+			OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.NETWORKED_MONO_BEHAVIOR_MANUAL_PROPERTIES, DeserializeManualProperties, true);
 			OwningNetWorker.AddCustomDataReadEvent(WriteCustomMapping.TRANSPORT_OBJECT, ReadTransportObject, true);
 
 			if (loadLevelFireOnConnect != null)
@@ -384,8 +385,8 @@ namespace BeardedManStudios.Network
 
 		private void DeserializeManualProperties(NetworkingPlayer player, NetworkingStream stream)
 		{
-			ulong NetworkedId = ObjectMapper.Map<ulong>(stream);
-			NetworkedMonoBehavior.Locate(NetworkedId).DeserializeManualProperties(stream);
+			ulong networkedId = ObjectMapper.Map<ulong>(stream);
+			NetworkedMonoBehavior.Locate(networkedId).DeserializeManualProperties(stream);
 		}
 
 		private void ReadTransportObject(NetworkingPlayer player, NetworkingStream stream)
@@ -430,26 +431,24 @@ namespace BeardedManStudios.Network
 		[BRPC]
 		public void NetworkInstantiate(ulong ownerId, ulong startNetworkId, string name, Vector3 position, Quaternion rotation, int callbackId = 0)
 		{
-            Debug.Log("Receiveed NetworkInstantiate");
-
-            lock (NetworkedBehaviorsMutex)
+			lock (networkedBehaviorsMutex)
 			{
-				if (NetworkedBehaviors.ContainsKey(startNetworkId))
+				if (networkedBehaviors.ContainsKey(startNetworkId))
 					return;
 
-				SimpleNetworkedMonoBehavior[] NetBehaviors = null;
+				SimpleNetworkedMonoBehavior[] netBehaviors = null;
 
 #if BARE_METAL
-				NetBehaviors = new SimpleNetworkedMonoBehavior[behaviorsAndRefCount[name].Length];
+				netBehaviors = new SimpleNetworkedMonoBehavior[behaviorsAndRefCount[name].Length];
 
-				for (int i = 0; i < NetBehaviors.Length; i++)
+				for (int i = 0; i < netBehaviors.Length; i++)
 				{
 					//if (CreateObject != null)
-					//	NetBehaviors[i] = CreateObject(name + "(Clone)(Child)" + i, behaviorsAndRefCount[name][i]);
+					//	netBehaviors[i] = CreateObject(name + "(Clone)(Child)" + i, behaviorsAndRefCount[name][i]);
 
 					if (behaviorsAndRefCount[name][i] == typeof(SimpleNetworkedMonoBehavior).ToString() || behaviorsAndRefCount[name][i] == typeof(NetworkedMonoBehavior).ToString())
 					{
-						NetBehaviors[i] = (SimpleNetworkedMonoBehavior)Activator.CreateInstance(typeof(SimpleNetworkedMonoBehavior).Assembly.GetType(behaviorsAndRefCount[name][i]), name, behaviorsAndRefCount[name][i]);
+						netBehaviors[i] = (SimpleNetworkedMonoBehavior)Activator.CreateInstance(typeof(SimpleNetworkedMonoBehavior).Assembly.GetType(behaviorsAndRefCount[name][i]), name, behaviorsAndRefCount[name][i]);
 					}
 					else
 					{
@@ -457,7 +456,7 @@ namespace BeardedManStudios.Network
 						{
 							if (assembly.FullName.Contains("ForgeBareMetalGame"))
 							{
-								NetBehaviors[i] = (SimpleNetworkedMonoBehavior)Activator.CreateInstance(assembly.GetType(behaviorsAndRefCount[name][i]), name, behaviorsAndRefCount[name][i]);
+								netBehaviors[i] = (SimpleNetworkedMonoBehavior)Activator.CreateInstance(assembly.GetType(behaviorsAndRefCount[name][i]), name, behaviorsAndRefCount[name][i]);
 								break;
 							}
 						}
@@ -466,42 +465,42 @@ namespace BeardedManStudios.Network
 #else
 
 				GameObject o = Instance.PullObject((ownerId != OwningNetWorker.Me.NetworkId ? name + "(Remote)" : name), name);
-				NetBehaviors = GetAllSimpleMonoBehaviors(o);
+				netBehaviors = GetAllSimpleMonoBehaviors(o);
 
-				if (NetBehaviors.Length == 0)
+				if (netBehaviors.Length == 0)
 				{
-					Debug.LogError("Instantiating on the Network is only for objects that derive from BaseNetworkedMonoBehavior, " +
+					Debug.LogError("Instantiating on the network is only for objects that derive from BaseNetworkedMonoBehavior, " +
 						"if object does not need to be serialized consider using a RPC with GameObject.Instantiate");
 
 					return;
 				}
 
 				GameObject tmp = (Instantiate(o, position, rotation) as GameObject);
-				NetBehaviors = GetAllSimpleMonoBehaviors(tmp);
+				netBehaviors = GetAllSimpleMonoBehaviors(tmp);
 #endif
 
-				while (ObjectCounter < startNetworkId + (ulong)NetBehaviors.Length - 1)
+				while (ObjectCounter < startNetworkId + (ulong)netBehaviors.Length - 1)
 				{
 					GenerateUniqueId();
 				}
 
-				for (int i = 0; i < NetBehaviors.Length; i++)
-					NetBehaviors[i].Setup(OwningNetWorker, OwningNetWorker.Uniqueidentifier == ownerId, startNetworkId + (ulong)i, ownerId);
+				for (int i = 0; i < netBehaviors.Length; i++)
+					netBehaviors[i].Setup(OwningNetWorker, OwningNetWorker.Uniqueidentifier == ownerId, startNetworkId + (ulong)i, ownerId);
 
 #if !BARE_METAL
 				if (ownerId == OwningNetWorker.Me.NetworkId)
-					Networking.RunInstantiateCallback(callbackId, NetBehaviors[0].GetComponent<SimpleNetworkedMonoBehavior>());
+					Networking.RunInstantiateCallback(callbackId, netBehaviors[0].GetComponent<SimpleNetworkedMonoBehavior>());
 #else
 				if (ownerId == OwningNetWorker.Me.NetworkId)
-					Networking.RunInstantiateCallback(callbackId, NetBehaviors[0]);
+					Networking.RunInstantiateCallback(callbackId, netBehaviors[0]);
 #endif
 			}
 		}
 
 		[BRPC]
-		private void DestroyOnNetwork(ulong NetworkId)
+		private void DestroyOnNetwork(ulong networkId)
 		{
-			NetworkDestroy(NetworkId);
+			NetworkDestroy(networkId);
 		}
 
 		/// <summary>
@@ -514,46 +513,46 @@ namespace BeardedManStudios.Network
 			if (name == fallback)
 				fallback = string.Empty;
 
-			foreach (GameObject obj in NetworkInstantiates)
+			foreach (GameObject obj in networkInstantiates)
 				if (obj.name == name)
 					return obj;
 
-			
+            
 
-			if (_cachedLoadedObjects.ContainsKey(name))
-				return _cachedLoadedObjects[name];
-			else
-			{
-				GameObject find = null;
-				bool isRemote = name.Contains("(Remote)"); //Determining if this object is a remote, if we don't already have it stored
-				//Then we will skip loading resources again to try and search for it.
+            if (_cachedLoadedObjects.ContainsKey(name))
+                return _cachedLoadedObjects[name];
+            else
+            {
+                GameObject find = null;
+                bool isRemote = name.Contains("(Remote)"); //Determining if this object is a remote, if we don't already have it stored
+                //Then we will skip loading resources again to try and search for it.
 
-				//If _cachedLoadedObjects.Count == 0, then this is our first time loading stuff from our resources directory
-				if ((_cachedLoadedObjects.Count == 0 || !isRemote) && !string.IsNullOrEmpty(resourcesDirectory))
-				{
-					foreach (GameObject obj in Resources.LoadAll<GameObject>(resourcesDirectory))
-					{
-						if (!_cachedLoadedObjects.ContainsKey(obj.name))
-							_cachedLoadedObjects.Add(obj.name, obj);
+                //If _cachedLoadedObjects.Count == 0, then this is our first time loading stuff from our resources directory
+                if ((_cachedLoadedObjects.Count == 0 || !isRemote) && !string.IsNullOrEmpty(resourcesDirectory))
+                {
+                    foreach (GameObject obj in Resources.LoadAll<GameObject>(resourcesDirectory))
+                    {
+                        if (!_cachedLoadedObjects.ContainsKey(obj.name))
+                            _cachedLoadedObjects.Add(obj.name, obj);
 
-						if (obj.name == name)
-							find = obj;
-					}
-				}
+                        if (obj.name == name)
+                            find = obj;
+                    }
+                }
 
 
-				if (find == null)
-				{
-					if (!string.IsNullOrEmpty(fallback))
-						return PullObject(fallback);
+                if (find == null)
+                {
+                    if (!string.IsNullOrEmpty(fallback))
+                        return PullObject(fallback);
 #if UNITY_EDITOR
-					else
-						Debug.LogError("GameObject with name " + name + " was not found in the lookup. Make sure the object is in the resources folder or in the Networking Manager \"Network Instantiates\" array in the inspector.");
+                    else
+                        Debug.LogError("GameObject with name " + name + " was not found in the lookup. Make sure the object is in the resources folder or in the Networking Manager \"Network Instantiates\" array in the inspector.");
 #endif
-				}
+                }
 
-				return find;
-			}
+                return find;
+            }
 		}
 
 		/// <summary>
@@ -607,10 +606,10 @@ namespace BeardedManStudios.Network
 
 			for (int i = 0; i < count; i++)
 			{
-				if (NetworkedBehaviors.ContainsKey(startObjectId + (ulong)i))
+				if (networkedBehaviors.ContainsKey(startObjectId + (ulong)i))
 				{
-					if (NetworkedBehaviors[startObjectId + (ulong)i] is NetworkedMonoBehavior)
-						((NetworkedMonoBehavior)NetworkedBehaviors[startObjectId + (ulong)i]).AutoritativeSerialize();
+					if (networkedBehaviors[startObjectId + (ulong)i] is NetworkedMonoBehavior)
+						((NetworkedMonoBehavior)networkedBehaviors[startObjectId + (ulong)i]).AutoritativeSerialize();
 				}
 			}
 		}
@@ -631,7 +630,7 @@ namespace BeardedManStudios.Network
 			foreach (NetworkingPlayer player in OwningNetWorker.Players)
 				ObjectMapper.MapBytes(playerPollData, player.NetworkId, player.Name);
 
-			Networking.WriteCustom(WriteCustomMapping.NetWORKING_MANAGER_POLL_PLAYERS, OwningNetWorker, playerPollData, OwningNetWorker.CurrentStreamOwner, true);
+			Networking.WriteCustom(WriteCustomMapping.NETWORKING_MANAGER_POLL_PLAYERS, OwningNetWorker, playerPollData, OwningNetWorker.CurrentStreamOwner, true);
 		}
 
 		private void PollPlayersResponse(NetworkingPlayer sender, NetworkingStream stream)
@@ -663,19 +662,14 @@ namespace BeardedManStudios.Network
 
 			Unity.UnityEventObject.onDestroy -= SkipResetOnDestroy;
 
-#if !UNITY_WEBGL
-			if (Threading.ThreadManagement.IsMainThread)
-#endif
-				Destroy(gameObject);
-#if !UNITY_WEBGL
-			else
-			{
-				// JM: make sure this is run on main thread
-				Unity.MainThreadManager.Run(() => {
-						Destroy(gameObject);
-				});
-			}
-#endif
+            if (Threading.ThreadManagement.IsMainThread)
+                Destroy(gameObject);
+            else {
+                // JM: make sure this is run on main thread
+                Unity.MainThreadManager.Run(() => {
+                        Destroy(gameObject);
+                });
+            }
 
 			instance = null;
 		}
@@ -687,11 +681,11 @@ namespace BeardedManStudios.Network
 			Unity.MainThreadManager.Run(() =>
 			{
 				// The level that was loaded is not the current level
-#if UNITY_4_6 || UNITY_4_7
+				#if UNITY_4_6 || UNITY_4_7
 				if (levelLoaded != Application.loadedLevel)
-#else
+				#else
 				if (levelLoaded != Unity.UnitySceneManager.GetCurrentSceneBuildIndex())
-#endif
+				#endif
 					return;
 
 				if (clientLoadedLevel != null)
@@ -714,8 +708,8 @@ namespace BeardedManStudios.Network
 
 			if (OwningNetWorker == null)
 				loadLevelFireOnConnect = () => { TellServerLevelLoaded(level); };
-			else
-				Initialize(OwningNetWorker);
+            else
+                Initialize(OwningNetWorker);
 		}
 
 		private void TellServerLevelLoaded(int level)
@@ -725,7 +719,7 @@ namespace BeardedManStudios.Network
 
 			loadLevelPing.Clear();
 			ObjectMapper.MapBytes(loadLevelPing, level);
-			Networking.WriteCustom(WriteCustomMapping.NetWORKING_MANAGER_PLAYER_LOADED_LEVEL, OwningNetWorker, loadLevelPing, true, NetworkReceivers.Server);
+			Networking.WriteCustom(WriteCustomMapping.NETWORKING_MANAGER_PLAYER_LOADED_LEVEL, OwningNetWorker, loadLevelPing, true, NetworkReceivers.Server);
 		}
 
 		private void CreateUnityEventObject()
@@ -741,4 +735,3 @@ namespace BeardedManStudios.Network
 		}
 	}
 }
-

@@ -17,7 +17,6 @@
 |                                                             |
 \------------------------------+-----------------------------*/
 
-#if !UNITY_WEBGL
 
 
 using System.Net;
@@ -27,7 +26,7 @@ namespace BeardedManStudios.Network
 {
 	class ForgeMasterServerPing
 	{
-#if NetFX_CORE
+#if NETFX_CORE
 		public ForgeMasterServerPing(CrossPlatformUDP currentSocket) { }
 		public void Disconnect() { }
 #else
@@ -69,4 +68,3 @@ namespace BeardedManStudios.Network
 #endif
 	}
 }
-#endif

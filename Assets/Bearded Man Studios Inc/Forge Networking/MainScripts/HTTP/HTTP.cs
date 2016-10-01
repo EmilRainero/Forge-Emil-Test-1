@@ -18,7 +18,6 @@
 \------------------------------+-----------------------------*/
 
 
-#if !UNITY_WEBGL
 
 using BeardedManStudios.Threading;
 using System;
@@ -27,7 +26,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-#if NetFX_CORE
+#if NETFX_CORE
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -36,14 +35,14 @@ using System.Runtime.InteropServices.WindowsRuntime;
 namespace BeardedManStudios.Network
 {
 	// TODO:  Setup multithreaded http get and post request default classes
-	/// <summary>
-	/// Used to access content from the web
-	/// </summary>
-	/// <remarks>
-	/// HTTP allows you to make multithreaded requests to the web, getting back content from any website. Typically this can be used to access live information,
-	/// interact with databases or download content (typically images) directly into your game. HTTP objects typically involve specifying a URL in the 
-	/// constructor and then using the Get() method.
-	/// </remarks>
+    /// <summary>
+    /// Used to access content from the web
+    /// </summary>
+    /// <remarks>
+    /// HTTP allows you to make multithreaded requests to the web, getting back content from any website. Typically this can be used to access live information,
+    /// interact with databases or download content (typically images) directly into your game. HTTP objects typically involve specifying a URL in the 
+    /// constructor and then using the Get() method.
+    /// </remarks>
 	public class HTTP
 	{
 		/// <summary>
@@ -74,7 +73,7 @@ namespace BeardedManStudios.Network
 		{
 			URL = url;
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 			if (stringHeaders != null)
 			{
 				headers = new WebHeaderCollection();
@@ -85,23 +84,23 @@ namespace BeardedManStudios.Network
 #endif
 		}
 
-		/// <summary>
-		/// Get a response from the HTTP
-		/// </summary>
-		/// <param name="callback">The method to call when a response is received</param>
-		/// <param name="getString">the string to be used in the URL</param>
-		/// <remarks>
-		/// The main method used in the HTTP class, this allows you to get a response from HTTP. You can use a lambda expression, delegate
-		/// or method to execute the response. The response will likely be string which you may want to use string.Split() to separte and
-		/// various Parse methods such as int.Parse().
-		/// Be aware, all of the html tags will be be part of the response, if you want to access content from websites, you may want to learn
-		/// a little html to target specific bits of information.
-		/// Additionally parameters can be applied, the Get() parameters are used by websites to take input and display results based on those inputs.
-		/// You can use this to input data into a database, if you write your own .PHP scripts for your own website.
-		/// each string needs to be written in the following format "key=input" for example "name=mark".
-		/// See <A HREF="http://developers.forgepowered.com/Tutorials/MasterClassBeginner/HTTP-Library">this</A> for more...
-		/// </remarks>
-		public void Get(Action<object> callback, params string[] getString)
+        /// <summary>
+        /// Get a response from the HTTP
+        /// </summary>
+        /// <param name="callback">The method to call when a response is received</param>
+        /// <param name="getString">the string to be used in the URL</param>
+        /// <remarks>
+        /// The main method used in the HTTP class, this allows you to get a response from HTTP. You can use a lambda expression, delegate
+        /// or method to execute the response. The response will likely be string which you may want to use string.Split() to separte and
+        /// various Parse methods such as int.Parse().
+        /// Be aware, all of the html tags will be be part of the response, if you want to access content from websites, you may want to learn
+        /// a little html to target specific bits of information.
+        /// Additionally parameters can be applied, the Get() parameters are used by websites to take input and display results based on those inputs.
+        /// You can use this to input data into a database, if you write your own .PHP scripts for your own website.
+        /// each string needs to be written in the following format "key=input" for example "name=mark".
+        /// See <A HREF="http://developers.forgepowered.com/Tutorials/MasterClassBeginner/HTTP-Library">this</A> for more...
+        /// </remarks>
+        public void Get(Action<object> callback, params string[] getString)
 		{
 			if (getString.Length > 0)
 			{
@@ -120,13 +119,13 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		public void GetImage(Action<object> callback)
 		{
-#if NetFX_CORE
+#if NETFX_CORE
 			Task.Run(async () =>
 #else
 			Task.Run(() =>
 #endif
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				BitmapImage bitmapImage = new BitmapImage(new Uri(URL));
 				RandomAccessStreamReference rasr = RandomAccessStreamReference.CreateFromUri(bitmapImage.UriSource);
 				var streamWithContent = await rasr.OpenReadAsync();
@@ -196,7 +195,7 @@ namespace BeardedManStudios.Network
 		{
 			Task.Run(() =>
 			{
-#if NetFX_CORE
+#if NETFX_CORE
 				GetWebResponse(argument, callback);
 #else
 				callback(GetWebResponse(argument));
@@ -207,13 +206,13 @@ namespace BeardedManStudios.Network
 		/// <summary>
 		/// Gets an image response from HTTP request as a byte[]
 		/// </summary>
-#if NetFX_CORE
+#if NETFX_CORE
 		public void GetImageResponse(byte[] parameters)
 #else
 		public byte[] GetImageResponse(object arg)
 #endif
 		{
-#if !NetFX_CORE
+#if !NETFX_CORE
 			string url = (string)arg;
 			byte[] imageAsByteArray;
 			using (var webClient = new WebClient())
@@ -225,7 +224,7 @@ namespace BeardedManStudios.Network
 #endif
 		}
 
-#if NetFX_CORE
+#if NETFX_CORE
 		private async void GetWebResponse(byte[] parameters, Action<object> callback)
 #else
 		private object GetWebResponse(byte[] parameters)
@@ -237,7 +236,7 @@ namespace BeardedManStudios.Network
 			{
 				request.Credentials = CredentialCache.DefaultCredentials;
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 				request.Timeout = 10000;
 				ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
 
@@ -261,7 +260,7 @@ namespace BeardedManStudios.Network
 
 				if (parameters != null)
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					Stream inputStream = await request.GetRequestStreamAsync();
 					inputStream.Write(parameters, 0, parameters.Length);
 #else
@@ -275,7 +274,7 @@ namespace BeardedManStudios.Network
 				}
 				
 				string responseFromServer = string.Empty;
-#if NetFX_CORE
+#if NETFX_CORE
 				HttpWebResponse webResponse = (HttpWebResponse)request.GetResponseAsync().Result;
 #else
 
@@ -289,19 +288,19 @@ namespace BeardedManStudios.Network
 							using (StreamReader reader = new StreamReader(dataStream))
 							{
 								responseFromServer = reader.ReadToEnd();
-#if !NetFX_CORE
+#if !NETFX_CORE
 								reader.Close();
 #endif
 								reader.Dispose();
 							}
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 							dataStream.Close();
 #endif
 							dataStream.Dispose();
 						}
 
-#if NetFX_CORE
+#if NETFX_CORE
 						webResponse.Dispose();
 #else
 						webResponse.Close();
@@ -310,18 +309,18 @@ namespace BeardedManStudios.Network
 				catch (Exception e)
 				{
 					request.Abort();
-#if NetFX_CORE
+#if NETFX_CORE
 					callback(e)
 #else
-					//TODO: If you need to see the error message, please debug it here.
-					e = null;
+                    //TODO: If you need to see the error message, please debug it here.
+                    e = null;
 					return e; // JM: don't output the error to screen
 #endif
 				}
 #endif
 				
 				request.Abort();
-#if NetFX_CORE
+#if NETFX_CORE
 				callback(responseFromServer);
 #else
 				return responseFromServer;
@@ -330,7 +329,7 @@ namespace BeardedManStudios.Network
 			catch (Exception e)
 			{
 				request.Abort();
-#if NetFX_CORE
+#if NETFX_CORE
 				callback(e);
 #else
 				return e;
@@ -357,4 +356,3 @@ namespace BeardedManStudios.Network
 		}
 	}
 }
-#endif

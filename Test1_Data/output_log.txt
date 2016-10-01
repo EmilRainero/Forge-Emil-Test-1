@@ -18,7 +18,7 @@ Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Ma
 Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
 Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.220 seconds
+- Completed reload, in  0.237 seconds
 Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.dll (this message is harmless)
 OnLevelWasLoaded was found on NetworkingManager
@@ -31,10 +31,47 @@ Add a delegate to SceneManager.sceneLoaded instead to get notifications after sc
 <RI> Input initialized.
 desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
 <RI> Initialized touch support.
-UnloadTime: 0.980148 ms
+UnloadTime: 0.796838 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 6458 -> priority: 1 
-  Thread -> id: 2118 -> priority: 1 
+  Thread -> id: 31e4 -> priority: 1 
+  Thread -> id: 3668 -> priority: 1 
+Initialize engine version: 5.4.1f1 (649f48bbbf0f)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 530 (ID=0x191b)
+    Vendor:   Intel
+    VRAM:     2111 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\Assembly-UnityScript.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\Assembly-UnityScript.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.048 seconds
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.dll (this message is harmless)
+OnLevelWasLoaded was found on NetworkingManager
+This message has been deprecated and will be removed in a later version of Unity.
+Add a delegate to SceneManager.sceneLoaded instead to get notifications after scene loading has completed
+ 
+(Filename:  Line: 375)
+
+<RI> Initializing input.
+<RI> Input initialized.
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initialized touch support.
+UnloadTime: 0.669233 ms
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 30a8 -> priority: 1 
+  Thread -> id: d5c -> priority: 1 
 Adding Start Client
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
@@ -47,7 +84,27 @@ Adding Connected
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-SimpleNetworkedMonoBehavior RPC 0
+Adding Start Client
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Adding try to connect to 127.0.0.1:15937
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Adding Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+OnDisconnected() timeoutDisconnectedInvoker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Adding Disconnected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+OnDisconnected() timeoutDisconnectedInvoker
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 

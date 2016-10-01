@@ -24,17 +24,16 @@
 #endif
 
 using System;
-using System.Collections.Generic;
+using System.Net;
 using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 #if UNITY_5_3
 #endif
 
-#if !NetFX_CORE
-#if !UNITY_WEBGL
-using System.Net;
+#if !NETFX_CORE
 using System.Threading;
-#endif
 #else
 using Windows.Networking.Sockets;
 #endif
@@ -80,12 +79,6 @@ namespace BeardedManStudios.Network
 		public virtual List<NetworkingPlayer> Players { get; protected set; }
 
 		/// <summary>
-		/// The cached write stream
-		/// </summary>
-		protected NetworkingStream writeStream = new NetworkingStream();
-		protected object writeMutex = new object();
-
-		/// <summary>
 		/// Assigns a list of players for a client
 		/// </summary>
 		public void AssignPlayers(List<NetworkingPlayer> playerList)
@@ -109,12 +102,10 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		public delegate void PingReceived(HostInfo host, int time);
 
-#if !UNITY_WEBGL
 		// JM: Added for threaded lan discovery
 		public delegate void LANEndPointFound(IPEndPoint endpoint);
-#endif
 		
-	  /// <summary>
+      /// <summary>
 		/// Network Exception response delegate
 		/// </summary>
 		/// <param name="exception">Exception thrown</param>
@@ -202,13 +193,11 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		public static ulong BandwidthOut { get; protected set; }
 
-#if !UNITY_WEBGL
-		protected IPEndPoint hostEndpoint = null;
-#endif
+        protected IPEndPoint hostEndpoint = null;
 
-#if NetFX_CORE
+#if NETFX_CORE
 		protected object groupEP = null;
-#elif !UNITY_WEBGL
+#else
 		protected IPEndPoint groupEP = null;
 #endif
 
@@ -225,7 +214,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// This is a referenct to the current players identity on the Network (server and client)
+		/// This is a referenct to the current players identity on the network (server and client)
 		/// </summary>
 		public NetworkingPlayer Me { get; protected set; }
 
@@ -384,8 +373,6 @@ namespace BeardedManStudios.Network
 
 		protected void OnPlayerConnected(NetworkingPlayer player)
 		{
-			player.Connected = true;
-
 			if (playerConnectedInvoker != null)
 			{
 #if BARE_METAL
@@ -408,7 +395,8 @@ namespace BeardedManStudios.Network
 		{
 			add
 			{
-				playerDisconnectedInvoker += value;
+                UnityEngine.Debug.Log("set playerDisconnected");
+                playerDisconnectedInvoker += value;
 			}
 			remove
 			{
@@ -433,15 +421,15 @@ namespace BeardedManStudios.Network
 #endregion
 
 #region Event Child Callers
-#if NetFX_CORE
+#if NETFX_CORE
 		protected async void OnConnected()
 #else
 		protected void OnConnected()
 #endif
 		{
-#if NetFX_CORE
+#if NETFX_CORE
 			await System.Threading.Tasks.Task.Delay(System.TimeSpan.FromMilliseconds(50));
-#elif !UNITY_WEBGL
+#else
 			Thread.Sleep(50);
 #endif
 
@@ -449,35 +437,35 @@ namespace BeardedManStudios.Network
 			Disconnected = false;
 
 #if BARE_METAL
-			if (connectedInvoker != null)
-				connectedInvoker();
+            if (connectedInvoker != null)
+                connectedInvoker();
 #else
-			if (connectedInvoker != null)
-			{
-				try
-				{
-					if (!UsingUnityEngine)
-						connectedInvoker();
-					else
-					{
-						// If there is not a MAIN_THREAD_MANAGER then throw the error and disconnect
-						Unity.MainThreadManager.Run(delegate ()
-						{
-							connectedInvoker();
-						});
-					}
-				}
+            if (connectedInvoker != null)
+            {
+                try
+                {
+                    if (!UsingUnityEngine)
+                        connectedInvoker();
+                    else
+                    {
+                        // If there is not a MAIN_THREAD_MANAGER then throw the error and disconnect
+                        Unity.MainThreadManager.Run(delegate ()
+                        {
+                            connectedInvoker();
+                        });
+                    }
+                }
 #if UNITY_EDITOR
-				catch (Exception e)
-				{
-					UnityEngine.Debug.LogException(e);
+                catch (Exception e)
+                {
+                    UnityEngine.Debug.LogException(e);
 #else
-				catch
-				{
+                catch
+                {
 #endif
-					Disconnect();
-				}
-			}
+                    Disconnect();
+                }
+            }
 #endif
 		}
 
@@ -487,8 +475,11 @@ namespace BeardedManStudios.Network
 			Disconnected = true;
 
 			if (disconnectedInvoker != null)
-				disconnectedInvoker();
-		}
+            {
+                UnityEngine.Debug.Log("OnDisconnected() timeoutDisconnectedInvoker");
+                disconnectedInvoker();
+            }
+        }
 
 		protected void OnDisconnected(string reason)
 		{
@@ -551,7 +542,7 @@ namespace BeardedManStudios.Network
 		}
 		public int ReadTimeout = 0;
 
-#if NetFX_CORE
+#if NETFX_CORE
 		protected async void TimeoutCheck()
 #else
 		protected void TimeoutCheck()
@@ -561,7 +552,7 @@ namespace BeardedManStudios.Network
 			{
 				if (ReadTimeout == 0)
 				{
-#if NetFX_CORE
+#if NETFX_CORE
 					await System.Threading.Tasks.Task.Delay(System.TimeSpan.FromMilliseconds(3000));
 #else
 					System.Threading.Thread.Sleep(3000);
@@ -569,7 +560,7 @@ namespace BeardedManStudios.Network
 					continue;
 				}
 
-#if NetFX_CORE
+#if NETFX_CORE
 				await System.Threading.Tasks.Task.Delay(System.TimeSpan.FromMilliseconds(ReadTimeout - LastRead + 1));
 #else
 				System.Threading.Thread.Sleep(ReadTimeout - LastRead + 1);
@@ -603,8 +594,11 @@ namespace BeardedManStudios.Network
 			Disconnected = true;
 
 			if (timeoutDisconnectedInvoker != null)
-				timeoutDisconnectedInvoker();
-		}
+            {
+                UnityEngine.Debug.Log("OnTimeoutDisconnected() timeoutDisconnectedInvoker");
+                timeoutDisconnectedInvoker();
+            }
+        }
 #endregion
 
 		public void ThrowException(NetworkException exception) { OnError(exception); }
@@ -631,7 +625,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Adds a callback function for when a specified command is recieved on the Network
+		/// Adds a callback function for when a specified command is recieved on the network
 		/// </summary>
 		/// <param name="command">The name of the command to listen for</param>
 		/// <param name="action">The callback action to add to the stack</param>
@@ -676,12 +670,12 @@ namespace BeardedManStudios.Network
 		{
 			Unity.MainThreadManager.Run(() =>
 			{
-				foreach (SimpleNetworkedMonoBehavior behavior in SimpleNetworkedMonoBehavior.NetworkedBehaviors.Values)
+				foreach (SimpleNetworkedMonoBehavior behavior in SimpleNetworkedMonoBehavior.networkedBehaviors.Values)
 				{
 					if (behavior == null)
 						continue;
 
-#if NetFX_CORE
+#if NETFX_CORE
 					if (behavior is NetworkedMonoBehavior)
 #else
 					if (behavior.GetType().IsSubclassOf(typeof(NetworkedMonoBehavior)))
@@ -710,12 +704,16 @@ namespace BeardedManStudios.Network
 			if (playerDisconnectedInvoker != null)
 			{
 #if BARE_METAL
+                UnityEngine.Debug.Log("OnPlayerDisconnected() baremetal timeoutDisconnectedInvoker");
 				playerDisconnectedInvoker(player);
 #else
-				Unity.MainThreadManager.Run(delegate ()
+                Unity.MainThreadManager.Run(delegate ()
 				{
-					playerDisconnectedInvoker(player);
-				});
+                    UnityEngine.Debug.Log("OnPlayerDisconnected() playerDisconnectedInvoker");
+
+                    playerDisconnectedInvoker(player);
+                    UnityEngine.Debug.Log("OnPlayerDisconnected() done");
+                });
 #endif
 			}
 
@@ -729,7 +727,6 @@ namespace BeardedManStudios.Network
 		{
 			get
 			{
-#if !UNITY_WEBGL
 				if (this is DefaultServerTCP)
 					return true;
 
@@ -738,7 +735,6 @@ namespace BeardedManStudios.Network
 
 				if (this is CrossPlatformUDP)
 					return ((CrossPlatformUDP)this).IsServer;
-#endif
 
 				return false;
 			}
@@ -798,7 +794,7 @@ namespace BeardedManStudios.Network
 
 			UsingUnityEngine = usingUnityEngine;
 		}
-		~NetWorker() { }
+		~NetWorker() { Disconnect(); }
 #endregion
 
 		abstract public void Connect(string hostAddress, ushort port);
@@ -931,14 +927,11 @@ namespace BeardedManStudios.Network
 				}
 			}
 
-			lock (writeMutex)
-			{
-				writeStream.SetProtocolType(stream.ProtocolType);
-				writeStream.Prepare(this, stream.identifierType, stream.NetworkedBehaviorId, stream.Bytes, stream.Receivers, stream.BufferedRPC, stream.Customidentifier, stream.RealSenderId, noBehavior: ReferenceEquals(stream.NetworkedBehavior, null));
+			writeStream.SetProtocolType(stream.ProtocolType);
+			writeStream.Prepare(this, stream.identifierType, stream.NetworkedBehaviorId, stream.Bytes, stream.Receivers, stream.BufferedRPC, stream.Customidentifier, stream.RealSenderId, noBehavior: ReferenceEquals(stream.NetworkedBehavior, null));
 
-				// Write what was read to all the clients
-				Write(writeStream);
-			}
+			// Write what was read to all the clients
+			Write(writeStream);
 		}
 
 		protected void ServerBufferRPC(uint updateidentifier, NetworkingStream stream)
@@ -968,15 +961,13 @@ namespace BeardedManStudios.Network
 			}
 		}
 
+		private NetworkingStream writeStream = new NetworkingStream();
 		protected void RelayStream(uint updateidentifier, NetworkingStream stream)
 		{
-			lock(writeMutex)
-			{
-				writeStream.SetProtocolType(stream.ProtocolType);
-				writeStream.Prepare(this, stream.identifierType, stream.NetworkedBehaviorId, stream.Bytes, stream.Receivers, stream.BufferedRPC, stream.Customidentifier, stream.RealSenderId, noBehavior: ReferenceEquals(stream.NetworkedBehavior, null));
+			writeStream.SetProtocolType(stream.ProtocolType);
+			writeStream.Prepare(this, stream.identifierType, stream.NetworkedBehaviorId, stream.Bytes, stream.Receivers, stream.BufferedRPC, stream.Customidentifier, stream.RealSenderId, noBehavior: ReferenceEquals(stream.NetworkedBehavior, null));
 
-				Write(updateidentifier, writeStream);
-			}
+			Write(updateidentifier, writeStream);
 		}
 
 		protected void UpdateNewPlayer(NetworkingPlayer player)
@@ -1051,7 +1042,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Removes a buffered ID from the Networker
+		/// Removes a buffered ID from the networker
 		/// </summary>
 		/// <param name="id"></param>
 		public bool ClearBufferedInstantiateFromID(ulong id)
@@ -1065,11 +1056,10 @@ namespace BeardedManStudios.Network
 				BMSByte streamBytes = null;
 				int unique = -1;
 				string methodName = string.Empty;
-				ulong NetworkID = 0;
+				ulong networkID = 0;
 
 				lock (rpcBuffersMutex)
 				{
-#if !UNITY_WEBGL
 					if (this is CrossPlatformUDP)
 					{
 						if (udpRpcBuffer.Count > 0)
@@ -1099,11 +1089,11 @@ namespace BeardedManStudios.Network
 										if (methodName == NetworkingStreamRPC.INSTANTIATE_METHOD_NAME)
 										{
 											for (int i = 0; i < uniqueID.Length; ++i)
-												uniqueID[i] = streamBytes.byteArr[NetworkingStreamRPC.NetWORKING_UNIQUE_ID + i];
+												uniqueID[i] = streamBytes.byteArr[NetworkingStreamRPC.NETWORKING_UNIQUE_ID + i];
 
-											NetworkID = BitConverter.ToUInt64(uniqueID, 0);
+											networkID = BitConverter.ToUInt64(uniqueID, 0);
 
-											if (NetworkID == id)
+											if (networkID == id)
 											{
 												removedSuccessfull = true;
 												key = kv.Key;
@@ -1125,7 +1115,7 @@ namespace BeardedManStudios.Network
 							if (removedSuccessfull)
 							{
 								//Successfully removed the instantiate from the buffer
-#if NetWORKING_DEBUG_BUFFER
+#if NETWORKING_DEBUG_BUFFER
 								string debugText = "UDP BUFFER\n=================\nBefore:\n";
 								foreach (KeyValuePair<ulong, List<KeyValuePair<uint, NetworkingStream>>> kv in udpRpcBuffer)
 								{
@@ -1143,7 +1133,7 @@ namespace BeardedManStudios.Network
 										udpRpcBuffer[key].RemoveAt(i--);
 									}
 								}
-#if NetWORKING_DEBUG_BUFFER
+#if NETWORKING_DEBUG_BUFFER
 								debugText += "=================\nAfter:\n";
 								foreach (KeyValuePair<ulong, List<KeyValuePair<uint, NetworkingStream>>> kv in udpRpcBuffer)
 								{
@@ -1156,7 +1146,6 @@ namespace BeardedManStudios.Network
 					}
 					else
 					{
-#endif
 						if (rpcBuffer.Count > 0)
 						{
 							foreach (KeyValuePair<ulong, List<NetworkingStream>> kv in rpcBuffer)
@@ -1182,11 +1171,11 @@ namespace BeardedManStudios.Network
 										if (methodName == NetworkingStreamRPC.INSTANTIATE_METHOD_NAME)
 										{
 											for (int i = 0; i < uniqueID.Length; ++i)
-												uniqueID[i] = streamBytes.byteArr[NetworkingStreamRPC.NetWORKING_UNIQUE_ID + i];
+												uniqueID[i] = streamBytes.byteArr[NetworkingStreamRPC.NETWORKING_UNIQUE_ID + i];
 
-											NetworkID = BitConverter.ToUInt64(uniqueID, 0);
+											networkID = BitConverter.ToUInt64(uniqueID, 0);
 
-											if (NetworkID == id)
+											if (networkID == id)
 											{
 												removedSuccessfull = true;
 												key = kv.Key;
@@ -1208,7 +1197,7 @@ namespace BeardedManStudios.Network
 							if (removedSuccessfull)
 							{
 								//Successfully removed the instantiate from the buffer
-#if NetWORKING_DEBUG_BUFFER
+#if NETWORKING_DEBUG_BUFFER
 							string debugText = "RPC BUFFER\n=================\nBefore:\n";
 							foreach (KeyValuePair<ulong, List<NetworkingStream>> kv in rpcBuffer)
 							{
@@ -1222,7 +1211,7 @@ namespace BeardedManStudios.Network
 									if (rpcBuffer[key][i].NetworkedBehavior.NetworkedId == id)
 										rpcBuffer[key].RemoveAt(i--);
 								}
-#if NetWORKING_DEBUG_BUFFER
+#if NETWORKING_DEBUG_BUFFER
 							debugText += "=================\nAfter:\n";
 							foreach (KeyValuePair<ulong, List<NetworkingStream>> kv in rpcBuffer)
 							{
@@ -1232,9 +1221,7 @@ namespace BeardedManStudios.Network
 #endif
 							}
 						}
-#if !UNITY_WEBGL
 					}
-#endif
 				}
 			}
 
@@ -1258,17 +1245,13 @@ namespace BeardedManStudios.Network
 			}
 		} PingEvent pingEventInvoker;
 
-
 		public void Ping(object endpoint = null, object overrideHost = null)
 		{
-#if UNITY_WEBGL
-			var overridedHost = overrideHost;
-#else
 			var overridedHost = overrideHost as IPEndPoint;
-#endif
+
 			if (IsServer && endpoint == null)
 			{
-#if !NetFX_CORE
+#if !NETFX_CORE
 				if (overrideHost == null)
 #endif
 					return;
@@ -1279,19 +1262,15 @@ namespace BeardedManStudios.Network
 			{
 			   if (overridedHost != null)
 			   {
-				  Send(ping, ping.Length, overridedHost);
+			      Send(ping, ping.Length, overridedHost);
 			   }
 			   else
 			   {
-#if UNITY_WEBGL
-					Send(ping, ping.Length);
-#else
-					if (IsServer)
-					 Send(ping, ping.Length, endpoint);
-				  else
-					 Send(ping, ping.Length, hostEndpoint);
-#endif
-				}
+			      if (IsServer)
+			         Send(ping, ping.Length, endpoint);
+			      else
+			         Send(ping, ping.Length, hostEndpoint);
+			   }
 			}
 			catch
 			{
@@ -1315,7 +1294,6 @@ namespace BeardedManStudios.Network
 			{
 				if (bytes.byteArr[0] == 3)
 				{
-#if !UNITY_WEBGL
 					if (IsServer)
 					{
 						// TODO:  Implement ping for WinRT
@@ -1324,28 +1302,25 @@ namespace BeardedManStudios.Network
 						
 						if (sender == null)
 						{
-							var splitEndpoint = endpoint.Split('+');
+						    var splitEndpoint = endpoint.Split('+');
 
-#if NetFX_CORE
-							Ping(new IPEndPoint(splitEndpoint[0], int.Parse(splitEndpoint[1]) ));
+#if NETFX_CORE
+                            Ping(new IPEndPoint(splitEndpoint[0], int.Parse(splitEndpoint[1]) ));
 #else
 							Ping(new IPEndPoint(IPAddress.Parse(splitEndpoint[0]), int.Parse(splitEndpoint[1])));
 #endif
-						}
+                  }
 						else
 							Ping(sender.SocketEndpoint);
 					}
 					else
-#endif
 						ExecutedPing();
 
 					return true;
 				}
 
-#if !UNITY_WEBGL
 				if (IsServer)
 					Send(new byte[1] { 1 }, 1, groupEP);
-#endif
 
 				return true;
 			}
@@ -1384,15 +1359,14 @@ namespace BeardedManStudios.Network
 						//else
 						//	Cache.NetworkRead(rawBuffer);
 						break;
-					case 4: // Nat registration request
-#if !UNITY_WEBGL
+					case 4:	// Nat registration request
 						if (IsServer)
 						{
 							if (!ReferenceEquals(ForgeMasterServer.Instance, null))
 							{
 								if (rawBuffer.byteArr[1] == 1)
 								{
-#if !NetFX_CORE
+#if !NETFX_CORE
 									string[] parts = endpoint.Split('+');
 									ushort internalPort = BitConverter.ToUInt16(rawBuffer.byteArr, 2);
 									ForgeMasterServer.Instance.RegisterNatRequest(parts[0], ushort.Parse(parts[1]), internalPort);
@@ -1411,7 +1385,7 @@ namespace BeardedManStudios.Network
 							else
 							{
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 								if (rawBuffer.byteArr[1] == 3)
 								{
 									ushort targetPort = BitConverter.ToUInt16(rawBuffer.byteArr, 2);
@@ -1426,7 +1400,6 @@ namespace BeardedManStudios.Network
 
 							return true;
 						}
-#endif
 						break;
 					case 5:
 						if (cacheUpdate != null)

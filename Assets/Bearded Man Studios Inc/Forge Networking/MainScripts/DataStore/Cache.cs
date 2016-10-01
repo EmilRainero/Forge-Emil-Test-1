@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if NetFX_CORE
+#if NETFX_CORE
 using System.Threading.Tasks;
 
 #else
@@ -108,7 +108,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Called when the Network as interpreted that a cache message has been sent from the client
+		/// Called when the network as interpreted that a cache message has been sent from the client
 		/// </summary>
 		/// <param name="player">The player that requested data from the cache</param>
 		/// <param name="stream">The data that was received</param>
@@ -131,7 +131,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Called when the Network as interpreted that a cache message has been sent from the server
+		/// Called when the network as interpreted that a cache message has been sent from the server
 		/// </summary>
 		/// <param name="player">The server</param>
 		/// <param name="stream">The data that was received</param>

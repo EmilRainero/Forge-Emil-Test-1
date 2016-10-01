@@ -19,7 +19,7 @@
 
 
 
-#if NetFX_CORE
+#if NETFX_CORE
 using Windows.Networking;
 using Windows.Networking.Sockets;
 
@@ -34,7 +34,7 @@ namespace BeardedManStudios.Network
 {
 	public class WinMobileClient : WinMobileWorker
 	{
-#if !NetFX_CORE
+#if !NETFX_CORE
 		public WinMobileClient() : base() { }
 		public override void Connect(string hostAddress, ushort port) { }
 		public override void Disconnect() { }

@@ -415,25 +415,25 @@ public class ServerAuthorityButton : ForgeEditorDisplayButton
 public class NetworkThrottleButton : ForgeEditorDisplayButton
 {
 	#region Networking Throttle
-	private float _NetworkingThrottle = 0.5f;
-	private float _NetworkingThrottlePrev = 0.5f;
+	private float _networkingThrottle = 0.5f;
+	private float _networkingThrottlePrev = 0.5f;
 
 	public float NetworkThrottle
 	{
-		get { return _NetworkingThrottle; }
+		get { return _networkingThrottle; }
 		set
 		{
-			if (value != _NetworkingThrottlePrev)
+			if (value != _networkingThrottlePrev)
 			{
-				_NetworkingThrottle = value;
-				_NetworkingThrottlePrev = value;
+				_networkingThrottle = value;
+				_networkingThrottlePrev = value;
 
-				if (_NetworkingThrottleChanged != null)
-					_NetworkingThrottleChanged(_NetworkingThrottle);
+				if (_networkingThrottleChanged != null)
+					_networkingThrottleChanged(_networkingThrottle);
 			}
 		}
 	}
-	private System.Action<float> _NetworkingThrottleChanged = null;
+	private System.Action<float> _networkingThrottleChanged = null;
 	#endregion
 
 	private string _toolTiptext;
@@ -442,12 +442,12 @@ public class NetworkThrottleButton : ForgeEditorDisplayButton
 	{
 	}
 
-	public void Initialize(float initialThrottle, string tooltipText, System.Action<float> NetworkingThrottleChanged)
+	public void Initialize(float initialThrottle, string tooltipText, System.Action<float> networkingThrottleChanged)
 	{
 		_toolTiptext = tooltipText;
-		_NetworkingThrottle = initialThrottle;
-		_NetworkingThrottlePrev = initialThrottle;
-		_NetworkingThrottleChanged = NetworkingThrottleChanged;
+		_networkingThrottle = initialThrottle;
+		_networkingThrottlePrev = initialThrottle;
+		_networkingThrottleChanged = networkingThrottleChanged;
 	}
 
 	public override void Update(Event windowEvent, GUIStyle fontStyle, Editor window, int width, int height)

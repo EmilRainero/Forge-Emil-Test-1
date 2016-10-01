@@ -62,7 +62,7 @@ namespace BeardedManStudios.Network.Unity
 
 		private void Go()
 		{
-			Networking.NetworkReset += RemoveSocketReference;
+			Networking.networkReset += RemoveSocketReference;
 
 			if (proximityBasedUpdates)
 				socket.MakeProximityBased(proximityDistance);

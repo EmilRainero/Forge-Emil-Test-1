@@ -19,7 +19,7 @@
 
 
 
-#if NetFX_CORE
+#if NETFX_CORE
 using System.Threading.Tasks;
 using System.Runtime.InteropServices.WindowsRuntime;
 #endif
@@ -32,34 +32,34 @@ using UnityEngine;
 
 namespace BeardedManStudios.Network
 {
-	/// <summary>
-	/// This is a class that can serialize class variables across the Network
-	/// </summary>
-	/// <remarks>
-	/// NetworkedMonoBehavior or NMB is the second of the two main classes used heavily by the forge Networking features. NetworkedMonoBehavior allows for
-	/// syncronization of position, rotation and scale of classes that inherit from it, interpolation of those values, RPCs, Proximity Based Updates, Authoritative Control, 
-	/// advanced management of message send rates (throttling) and the use of forge's NetworkControls.
-	/// If you only need to use RPCs your class should inherit from SimpleNetworkedMonoBehavior instead, the additional features of the NetworkedMonoBehavior 
-	/// are slightly more resource intensive.
-	/// </remarks>
-	[AddComponentMenu("Forge Networking/Networked MonoBehavior")]
+    /// <summary>
+    /// This is a class that can serialize class variables across the network
+    /// </summary>
+    /// <remarks>
+    /// NetworkedMonoBehavior or NMB is the second of the two main classes used heavily by the forge networking features. NetworkedMonoBehavior allows for
+    /// syncronization of position, rotation and scale of classes that inherit from it, interpolation of those values, RPCs, Proximity Based Updates, Authoritative Control, 
+    /// advanced management of message send rates (throttling) and the use of forge's NetworkControls.
+    /// If you only need to use RPCs your class should inherit from SimpleNetworkedMonoBehavior instead, the additional features of the NetworkedMonoBehavior 
+    /// are slightly more resource intensive.
+    /// </remarks>
+    [AddComponentMenu("Forge Networking/Networked MonoBehavior")]
 	public class NetworkedMonoBehavior : SimpleNetworkedMonoBehavior
 	{
 #if BARE_METAL
 		public NetworkedMonoBehavior(string name, string type) : base(name, type) { }
 #endif
-		///@{
-		/// <summary>
-		/// A delegate fired on the server by using InputCheck()
-		/// </summary>
-		/// <param name="keyCode">The input key that was pressed</param>
-		/// <param name="frame">The frame that this was requested on</param>
-		protected delegate void InputRequest(KeyCode keyCode, int frame);
-		/// <summary>
-		/// A delegate for execuing input events from the client on the server
-		/// </summary>
-		/// <param name="keyCode">The input key that was pressed</param>
-		protected delegate void FramelessInputRequest(KeyCode keyCode);
+        ///@{
+        /// <summary>
+        /// A delegate fired on the server by using InputCheck()
+        /// </summary>
+        /// <param name="keyCode">The input key that was pressed</param>
+        /// <param name="frame">The frame that this was requested on</param>
+        protected delegate void InputRequest(KeyCode keyCode, int frame);
+        /// <summary>
+        /// A delegate for execuing input events from the client on the server
+        /// </summary>
+        /// <param name="keyCode">The input key that was pressed</param>
+        protected delegate void FramelessInputRequest(KeyCode keyCode);
 
 		/// <summary>
 		/// A delegate for execuing mouse input events from the client on the server
@@ -73,29 +73,29 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		/// <param name="buttonIndex">The index of the button that was pressed</param>
 		protected delegate void FramelessMouseInputRequest(int buttonIndex);
-		///@}
+        ///@}
 
 
-		///<summary>
-		///This type of delegate describes a delegate type, used in the NetworkedMonoBehavior.enteredProximity
-		///event and the NetworkedMonoBehavior.exitedProximity it simply describes a signature with two players.
-		///The player who's perspective is being handled and the player who has entered or exited proximity with
-		///the other player.
-		///</summary>
-		public delegate void ProximityEvent(NetworkedMonoBehavior myPlayer, NetworkedMonoBehavior otherPlayer);
+        ///<summary>
+        ///This type of delegate describes a delegate type, used in the NetworkedMonoBehavior.enteredProximity
+        ///event and the NetworkedMonoBehavior.exitedProximity it simply describes a signature with two players.
+        ///The player who's perspective is being handled and the player who has entered or exited proximity with
+        ///the other player.
+        ///</summary>
+        public delegate void ProximityEvent(NetworkedMonoBehavior myPlayer, NetworkedMonoBehavior otherPlayer);
 
-		/// <summary>
-		/// An event that is fired for when one player has entered "my players" proximity
-		/// </summary>
-		/// <remarks>
-		/// This method can be used to display a player only once they are within a given proximity distance of the player.
-		/// This event can be fired like so:
-		/// <code>
-		/// // This is an event that will fire whenever the other object enters my proximity
-		/// enteredProximity += (mine, other) => { Debug.Log(other.name + " entered my (" + mine.name + ") proximity"); };
-		/// </code>
-		/// </remarks>
-		public event ProximityEvent enteredProximity
+        /// <summary>
+        /// An event that is fired for when one player has entered "my players" proximity
+        /// </summary>
+        /// <remarks>
+        /// This method can be used to display a player only once they are within a given proximity distance of the player.
+        /// This event can be fired like so:
+        /// <code>
+        /// // This is an event that will fire whenever the other object enters my proximity
+        /// enteredProximity += (mine, other) => { Debug.Log(other.name + " entered my (" + mine.name + ") proximity"); };
+        /// </code>
+        /// </remarks>
+        public event ProximityEvent enteredProximity
 		{
 			add
 			{
@@ -111,10 +111,10 @@ namespace BeardedManStudios.Network
 		/// <summary>
 		/// An event that is fired for when one player has left "my players" proximity
 		/// </summary>
-		/// <remarks>
-		/// See NetworkedMonoBehavior.enteredProximity, this method does the same, but handles an NMB going beyond the proximity of the NMB
-		/// owned by the local player.
-		/// </remarks>
+        /// <remarks>
+        /// See NetworkedMonoBehavior.enteredProximity, this method does the same, but handles an NMB going beyond the proximity of the NMB
+        /// owned by the local player.
+        /// </remarks>
 		public event ProximityEvent exitedProximity
 		{
 			add
@@ -135,28 +135,28 @@ namespace BeardedManStudios.Network
 		public List<ulong> proximityBehaviors = new List<ulong>();
 		
 		/// <summary>
-		/// Attribute for easily replicating properties and fields across the Network
+		/// Attribute for easily replicating properties and fields across the network
 		/// </summary>
-		/// <remarks>
-		/// NetSync is an attribute that can easily be assigned to any variable, the variable will then be syncronized across the Network for all clients.
-		/// An attribute can be assigned to a variable as follows:
-		/// <code>
-		/// [NetSync]
-		/// public int playerHealth;
-		/// </code>
-		/// Additionally you can specify a method to be called when the variable is updated (this allows you to design behavior similar to that of a property),
-		/// this is done so as follows:
-		/// <code>
-		/// [NetSync("methodA", NetworkCallers.Everyone)]
-		/// public int playerHealth;
-		/// 
-		/// public void methodA(){
-		/// 
-		/// }
-		/// </code>
-		/// The NetSync attribute has two parameters, the first is a string representing the method's name. The second is a Network.NetworkCallers value,
-		/// this defines which clients in the Network execute the method.
-		/// </remarks>
+        /// <remarks>
+        /// NetSync is an attribute that can easily be assigned to any variable, the variable will then be syncronized across the network for all clients.
+        /// An attribute can be assigned to a variable as follows:
+        /// <code>
+        /// [NetSync]
+        /// public int playerHealth;
+        /// </code>
+        /// Additionally you can specify a method to be called when the variable is updated (this allows you to design behavior similar to that of a property),
+        /// this is done so as follows:
+        /// <code>
+        /// [NetSync("methodA", NetworkCallers.Everyone)]
+        /// public int playerHealth;
+        /// 
+        /// public void methodA(){
+        /// 
+        /// }
+        /// </code>
+        /// The NetSync attribute has two parameters, the first is a string representing the method's name. The second is a Network.NetworkCallers value,
+        /// this defines which clients in the network execute the method.
+        /// </remarks>
 		protected class NetSync : Attribute
 		{
 			/// <summary>
@@ -181,11 +181,11 @@ namespace BeardedManStudios.Network
 			/// <summary>
 			/// This is uesd to determine if this value ignores interpolation
 			/// </summary>
-			/// <remarks>
-			/// This defines if a value will be interpolated as it is updated across the Network. Typically you'll want to set this with a constructor.
-			/// This can often be needed if a value needs to be interpolated smoothly as the increments across the Network tend to be a little too large
-			/// for things like movement.
-			/// </remarks>
+            /// <remarks>
+            /// This defines if a value will be interpolated as it is updated across the network. Typically you'll want to set this with a constructor.
+            /// This can often be needed if a value needs to be interpolated smoothly as the increments across the network tend to be a little too large
+            /// for things like movement.
+            /// </remarks>
 			public Interpolate interpolate;
 
 			public NetSync()
@@ -195,20 +195,20 @@ namespace BeardedManStudios.Network
 				interpolate = Interpolate.True;
 			}
 
-			/// <summary>
-			/// This constructor allows you to specify if the NetSync should be interpolated, see NetSync.interpolate
-			/// </summary>
-			/// <param name="ignoreInterpolation">Interpolation setting</param>
+            /// <summary>
+            /// This constructor allows you to specify if the NetSync should be interpolated, see NetSync.interpolate
+            /// </summary>
+            /// <param name="ignoreInterpolation">Interpolation setting</param>
 			public NetSync(Interpolate ignoreInterpolation)
 			{
 				interpolate = ignoreInterpolation;
 			}
 
-			/// <summary>
-			/// Allows you to specify a method that will be called when the NetSync is updated and who should call the method.
-			/// </summary>
-			/// <param name="method">Method name</param>
-			/// <param name="callers">Who in the Network should call the method when it is updated</param>
+            /// <summary>
+            /// Allows you to specify a method that will be called when the NetSync is updated and who should call the method.
+            /// </summary>
+            /// <param name="method">Method name</param>
+            /// <param name="callers">Who in the network should call the method when it is updated</param>
 			public NetSync(string method, NetworkCallers callers)
 			{
 				this.method = method;
@@ -216,13 +216,13 @@ namespace BeardedManStudios.Network
 				interpolate = Interpolate.True;
 			}
 
-			/// <summary>
-			/// Allows you to specify a method to call when the value is updated, who in the Network should call the method and the type of interpolation on the 
-			/// value of the NetSync.
-			/// </summary>
-			/// <param name="method">Method name</param>
-			/// <param name="callers">Who in the Network should call the method when it is updated</param>
-			/// <param name="ignoreInterpolation">Interpolation setting</param>
+            /// <summary>
+            /// Allows you to specify a method to call when the value is updated, who in the network should call the method and the type of interpolation on the 
+            /// value of the NetSync.
+            /// </summary>
+            /// <param name="method">Method name</param>
+            /// <param name="callers">Who in the network should call the method when it is updated</param>
+            /// <param name="ignoreInterpolation">Interpolation setting</param>
 			public NetSync(string method, NetworkCallers callers, Interpolate ignoreInterpolation)
 			{
 				this.method = method;
@@ -231,36 +231,36 @@ namespace BeardedManStudios.Network
 			}
 		}
 
-		/// <summary>
-		/// Attribute for manually replicating properties and fields across the Network
-		/// </summary>
-		/// <remarks>
-		/// Similar to NetSync, ManualNetSync allows you to decide when the variable syncs as opposed to the variable automatically
-		/// syncing. SerializeManualProperties() method is used to sync the variable manually. To use ManualNetSync,
-		/// apply it as an attribute to a variable.
-		/// <code>
-		/// [ManualNetSync]
-		/// public float energy;
-		/// 
-		/// void Start(){
-		///     SerializeManualProperties(true, NetworkReceivers.All);
-		/// }
-		/// </code>
-		/// </remarks>
-		protected sealed class ManualNetSync : NetSync { }
+        /// <summary>
+        /// Attribute for manually replicating properties and fields across the network
+        /// </summary>
+        /// <remarks>
+        /// Similar to NetSync, ManualNetSync allows you to decide when the variable syncs as opposed to the variable automatically
+        /// syncing. SerializeManualProperties() method is used to sync the variable manually. To use ManualNetSync,
+        /// apply it as an attribute to a variable.
+        /// <code>
+        /// [ManualNetSync]
+        /// public float energy;
+        /// 
+        /// void Start(){
+        ///     SerializeManualProperties(true, NetworkReceivers.All);
+        /// }
+        /// </code>
+        /// </remarks>
+        protected sealed class ManualNetSync : NetSync { }
 
-		/// <summary>
-		/// Attribute for easily replicating properties and fields across the Network only to the server
-		/// </summary>
-		/// <remarks>
-		/// Similar to NetSync, NetSyncToServer only syncronizes the variable on the owner client and the server. To use NetSyncToServer,
-		/// apply it as an attribute to a variable.
-		/// <code>
-		/// [NetSyncToServer]
-		/// public float energy;
-		/// </code>
-		/// </remarks>
-		protected sealed class NetSyncToServer : NetSync { }
+        /// <summary>
+        /// Attribute for easily replicating properties and fields across the network only to the server
+        /// </summary>
+        /// <remarks>
+        /// Similar to NetSync, NetSyncToServer only syncronizes the variable on the owner client and the server. To use NetSyncToServer,
+        /// apply it as an attribute to a variable.
+        /// <code>
+        /// [NetSyncToServer]
+        /// public float energy;
+        /// </code>
+        /// </remarks>
+        protected sealed class NetSyncToServer : NetSync { }
 
 		/// <summary>
 		/// An enum for easy visual serialization of properties
@@ -320,7 +320,7 @@ namespace BeardedManStudios.Network
 		public bool isReliable = false;
 
 		/// <summary>
-		/// If you want to Interpolate the values across the Network for smooth movement
+		/// If you want to Interpolate the values across the network for smooth movement
 		/// </summary>
 		[HideInInspector]
 		public bool interpolateFloatingValues = true;
@@ -347,7 +347,7 @@ namespace BeardedManStudios.Network
 		/// The delay it takes to send to the server
 		/// </summary>
 		[HideInInspector]
-		public float NetworkTimeDelay = 0.1f;
+		public float networkTimeDelay = 0.1f;
 
 		/// <summary>
 		/// The current time for the delay counter
@@ -355,12 +355,12 @@ namespace BeardedManStudios.Network
 		private float timeDelayCounter = 0;
 
 		/// <summary>
-		/// A list of all of the properties that are to be serialized across the Network
+		/// A list of all of the properties that are to be serialized across the network
 		/// </summary>
 		private List<NetRef<object>> Properties = new List<NetRef<object>>();
 
 		/// <summary>
-		/// A list of all of the properties that are to be manually serialized across the Network
+		/// A list of all of the properties that are to be manually serialized across the network
 		/// </summary>
 		private List<NetRef<object>> ManualProperties = new List<NetRef<object>>();
 
@@ -370,13 +370,13 @@ namespace BeardedManStudios.Network
 		[HideInInspector]
 		public bool isPlayer = false;
 
-		/// <summary>
-		/// When this is true, the client can only send inputs to the server via the Request() method
-		/// </summary>
-		/// <remarks>
-		/// See <A HREF="http://developers.forgepowered.com/Tutorials/MasterClassIntermediate/Working-With-Authoritative-Server-Option">this</A> for more...
-		/// </remarks>
-		[HideInInspector]
+        /// <summary>
+        /// When this is true, the client can only send inputs to the server via the Request() method
+        /// </summary>
+        /// <remarks>
+        /// See <A HREF="http://developers.forgepowered.com/Tutorials/MasterClassIntermediate/Working-With-Authoritative-Server-Option">this</A> for more...
+        /// </remarks>
+        [HideInInspector]
 		public bool serverIsAuthority = false;
 
 		/// <summary>
@@ -385,30 +385,30 @@ namespace BeardedManStudios.Network
 		[HideInInspector]
 		public bool clientSidePrediction = false;
 
-		/// <summary>
-		/// This is the maximum distance offset that the player can be from the server before it is syncronized
-		/// </summary>
-		/// <remarks>
-		/// Used when the server is using the authoritative option, this essentially is a distance that the server will allow the local client to be from
-		/// the server's version of the client. If the distance is very low, the client will likely snap back to the server's representation of the client
-		/// a lot. Setting the option to be higher will allow the client to have a local simulation of the client that feels very responsive while the server's
-		/// version of the client is slightly behind.
-		/// See <A HREF="http://developers.forgepowered.com/Tutorials/MasterClassIntermediate/Authoritative-Sync-Thresholds">this</A> for a demonstration.
-		/// </remarks>
-		public float authoritativeSyncDistance = 0.25f;
+        /// <summary>
+        /// This is the maximum distance offset that the player can be from the server before it is syncronized
+        /// </summary>
+        /// <remarks>
+        /// Used when the server is using the authoritative option, this essentially is a distance that the server will allow the local client to be from
+        /// the server's version of the client. If the distance is very low, the client will likely snap back to the server's representation of the client
+        /// a lot. Setting the option to be higher will allow the client to have a local simulation of the client that feels very responsive while the server's
+        /// version of the client is slightly behind.
+        /// See <A HREF="http://developers.forgepowered.com/Tutorials/MasterClassIntermediate/Authoritative-Sync-Thresholds">this</A> for a demonstration.
+        /// </remarks>
+        public float authoritativeSyncDistance = 0.25f;
 
 		/// <summary>
 		/// This is the maximum distance offset that the player can be from the server before it is syncronized
 		/// </summary>
 		public float authoritativeTeleportSyncDistance = 3.0f;
 
-		/// <summary>
-		/// This is the maximum rotation in degrees that the player can be from the server before it is syncronized
-		/// </summary>
-		/// <remarks>
-		/// Works exactly the same as NetworkedMonoBehavior.authoritativeSyncDistance, but for the rotation of the client.
-		/// </remarks>
-		public float authoritativeSyncRotation = 5.0f;
+        /// <summary>
+        /// This is the maximum rotation in degrees that the player can be from the server before it is syncronized
+        /// </summary>
+        /// <remarks>
+        /// Works exactly the same as NetworkedMonoBehavior.authoritativeSyncDistance, but for the rotation of the client.
+        /// </remarks>
+        public float authoritativeSyncRotation = 5.0f;
 
 		#region Authoritative Frame History
 
@@ -877,176 +877,176 @@ namespace BeardedManStudios.Network
 		/// </summary>
 		private Vector3 previousAuthoritativeScale = Vector3.zero;
 
-		/** @name Authorative Input events
-		* The following events allow you to drive input on an authorative server.
-		*/
-		///@{
-		/// <summary>
-		/// An event that is fired on the server when an input down was 
-		/// requested from a client.
-		/// </summary>
-		/// <remarks>
-		/// This event is fired on the server when a client is using InputCheck(), 
-		/// the keycode corresponds directly to the key pressed by the 
-		/// client. A client needs to use InputCheck() in a method 
-		/// such as OwnerUpdate(), in a NMB object:
-		/// <code>
-		/// protected override void OwnerUpdate(){
-		///     InputCheck(KeyCode.RightArrow);
-		///     InputCheck(KeyCode.LeftArrow);
-		/// }
-		/// </code>
-		/// inputDownRequest() is then fired on the server, it can be used 
-		/// to drive input to a character or system on the server side. 
-		/// <code>
-		/// //The event has to be subscribed on the server side
-		/// protected override void NetworkStart(){
-		///     inputDownRequest += InputDown;
-		/// }
-		/// 
-		/// //The event has to be unsubscribed if the NMB object is destroyed
-		/// protected override void OnDestroy(){
-		///     inputDownRequest -= InputDown;
-		/// }
-		/// 
-		/// //the event can be subscribed to a method and will pass the KeyCode pressed by the client
-		/// //this is just an example method, the idea can be extended or used as needed.
-		/// private void InputDown(KeyCode keyCode, int frame){
-		///     switch(keyCode){
-		///         case KeyCode.RightArrow:
-		///             //do something when right arrow is held
-		///             break;
-		///         case KeyCode.LeftArrow:
-		///             //do something when left arrow is held
-		///             break;
-		///     }
-		/// }
-		/// </code>
-		/// inputDownRequest() specifically drives a key being pressed down, 
-		/// inputRequest() and inputUpRequest() should be used for keys being 
-		/// held or released.
-		/// </remarks>
-		protected event InputRequest inputDownRequest = null;
+        /** @name Authorative Input events
+        * The following events allow you to drive input on an authorative server.
+        */
+        ///@{
+        /// <summary>
+        /// An event that is fired on the server when an input down was 
+        /// requested from a client.
+        /// </summary>
+        /// <remarks>
+        /// This event is fired on the server when a client is using InputCheck(), 
+        /// the keycode corresponds directly to the key pressed by the 
+        /// client. A client needs to use InputCheck() in a method 
+        /// such as OwnerUpdate(), in a NMB object:
+        /// <code>
+        /// protected override void OwnerUpdate(){
+        ///     InputCheck(KeyCode.RightArrow);
+        ///     InputCheck(KeyCode.LeftArrow);
+        /// }
+        /// </code>
+        /// inputDownRequest() is then fired on the server, it can be used 
+        /// to drive input to a character or system on the server side. 
+        /// <code>
+        /// //The event has to be subscribed on the server side
+        /// protected override void NetworkStart(){
+        ///     inputDownRequest += InputDown;
+        /// }
+        /// 
+        /// //The event has to be unsubscribed if the NMB object is destroyed
+        /// protected override void OnDestroy(){
+        ///     inputDownRequest -= InputDown;
+        /// }
+        /// 
+        /// //the event can be subscribed to a method and will pass the KeyCode pressed by the client
+        /// //this is just an example method, the idea can be extended or used as needed.
+        /// private void InputDown(KeyCode keyCode, int frame){
+        ///     switch(keyCode){
+        ///         case KeyCode.RightArrow:
+        ///             //do something when right arrow is held
+        ///             break;
+        ///         case KeyCode.LeftArrow:
+        ///             //do something when left arrow is held
+        ///             break;
+        ///     }
+        /// }
+        /// </code>
+        /// inputDownRequest() specifically drives a key being pressed down, 
+        /// inputRequest() and inputUpRequest() should be used for keys being 
+        /// held or released.
+        /// </remarks>
+        protected event InputRequest inputDownRequest = null;
 
-		/// <summary>
-		/// An event that is fired on the server when an input up was requested from a client
-		/// </summary>
-		/// <remarks>
-		/// This event is fired on the server when a client is using InputCheck(), 
-		/// the keycode corresponds directly to the key pressed by the 
-		/// client. A client needs to use InputCheck() in a method 
-		/// such as OwnerUpdate(), in a NMB object:
-		/// <code>
-		/// protected override void OwnerUpdate(){
-		///     InputCheck(KeyCode.RightArrow);
-		///     InputCheck(KeyCode.LeftArrow);
-		/// }
-		/// </code>
-		/// inputUpRequest() is then fired on the server, it can be used 
-		/// to drive input to a character or system on the server side. 
-		/// <code>
-		/// //The event has to be subscribed on the server side
-		/// protected override void NetworkStart(){
-		///     inputUpRequest += InputUp;
-		/// }
-		/// 
-		/// //The event has to be unsubscribed if the NMB object is destroyed
-		/// protected override void OnDestroy(){
-		///     inputUpRequest -= InputUp;
-		/// }
-		/// 
-		/// //the event can be subscribed to a method and will pass the KeyCode pressed by the client
-		/// //this is just an example method, the idea can be extended or used as needed.
-		/// private void InputUp(KeyCode keyCode, int frame){
-		///     switch(keyCode){
-		///         case KeyCode.RightArrow:
-		///             //do something when right arrow is held
-		///             break;
-		///         case KeyCode.LeftArrow:
-		///             //do something when left arrow is held
-		///             break;
-		///     }
-		/// }
-		/// </code>
-		/// inputUpRequest() specifically drives a key being released, 
-		/// inputRequest() and inputDownRequest() should be used for keys being 
-		/// held or pressed.
-		/// </remarks>
-		protected event InputRequest inputUpRequest = null;
+        /// <summary>
+        /// An event that is fired on the server when an input up was requested from a client
+        /// </summary>
+        /// <remarks>
+        /// This event is fired on the server when a client is using InputCheck(), 
+        /// the keycode corresponds directly to the key pressed by the 
+        /// client. A client needs to use InputCheck() in a method 
+        /// such as OwnerUpdate(), in a NMB object:
+        /// <code>
+        /// protected override void OwnerUpdate(){
+        ///     InputCheck(KeyCode.RightArrow);
+        ///     InputCheck(KeyCode.LeftArrow);
+        /// }
+        /// </code>
+        /// inputUpRequest() is then fired on the server, it can be used 
+        /// to drive input to a character or system on the server side. 
+        /// <code>
+        /// //The event has to be subscribed on the server side
+        /// protected override void NetworkStart(){
+        ///     inputUpRequest += InputUp;
+        /// }
+        /// 
+        /// //The event has to be unsubscribed if the NMB object is destroyed
+        /// protected override void OnDestroy(){
+        ///     inputUpRequest -= InputUp;
+        /// }
+        /// 
+        /// //the event can be subscribed to a method and will pass the KeyCode pressed by the client
+        /// //this is just an example method, the idea can be extended or used as needed.
+        /// private void InputUp(KeyCode keyCode, int frame){
+        ///     switch(keyCode){
+        ///         case KeyCode.RightArrow:
+        ///             //do something when right arrow is held
+        ///             break;
+        ///         case KeyCode.LeftArrow:
+        ///             //do something when left arrow is held
+        ///             break;
+        ///     }
+        /// }
+        /// </code>
+        /// inputUpRequest() specifically drives a key being released, 
+        /// inputRequest() and inputDownRequest() should be used for keys being 
+        /// held or pressed.
+        /// </remarks>
+        protected event InputRequest inputUpRequest = null;
 
-		/// <summary>
-		/// An event that is fired every update while in between a input 
-		/// down request and an input up request
-		/// </summary>
-		/// <remarks>
-		/// This event is fired on the server when a client is using InputCheck(), 
-		/// the keycode corresponds directly to the key being pressed by the 
-		/// client. A client needs to use InputCheck() in a method 
-		/// such as OwnerUpdate(), in a NMB object:
-		/// <code>
-		/// protected override void OwnerUpdate(){
-		///     InputCheck(KeyCode.RightArrow);
-		///     InputCheck(KeyCode.LeftArrow);
-		/// }
-		/// </code>
-		/// inputRequest() is then fired on the server, it can be used 
-		/// to drive input to a character or system on the server side. 
-		/// <code>
-		/// //The event has to be subscribed on the server side
-		/// protected override void NetworkStart(){
-		///     inputRequest += InputHeld;
-		/// }
-		/// 
-		/// //The event has to be unsubscribed if the NMB object is destroyed
-		/// protected override void OnDestroy(){
-		///     inputRequest -= InputHeld;
-		/// }
-		/// 
-		/// //the event can be subscribed to a method and pass the KeyCode being pressed by the client
-		/// //this is just an example method, the idea can be extended or used as needed.
-		/// private void InputHeld(KeyCode keyCode){
-		///     switch(keyCode){
-		///         case KeyCode.RightArrow:
-		///             //do something when right arrow is held
-		///             break;
-		///         case KeyCode.LeftArrow:
-		///             //do something when left arrow is held
-		///             break;
-		///     }
-		/// }
-		/// </code>
-		/// inputRequest() specifically drives a key being held down, 
-		/// inputDownRequest() and inputUpRequest() should be used for 
-		/// keys being pressed or released.
-		/// </remarks>
-		protected event FramelessInputRequest inputRequest = null;
+        /// <summary>
+        /// An event that is fired every update while in between a input 
+        /// down request and an input up request
+        /// </summary>
+        /// <remarks>
+        /// This event is fired on the server when a client is using InputCheck(), 
+        /// the keycode corresponds directly to the key being pressed by the 
+        /// client. A client needs to use InputCheck() in a method 
+        /// such as OwnerUpdate(), in a NMB object:
+        /// <code>
+        /// protected override void OwnerUpdate(){
+        ///     InputCheck(KeyCode.RightArrow);
+        ///     InputCheck(KeyCode.LeftArrow);
+        /// }
+        /// </code>
+        /// inputRequest() is then fired on the server, it can be used 
+        /// to drive input to a character or system on the server side. 
+        /// <code>
+        /// //The event has to be subscribed on the server side
+        /// protected override void NetworkStart(){
+        ///     inputRequest += InputHeld;
+        /// }
+        /// 
+        /// //The event has to be unsubscribed if the NMB object is destroyed
+        /// protected override void OnDestroy(){
+        ///     inputRequest -= InputHeld;
+        /// }
+        /// 
+        /// //the event can be subscribed to a method and pass the KeyCode being pressed by the client
+        /// //this is just an example method, the idea can be extended or used as needed.
+        /// private void InputHeld(KeyCode keyCode){
+        ///     switch(keyCode){
+        ///         case KeyCode.RightArrow:
+        ///             //do something when right arrow is held
+        ///             break;
+        ///         case KeyCode.LeftArrow:
+        ///             //do something when left arrow is held
+        ///             break;
+        ///     }
+        /// }
+        /// </code>
+        /// inputRequest() specifically drives a key being held down, 
+        /// inputDownRequest() and inputUpRequest() should be used for 
+        /// keys being pressed or released.
+        /// </remarks>
+        protected event FramelessInputRequest inputRequest = null;
 
-		/// <summary>
-		/// An event that is fired on the server when a mouse input down was requested from a client
-		/// </summary>
-		/// <remarks>
-		/// For more information see inputDownRequest(), this handles mouse buttons being pressed.
-		/// </remarks>
-		protected event MouseInputRequest mouseDownRequest = null;
+        /// <summary>
+        /// An event that is fired on the server when a mouse input down was requested from a client
+        /// </summary>
+        /// <remarks>
+        /// For more information see inputDownRequest(), this handles mouse buttons being pressed.
+        /// </remarks>
+        protected event MouseInputRequest mouseDownRequest = null;
 
-		/// <summary>
-		/// An event that is fired on the server when a mouse input up was requested from a client
-		/// </summary>
-		/// <remarks>
-		/// For more information see inputUpRequest(), this handles mouse buttons being released.
-		/// </remarks>
-		protected event MouseInputRequest mouseUpRequest = null;
+        /// <summary>
+        /// An event that is fired on the server when a mouse input up was requested from a client
+        /// </summary>
+        /// <remarks>
+        /// For more information see inputUpRequest(), this handles mouse buttons being released.
+        /// </remarks>
+        protected event MouseInputRequest mouseUpRequest = null;
 
-		/// <summary>
-		/// An event that is fired every update while in between a mouse down request and an mouse up request
-		/// </summary>
-		/// <remarks>
-		/// For more information see inputRequest(), this handles mouse buttons being held.
-		/// </remarks>
-		protected event FramelessMouseInputRequest mouseRequest = null;
-		///@}
+        /// <summary>
+        /// An event that is fired every update while in between a mouse down request and an mouse up request
+        /// </summary>
+        /// <remarks>
+        /// For more information see inputRequest(), this handles mouse buttons being held.
+        /// </remarks>
+        protected event FramelessMouseInputRequest mouseRequest = null;
+        ///@}
 
-		private List<KeyCode> currentKeys = new List<KeyCode>();
+        private List<KeyCode> currentKeys = new List<KeyCode>();
 		private List<int> mouseIndices = new List<int>();
 		private List<int> keyUpBuffer = new List<int>();
 		private List<int> mouseUpBuffer = new List<int>();
@@ -1064,7 +1064,7 @@ namespace BeardedManStudios.Network
 		private object valueGetter = null;
 
 		/// <summary>
-		/// The primary writing stream for this object to send data across the Network
+		/// The primary writing stream for this object to send data across the network
 		/// </summary>
 		private NetworkingStream writeStream = new NetworkingStream();
 
@@ -1084,17 +1084,17 @@ namespace BeardedManStudios.Network
 		private Vector3 previousScale = Vector3.zero;
 
 		/// <summary>
-		/// The new destination position for this object as described from the Network
+		/// The new destination position for this object as described from the network
 		/// </summary>
 		private Vector3 targetPosition = Vector3.zero;
 
 		/// <summary>
-		/// The new rotation for this object as described from the Network
+		/// The new rotation for this object as described from the network
 		/// </summary>
 		private Vector3 targetRotation = Vector3.zero;
 
 		/// <summary>
-		/// The new scale for this object as described from the Network
+		/// The new scale for this object as described from the network
 		/// </summary>
 		private Vector3 targetScale = Vector3.zero;
 
@@ -1123,7 +1123,7 @@ namespace BeardedManStudios.Network
 		private bool skipInterpolation = false;
 		
 		/// <summary>
-		/// Tells if the data has been initialized for this object across the Network
+		/// Tells if the data has been initialized for this object across the network
 		/// </summary>
 		public bool DataInitialized
 		{
@@ -1143,7 +1143,7 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Called when the data has been initialized across the Network for this object (purpose is to override)
+		/// Called when the data has been initialized across the network for this object (purpose is to override)
 		/// </summary>
 		protected virtual void NetworkInitialized() { }
 
@@ -1163,7 +1163,7 @@ namespace BeardedManStudios.Network
 		protected Collider colliderRef = null;
 
 		/// <summary>
-		/// The main byte buffer for serialization (sending across the Network)
+		/// The main byte buffer for serialization (sending across the network)
 		/// </summary>
 		private BMSByte serializedBuffer = new BMSByte();
 
@@ -1177,18 +1177,18 @@ namespace BeardedManStudios.Network
 		/// <returns></returns>
 		new public static NetworkedMonoBehavior Locate(ulong id)
 		{
-			if (NetworkedBehaviors.ContainsKey(id))
-			{
-				if (NetworkedBehaviors[id] == null)
-				{
+            if (networkedBehaviors.ContainsKey(id))
+            {
+                if (networkedBehaviors[id] == null)
+                {
 #if UNITY_EDITOR
-					Debug.LogError("Null id [" + id + "] found in the behaviors! Did you delete an object instead of calling NetworkDestroy or Transition Scenes with Multiple Network Managers?");
+                    Debug.LogError("Null id [" + id + "] found in the behaviors! Did you delete an object instead of calling NetworkDestroy or Transition Scenes with Multiple Network Managers?");
 #endif
-					NetworkedBehaviors.Remove(id); //Removing the ID as it is invalid.
-					return null;
-				}
-				return (NetworkedMonoBehavior)NetworkedBehaviors[id];
-			}
+                    networkedBehaviors.Remove(id); //Removing the ID as it is invalid.
+                    return null;
+                }
+                return (NetworkedMonoBehavior)networkedBehaviors[id];
+            }
 
 			return null;
 		}
@@ -1211,7 +1211,7 @@ namespace BeardedManStudios.Network
 
 			base.Reflect();
 
-#if NetFX_CORE
+#if NETFX_CORE
 			// Get all of the fields for this class
 			List<FieldInfo> fields = this.GetType().GetRuntimeFields().OrderBy(x => x.Name).ToList();
 			// Get all of the properties for this class
@@ -1223,39 +1223,39 @@ namespace BeardedManStudios.Network
 			PropertyInfo[] properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(x => x.Name).ToArray();
 #endif
 
-			// Go throug all of the found fields and find any that are to be synced across the Network
-#if NetFX_CORE
+			// Go throug all of the found fields and find any that are to be synced across the network
+#if NETFX_CORE
 			for (int i = 0; i < fields.Count; i++)
 #else
 			for (int i = 0; i < fields.Length; i++)
 #endif
 			{
 				// If this field has a [NetSync] attribute then add it to the variables to be synced
-				NetSync[] NetSyncs = fields[i].GetCustomAttributes(typeof(NetSync), true) as NetSync[];
-				if (NetSyncs.Length != 0)
+				NetSync[] netSyncs = fields[i].GetCustomAttributes(typeof(NetSync), true) as NetSync[];
+				if (netSyncs.Length != 0)
 				{
 					// Create a temporary reference to this particular object to be used
 					FieldInfo field = fields[i];
 
-#if NetFX_CORE
-					AddNetworkVariable(() => field.GetValue(this), x => field.SetValue(this, x), NetSyncs[0]);
+#if NETFX_CORE
+					AddNetworkVariable(() => field.GetValue(this), x => field.SetValue(this, x), netSyncs[0]);
 #else
 					GetValueDelegate get = (GetValueDelegate)Delegate.CreateDelegate(typeof(GetValueDelegate), field, "GetValue");
 					SetValueDelegate set = (SetValueDelegate)Delegate.CreateDelegate(typeof(SetValueDelegate), field, typeof(FieldInfo).GetMethod("SetValue", new Type[] { typeof(object), typeof(object) }));
-					AddNetworkVariable(() => get(this), x => set(this, x), NetSyncs[0], NetSyncs[0] is ManualNetSync, NetSyncs[0] is NetSyncToServer);
+					AddNetworkVariable(() => get(this), x => set(this, x), netSyncs[0], netSyncs[0] is ManualNetSync, netSyncs[0] is NetSyncToServer);
 #endif
 				}
 			}
 
-			// Go throug all of the found propperties and find any that are to be synced across the Network
-#if NetFX_CORE
+			// Go throug all of the found propperties and find any that are to be synced across the network
+#if NETFX_CORE
 			for (int i = 0; i < properties.Count; i++)
 #else
 			for (int i = 0; i < properties.Length; i++)
 #endif
 			{
 				// If this property has a [NetSync] attribute then add it to the variables to be synced
-#if NetFX_CORE
+#if NETFX_CORE
 				if (properties[i].GetCustomAttribute<NetSync>() != null)
 #else
 				if (properties[i].GetCustomAttributes(typeof(NetSync), true).Length != 0)
@@ -1288,15 +1288,15 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Setup this NetworkedMonoBehavior with the owner of this object along with the Networked ID
+		/// Setup this NetworkedMonoBehavior with the owner of this object along with the networked ID
 		/// </summary>
 		/// <param name="owningSocket">The socket that owns this object</param>
 		/// <param name="isOwner">Is this the owner of this object</param>
-		/// <param name="NetworkId">Network ID of who owns it</param>
-		/// <param name="ownerId">The Network identifyer for the player who owns this object</param>
-		public override void Setup(NetWorker owningSocket, bool isOwner, ulong NetworkId, ulong ownerId, bool isSceneObject = false)
+		/// <param name="networkId">Network ID of who owns it</param>
+		/// <param name="ownerId">The network identifyer for the player who owns this object</param>
+		public override void Setup(NetWorker owningSocket, bool isOwner, ulong networkId, ulong ownerId, bool isSceneObject = false)
 		{
-			base.Setup(owningSocket, isOwner, NetworkId, ownerId, isSceneObject);
+			base.Setup(owningSocket, isOwner, networkId, ownerId, isSceneObject);
 
 #if !BARE_METAL
 			bool foundServerAuthority = false, clientPrediction = false;
@@ -1372,7 +1372,7 @@ namespace BeardedManStudios.Network
 		private BMSByte manualPropertyBytes = new BMSByte();
 
 		/// <summary>
-		/// Used to serialize manual properties across the Network for this object
+		/// Used to serialize manual properties across the network for this object
 		/// </summary>
 		/// <param name="reliable">Determines if these properties should be reliably sent</param>
 		/// <param name="receivers">The receivers for this data</param>
@@ -1390,7 +1390,7 @@ namespace BeardedManStudios.Network
 				obj.Callback(this);
 			}
 
-			Networking.WriteCustom(WriteCustomMapping.NetWORKED_MONO_BEHAVIOR_MANUAL_PROPERTIES, OwningNetWorker, manualPropertyBytes, reliable, receivers);
+			Networking.WriteCustom(WriteCustomMapping.NETWORKED_MONO_BEHAVIOR_MANUAL_PROPERTIES, OwningNetWorker, manualPropertyBytes, reliable, receivers);
 		}
 
 		public void DeserializeManualProperties(NetworkingStream stream)
@@ -1408,11 +1408,11 @@ namespace BeardedManStudios.Network
 		}
 
 		/// <summary>
-		/// Add a Network variable to the NetworkedMonoBehavior to use
+		/// Add a network variable to the NetworkedMonoBehavior to use
 		/// </summary>
 		/// <param name="getter">Variable to get</param>
 		/// <param name="setter">Variable to set</param>
-		protected void AddNetworkVariable(Func<object> getter, Action<object> setter, NetSync NetSync = null, bool manualProperty = false, bool serverOnly = false)
+		protected void AddNetworkVariable(Func<object> getter, Action<object> setter, NetSync netSync = null, bool manualProperty = false, bool serverOnly = false)
 		{
 			if (IsSetup)
 				throw new NetworkException(6, "Network variables can not be added after the Awake method of this MonoBehaviour");
@@ -1421,19 +1421,19 @@ namespace BeardedManStudios.Network
 			NetworkCallers callers = NetworkCallers.Everyone;
 			NetSync.Interpolate useInterpolation = NetSync.Interpolate.True;
 
-			if (NetSync != null)
+			if (netSync != null)
 			{
-				if (!string.IsNullOrEmpty(NetSync.method))
+				if (!string.IsNullOrEmpty(netSync.method))
 				{
-#if NetFX_CORE
-					callback = () => { this.GetType().GetRuntimeMethod(NetSync.method, null).Invoke(this, new object[] { }); };
+#if NETFX_CORE
+					callback = () => { this.GetType().GetRuntimeMethod(netSync.method, null).Invoke(this, new object[] { }); };
 #else
-					callback = (Action)Delegate.CreateDelegate(typeof(Action), this, NetSync.method);
+					callback = (Action)Delegate.CreateDelegate(typeof(Action), this, netSync.method);
 #endif
 				}
 
-				callers = NetSync.callers;
-				useInterpolation = NetSync.interpolate;
+				callers = netSync.callers;
+				useInterpolation = netSync.interpolate;
 			}
 
 			if (manualProperty)
@@ -1594,21 +1594,21 @@ namespace BeardedManStudios.Network
 		}
 
 #if BARE_METAL
-		private Quaternion QuaternionFromEuler(Vector3 v)
-		{
-			float yaw = v.y;
-			float pitch = -v.x;
-			float roll = -v.z;
-			Quaternion quaternion = new Quaternion();
-			quaternion.x = (((float)Math.Cos(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f)) + (((float)Math.Sin(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f));
-			quaternion.y = (((float)Math.Sin(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f)) - (((float)Math.Cos(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f));
-			quaternion.z = (((float)Math.Cos(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f)) - (((float)Math.Sin(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f));
-			quaternion.w = (((float)Math.Cos(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f)) + (((float)Math.Sin(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f));
-			return quaternion;
-		}
+        private Quaternion QuaternionFromEuler(Vector3 v)
+        {
+            float yaw = v.y;
+            float pitch = -v.x;
+            float roll = -v.z;
+            Quaternion quaternion = new Quaternion();
+            quaternion.x = (((float)Math.Cos(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f)) + (((float)Math.Sin(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f));
+            quaternion.y = (((float)Math.Sin(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f)) - (((float)Math.Cos(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f));
+            quaternion.z = (((float)Math.Cos(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f)) - (((float)Math.Sin(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f));
+            quaternion.w = (((float)Math.Cos(yaw * 0.5f) * (float)Math.Cos(pitch * 0.5f)) * (float)Math.Cos(roll * 0.5f)) + (((float)Math.Sin(yaw * 0.5f) * (float)Math.Sin(pitch * 0.5f)) * (float)Math.Sin(roll * 0.5f));
+            return quaternion;
+        }
 #endif
 
-		// JM: added support to run Netsync and other Network updates in fixed loop
+		// JM: added support to run netsync and other network updates in fixed loop
 		protected override void UnityFixedUpdate ()
 		{
 			// TODO:  Look into this
@@ -1680,7 +1680,7 @@ namespace BeardedManStudios.Network
 
 			if ((OwningNetWorker.IsServer && serverIsAuthority) || (!serverIsAuthority && IsOwner))
 			{
-				if (NetworkTimeDelay > 0)
+				if (networkTimeDelay > 0)
 				{
 #if BARE_METAL
 					timeDelayCounter += (float)BareMetal.BareMetalTime.deltaTime;
@@ -1688,7 +1688,7 @@ namespace BeardedManStudios.Network
 					timeDelayCounter += Time.deltaTime;
 #endif
 
-					if (timeDelayCounter < NetworkTimeDelay)
+					if (timeDelayCounter < networkTimeDelay)
 					{
 						OwnedUpdate();
 						return;
@@ -1946,7 +1946,6 @@ namespace BeardedManStudios.Network
 		{
 			serializedBuffer = Serialized();
 
-#if !UNITY_WEBGL
 			if (OwningNetWorker is CrossPlatformUDP)
 			{
 				writeStream.SetProtocolType(Networking.ProtocolType.UDP);
@@ -1954,12 +1953,9 @@ namespace BeardedManStudios.Network
 			}
 			else
 			{
-#endif
 				writeStream.SetProtocolType(Networking.ProtocolType.TCP);
 				Networking.WriteTCP(OwningNetWorker, writeStream.Prepare(OwningNetWorker, NetworkingStream.IdentifierType.NetworkedBehavior, this.NetworkedId, serializedBuffer, OwningNetWorker.ProximityBasedMessaging ? NetworkReceivers.OthersProximity : NetworkReceivers.Others));
-#if !UNITY_WEBGL
-		}
-#endif
+			}
 
 			HasSerialized = true;
 			UpdateValues();
@@ -2002,16 +1998,16 @@ namespace BeardedManStudios.Network
 		/// Get the serialzed version of this NetworkedMonoBehavior
 		/// </summary>
 		/// <returns></returns>
-		/// <remarks>
-		/// Used to serialize the NetworkedMonoBehavior into a BMSByte which is a format that can be sent across the Network.
-		/// </remarks>
+        /// <remarks>
+        /// Used to serialize the NetworkedMonoBehavior into a BMSByte which is a format that can be sent across the network.
+        /// </remarks>
 		public override BMSByte Serialized()
 		{
 			serializedBuffer.Clear();
 
 			PrepareNextSerializedTransform(serializePosition, transform.position);
 
-			// Sending rotation across the Network as a Vector3 instead of Vector4 to save bandwidth
+			// Sending rotation across the network as a Vector3 instead of Vector4 to save bandwidth
 			PrepareNextSerializedTransform(serializeRotation, transform.eulerAngles);
 			PrepareNextSerializedTransform(serializeScale, transform.localScale);
 
@@ -2080,10 +2076,10 @@ namespace BeardedManStudios.Network
 		/// Only Deserialize the stream of data that is not the owner
 		/// </summary>
 		/// <param name="stream">Stream of data to use</param>
-		/// <remarks>
-		/// This deserializes a NetworkedMonoBehavior from a NetworkingStream, the NetworkingStream contains a BMSByte which is what actually stores
-		/// the NMB. See Serialize() for more...
-		/// </remarks>
+        /// <remarks>
+        /// This deserializes a NetworkedMonoBehavior from a NetworkingStream, the NetworkingStream contains a BMSByte which is what actually stores
+        /// the NMB. See Serialize() for more...
+        /// </remarks>
 		public override void Deserialize(NetworkingStream stream)
 		{
 			if ((IsOwner && !serverIsAuthority) || (OwningNetWorker.IsServer && serverIsAuthority))
@@ -2102,7 +2098,7 @@ namespace BeardedManStudios.Network
 
 			foreach (NetRef<object> obj in Properties)
 			{
-				// Only allow the server to replicate this variable across the Network
+				// Only allow the server to replicate this variable across the network
 				if (obj.serverOnly && !OwningNetWorker.IsServer)
 				{
 					ObjectMapper.Map(obj.Value.GetType(), stream);

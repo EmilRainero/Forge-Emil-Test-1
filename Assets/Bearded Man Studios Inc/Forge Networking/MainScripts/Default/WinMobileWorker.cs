@@ -19,7 +19,7 @@
 
 
 
-#if NetFX_CORE
+#if NETFX_CORE
 using System;
 using System.Collections.Generic;
 using Windows.Networking;
@@ -32,7 +32,7 @@ namespace BeardedManStudios.Network
 	{
 		public WinMobileWorker() : base() { }
 		public WinMobileWorker(int maxConnections) : base(maxConnections) { }
-#if NetFX_CORE
+#if NETFX_CORE
 		protected HostName serverHost;
 
 		abstract protected void ConnectAsync(string hostAddress, ushort port);
@@ -75,7 +75,7 @@ namespace BeardedManStudios.Network
 		public override void Write(NetworkingStream stream)
 		{
 			if (!Connected)
-				throw new NetworkException("You must first be connected to a Network before you can send packets.");
+				throw new NetworkException("You must first be connected to a network before you can send packets.");
 
 			SendAsync(stream);
 		}

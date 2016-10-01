@@ -419,13 +419,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98643db8660606c46abed6a71ae25bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneNetworkedId: 0
-  dontDestroyOnLoad: 0
-  destroyOnDisconnect: 0
-  allowOwnershipChange: 1
-  MaxRPCBatch: 10000
-  startNetworkedSceneBehaviors: []
-  NetworkInstantiates: []
+  networkInstantiates:
+  - {fileID: 147484, guid: ea19866e90d07bf4aa63e2821e9cde07, type: 2}
   resourcesDirectory: 
   frameInterval: 100
   updateTimeInterval: 1

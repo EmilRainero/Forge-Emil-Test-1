@@ -19,7 +19,7 @@
 
 
 
-#if !NetFX_CORE
+#if !NETFX_CORE
 using BeardedManStudios.Network;
 using System;
 using UnityEngine;

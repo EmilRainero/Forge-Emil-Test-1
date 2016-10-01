@@ -87,13 +87,13 @@ namespace BeardedManStudios.Network
 #else
 
 		/// <summary>
-		/// Constructor for a Networked exception
+		/// Constructor for a networked exception
 		/// </summary>
 		/// <param name="message">Message of the exception</param>
 		public NetworkException(string message) : base(message) { Code = 0; }
 
 		/// <summary>
-		/// Constructor for a Networked exception
+		/// Constructor for a networked exception
 		/// </summary>
 		/// <param name="code">Error code of the exception</param>
 		/// <param name="message">Message of the exception</param>

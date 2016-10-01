@@ -34,7 +34,7 @@ namespace BeardedManStudios.Network
 		private static int byteArrSize = 0;
 
 		/// <summary>
-		/// Map a type of object from a Networking stream to a object
+		/// Map a type of object from a networking stream to a object
 		/// </summary>
 		/// <param name="type">Type of object to map</param>
 		/// <param name="stream">Networking Stream to be used</param>
@@ -165,7 +165,7 @@ namespace BeardedManStudios.Network
 			else if (type == typeof(double))
 				return BitConverter.ToDouble(stream.Read(sizeof(double)), 0);
 			else
-				throw new NetworkException(11, "The type " + type.ToString() + " is not allowed to be sent over the Network (yet)");
+				throw new NetworkException(11, "The type " + type.ToString() + " is not allowed to be sent over the network (yet)");
 		}
 
 		/// <summary>
@@ -180,7 +180,7 @@ namespace BeardedManStudios.Network
 			if (length <= 0)
 				return string.Empty;
 
-#if NetFX_CORE
+#if NETFX_CORE
 			return Encoding.UTF8.GetString(stream.Read(length), 0, length);
 #else
 			if (length > stream.Bytes.Size - sizeof(int))
@@ -285,7 +285,7 @@ namespace BeardedManStudios.Network
 			{
 #if UNITY_EDITOR
 				if (o == null)
-					throw new NetworkException("You are trying to serialize a null object, null objects have no dimentions and can not be mapped across the Network");
+					throw new NetworkException("You are trying to serialize a null object, null objects have no dimentions and can not be mapped across the network");
 #endif
 
 				Type type = o.GetType();
@@ -382,7 +382,7 @@ namespace BeardedManStudios.Network
 			else if (type.IsEnum())
 				GetBytes(o, Enum.GetUnderlyingType(type), ref bytes);
 			else
-				throw new NetworkException(11, "The type " + type.ToString() + " is not allowed to be sent over the Network (yet)");
+				throw new NetworkException(11, "The type " + type.ToString() + " is not allowed to be sent over the network (yet)");
 		}
 	}
 }
