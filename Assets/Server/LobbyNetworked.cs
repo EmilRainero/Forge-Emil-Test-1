@@ -5,7 +5,7 @@ using ScalableServer;
 using System;
 using System.Collections.Generic;
 
-public class LobbyNetworked
+public class LobbyNetworked : SimpleNetworkedMonoBehavior
 {
     public string Host { get; set; }
     public ushort Port { get; set; }
@@ -84,7 +84,7 @@ public class LobbyNetworked
         }
     }
 
-    public void Connect(string host, ushort port, Networking.TransportationProtocolType protocolType)
+    public void StartListener(string host, ushort port, Networking.TransportationProtocolType protocolType)
     {
         this.Host = host;
         this.Port = port;
@@ -99,8 +99,14 @@ public class LobbyNetworked
         Networking.Sockets[this.Port].playerDisconnected += PlayerDisconnected;
     }
 
-    public void Disconnect()
+    public void StopListener()
     {
         Networking.Disconnect(this.NetWorker);
     }
+
+    //[BRPC]
+    //public void RequestStartMatch(string message)
+    //{
+    //    DebugLog.Log("got RequestStartMatch " + message);
+    //}
 }

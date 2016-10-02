@@ -780,6 +780,7 @@ namespace BeardedManStudios.Network
 						if (rpc.Value.Key.Name == stream.MethodName)
 						{
 							CurrentRPCSender = stream.Sender;
+                            Debug.Log("ExecuteRPCStack: about to invoke " + rpc.Value.Key.Name);
 							rpc.Value.Key.Invoke(this, stream.Arguments);
 							CurrentRPCSender = null;
 							found = true;

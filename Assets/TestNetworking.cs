@@ -4,7 +4,7 @@ using System.Collections;
 using BeardedManStudios.Network;
 using ScalableServer;
 
-public class TestNetworking : MonoBehaviour
+public class TestNetworking : SimpleNetworkedMonoBehavior
 {
     public Text Text;
 
@@ -73,11 +73,20 @@ public class TestNetworking : MonoBehaviour
         }
         else
         {
-            if (started == "Client" && GUI.Button(new Rect(Screen.width - 200, 50, 190, 30), "Disconnect"))
+            if (started == "Client")
             {
-                clientNetworked.Disconnect();
-                started = null;
+                if (GUI.Button(new Rect(Screen.width - 200, 10, 190, 30), "Start Match"))
+                {
+                    //clientNetworked.RequestMatch();
+                    RPC("RequestStartMatch", NetworkReceivers.Server, "hi there");
+                }
+                if (GUI.Button(new Rect(Screen.width - 200, 50, 190, 30), "Disconnect"))
+                {
+                    clientNetworked.DisconnectClient();
+                    started = null;
+                }
             }
+            
         }
     }
 
@@ -88,7 +97,7 @@ public class TestNetworking : MonoBehaviour
     private void StartServer(string lobbyIpAddress, ushort lobbyPort, ushort gicPort)
     {
         lobbyNetworked = new LobbyNetworked();
-        lobbyNetworked.Connect(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
+        lobbyNetworked.StartListener(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
         gicNetworked = new GameInstanceClusterNetworked();
         gicNetworked.Connect(gicPort, Networking.TransportationProtocolType.TCP);
     }
@@ -113,5 +122,11 @@ public class TestNetworking : MonoBehaviour
             clientNetworked = new ClientNetworked();
         }
         clientNetworked.Connect(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
+    }
+
+    [BRPC]
+    public void RequestStartMatch(string message)
+    {
+        DebugLog.Log("got RequestStartMatch " + message);
     }
 }

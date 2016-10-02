@@ -61,6 +61,8 @@ namespace BeardedManStudios.Network
 			if (count == 0)
 				return readBuffer;
 
+            UnityEngine.Debug.Log("TCPProcess ReadBuffer");
+
 			readBuffer.BlockCopy(backBuffer.byteArr, backBuffer.StartIndex(4), size);
 
 			if (readBuffer.Size + 4 < backBuffer.Size)
@@ -81,6 +83,8 @@ namespace BeardedManStudios.Network
 			{
 				bytes.MoveStartIndex(1);
 				readStream.Reset();
+
+                UnityEngine.Debug.Log("streamreceived ");
 
 				if (base.ProcessReceivedData(sender, bytes, bytes[0]))
 					return;
