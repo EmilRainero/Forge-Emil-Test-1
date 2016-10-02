@@ -10,6 +10,28 @@ public class GameInstanceNetworked {
     public ushort Port { get; set; }
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     public NetWorker NetWorker { get; set; }
+    private bool matchRunning = false;
+    public bool isMatchRunning
+    {
+        get
+        {
+            return matchRunning;
+        }
+    }
+
+    public Match Match { get; set; }
+    public NetworkingPlayer NetworkingPlayer { get; set; }
+
+    public void StartMatch(Match match)
+    {
+        this.Match = match;
+        matchRunning = true;
+    }
+
+    public void EndMatch()
+    {
+        matchRunning = false;
+    }
 
     public GameInstanceNetworked()
     {

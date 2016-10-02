@@ -12,7 +12,7 @@ namespace UnityTest
         [Test]
         public void CreateTest()
         {
-            GameInstanceManager gameInstanceManager = new GameInstanceManager();
+            GameInstanceManagerNetworked gameInstanceManager = new GameInstanceManagerNetworked();
             Assert.NotNull(gameInstanceManager);
             Assert.AreEqual(0, gameInstanceManager.NumberGameInstances);
         }

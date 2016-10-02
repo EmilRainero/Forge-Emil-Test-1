@@ -11,14 +11,14 @@ namespace UnityTest
         [Test]
         public void CreateTest()
         {
-            GameInstance gameInstance = new GameInstance();
+            GameInstanceNetworked gameInstance = new GameInstanceNetworked();
             Assert.NotNull(gameInstance);
         }
 
         [Test]
         public void StartMatchTest()
         {
-            GameInstance gameInstance = new GameInstance();
+            GameInstanceNetworked gameInstance = new GameInstanceNetworked();
             Match match = new Match();
             match.AddPlayerToTeam(new Player(), 0);
             match.AddPlayerToTeam(new Player(), 1);
@@ -30,7 +30,7 @@ namespace UnityTest
         [Test]
         public void EndMatchTest()
         {
-            GameInstance gameInstance = new GameInstance();
+            GameInstanceNetworked gameInstance = new GameInstanceNetworked();
             Match match = new Match();
             match.AddPlayerToTeam(new Player(), 0);
             match.AddPlayerToTeam(new Player(), 1);
