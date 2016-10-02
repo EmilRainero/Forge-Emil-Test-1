@@ -56,12 +56,12 @@ public class LobbyNetworked
 
     void ServerConnected()
     {
-        DebugLog.Log("Server Connected");
+        DebugLog.Log("Server: Lobby Connected");
     }
 
     void ServerDisconnected()
     {
-        DebugLog.Log("Server Disconnected");
+        DebugLog.Log("Server: Lobby Diconnected");
     }
 
     void PlayerConnected(NetworkingPlayer player)
@@ -91,6 +91,7 @@ public class LobbyNetworked
         this.ProtocolType = protocolType;
 
         //Networking.InitializeFirewallCheck(port);
+        DebugLog.Log(string.Format("Server: Starting Lobby {0}", this.Port));
         this.NetWorker = Networking.Host(this.Port, this.ProtocolType, 100);
         Networking.Sockets[this.Port].connected += ServerConnected;
         Networking.Sockets[this.Port].disconnected += ServerDisconnected;

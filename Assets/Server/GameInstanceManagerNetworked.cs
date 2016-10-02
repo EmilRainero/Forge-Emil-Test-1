@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 public class GameInstanceManagerNetworked {
 
+    public string ServerHost { get; set; }
+    public ushort GICPort { get; set; }
     public ushort Port { get; set; }
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     private NetWorker NetWorker { get; set; }
@@ -88,7 +90,7 @@ public class GameInstanceManagerNetworked {
             //debuglog.log("duplicate player disconnect");
         }
     }
-    public void Connect(ushort port, Networking.TransportationProtocolType protocolType)
+    public void ConnectHost(ushort port, Networking.TransportationProtocolType protocolType)
     {
         this.Port = port;
         this.ProtocolType = protocolType;
@@ -106,4 +108,27 @@ public class GameInstanceManagerNetworked {
     {
         Networking.Disconnect(this.NetWorker);
     }
+
+    void ClientConnected()
+    {
+        DebugLog.Log("Connected to GIC");
+    }
+
+    void ClientDisconnected()
+    {
+        DebugLog.Log("Disconnected from GIC");
+    }
+
+    public void Connect(string lobbyIpAddress, ushort gicPort, Networking.TransportationProtocolType protocolType)
+    {
+        this.ServerHost = lobbyIpAddress;
+        this.GICPort = gicPort;
+        this.ProtocolType = protocolType;
+
+        DebugLog.Log(string.Format("try to connect to GI Cluster {0}:{1}", this.ServerHost, this.GICPort));
+        this.NetWorker = Networking.Connect(this.ServerHost, this.GICPort, this.ProtocolType);
+        Networking.Sockets[this.GICPort].connected += ClientConnected;
+        Networking.Sockets[this.GICPort].disconnected += ClientDisconnected;
+    }
+
 }

@@ -11,7 +11,7 @@ public class TestNetworking : MonoBehaviour
     private string lobbyIpAddress = "127.0.0.1";
     private string gimIpAddress = "127.0.0.1";
     private string lobbyPort = "15937";
-    private string gicPort = "15937";
+    private string gicPort = "16000";
     private string gimPort = "16100";
     private string giPort = "16200";
     private string clientPort = "16300";
@@ -35,7 +35,7 @@ public class TestNetworking : MonoBehaviour
             {
                 Debug.Log("Start Lobby  port: " + lobbyPort);
                 started = "Lobby";
-                StartLobby(lobbyIpAddress, ushort.Parse(lobbyPort));
+                StartServer(lobbyIpAddress, ushort.Parse(lobbyPort), ushort.Parse(gicPort));
             }
             GUI.Label(new Rect(110, 50, 100, 30), "IP Address", guiStyle);
             lobbyIpAddress = GUI.TextField(new Rect(10, 50, 90, 20), lobbyIpAddress);
@@ -48,7 +48,7 @@ public class TestNetworking : MonoBehaviour
             {
                 Debug.Log("Start GI Manager");
                 started = "GI Manager";
-                StartGameInstanceManager(lobbyIpAddress, ushort.Parse(gimPort));
+                StartGameInstanceManager(lobbyIpAddress, ushort.Parse(gicPort), ushort.Parse(gimPort));
             }
             gimIpAddress = GUI.TextField(new Rect(Screen.width - 210, 50, 90, 20), gimIpAddress);
             gimPort = GUI.TextField(new Rect(Screen.width - 210, 80, 90, 20), gimPort);
@@ -82,17 +82,22 @@ public class TestNetworking : MonoBehaviour
     }
 
     private ClientNetworked clientNetworked;
+    private LobbyNetworked lobbyNetworked;
+    private GameInstanceClusterNetworked gicNetworked;
 
-    private void StartLobby(string lobbyIpAddress, ushort port)
+    private void StartServer(string lobbyIpAddress, ushort lobbyPort, ushort gicPort)
     {
-        LobbyNetworked lobbyNetworked = new LobbyNetworked();
-        lobbyNetworked.Connect(lobbyIpAddress, port, Networking.TransportationProtocolType.TCP);
+        lobbyNetworked = new LobbyNetworked();
+        lobbyNetworked.Connect(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
+        gicNetworked = new GameInstanceClusterNetworked();
+        gicNetworked.Connect(gicPort, Networking.TransportationProtocolType.TCP);
     }
 
-    private void StartGameInstanceManager(string lobbyIpAddress, ushort port)
+    private void StartGameInstanceManager(string lobbyIpAddress, ushort gicPort, ushort gimPort)
     {
         GameInstanceManagerNetworked gameInstanceManagerNetworked = new GameInstanceManagerNetworked();
-        gameInstanceManagerNetworked.Connect(port, Networking.TransportationProtocolType.TCP);
+        gameInstanceManagerNetworked.ConnectHost(gimPort, Networking.TransportationProtocolType.TCP);
+        gameInstanceManagerNetworked.Connect(lobbyIpAddress, gicPort, Networking.TransportationProtocolType.TCP);
     }
 
     private void StartGameInstance(string lobbyIpAddress, ushort port)
