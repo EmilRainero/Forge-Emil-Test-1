@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 
 public class GameInstanceManagerNetworked {
-
+    public NetworkingPlayer NetworkingPlayer { get; set; }
     public string ServerHost { get; set; }
     public ushort GICPort { get; set; }
     public ushort Port { get; set; }
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     private NetWorker NetWorker { get; set; }
+    private NetWorker GICNetWorker { get; set; }
     private List<NetworkingPlayer> players;
     private List<GameInstanceNetworked> gameInstances;
 
@@ -48,18 +49,25 @@ public class GameInstanceManagerNetworked {
 
     void ServerConnected()
     {
-        DebugLog.Log("Server Connected");
+        DebugLog.Log("GI Cluster Manager Connected");
     }
 
     void ServerDisconnected()
     {
-        DebugLog.Log("Server Disconnected");
+        DebugLog.Log("GI Cluster Manager Disconnected");
     }
 
     void GIConnected(NetworkingPlayer player)
     {
+        GameInstanceNetworked gin = FindGameInstanceFromNetworkingPlayer(player);
+        if (gin != null)
+        {
+            // already added
+            return;
+        }
         DebugLog.Log("GI Connected");
-        GameInstanceNetworked gin = new GameInstanceNetworked();
+
+        gin = new GameInstanceNetworked();
         gin.NetworkingPlayer = player;
 
         this.gameInstances.Add(gin);
@@ -81,7 +89,7 @@ public class GameInstanceManagerNetworked {
         GameInstanceNetworked gin = FindGameInstanceFromNetworkingPlayer(player);
         if (this.gameInstances.Contains(gin))
         {
-            DebugLog.Log("gi disconnected");
+            DebugLog.Log("GI Disconnected");
             this.gameInstances.Remove(gin);
             DebugLog.Log(string.Format("{0} game instances registered", this.gameInstances.Count));
         }
@@ -106,7 +114,9 @@ public class GameInstanceManagerNetworked {
 
     public void Disconnect()
     {
-        Networking.Disconnect(this.NetWorker);
+        DebugLog.Log("Disconnect from GIC");
+        Networking.Disconnect(this.GICNetWorker);
+        //Networking.Disconnect(this.NetWorker);
     }
 
     void ClientConnected()
@@ -126,7 +136,7 @@ public class GameInstanceManagerNetworked {
         this.ProtocolType = protocolType;
 
         DebugLog.Log(string.Format("try to connect to GI Cluster {0}:{1}", this.ServerHost, this.GICPort));
-        this.NetWorker = Networking.Connect(this.ServerHost, this.GICPort, this.ProtocolType);
+        this.GICNetWorker = Networking.Connect(this.ServerHost, this.GICPort, this.ProtocolType);
         Networking.Sockets[this.GICPort].connected += ClientConnected;
         Networking.Sockets[this.GICPort].disconnected += ClientDisconnected;
     }

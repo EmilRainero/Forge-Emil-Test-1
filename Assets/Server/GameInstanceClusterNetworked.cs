@@ -11,7 +11,7 @@ public class GameInstanceClusterNetworked {
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     private NetWorker NetWorker { get; set; }
     private List<NetworkingPlayer> players;
-    private List<GameInstanceNetworked> gameInstanceManagers;
+    private List<GameInstanceManagerNetworked> gameInstanceManagers;
 
     public int NumberGameInstanceManagers
     {
@@ -21,18 +21,28 @@ public class GameInstanceClusterNetworked {
         }
     }
 
+    public int AvailableGameInstances
+    {
+        get
+        {
+            int count = 0;
+
+            foreach (GameInstanceManagerNetworked gim in this.gameInstanceManagers)
+            {
+                count += gim.AvailableGameInstances;
+            }
+            return count;
+        }
+    }
+
     public int AvailableGameInstanceManagers
     {
         get
         {
             int count = 0;
 
-            foreach (GameInstanceNetworked instance in this.gameInstanceManagers)
+            foreach (GameInstanceManagerNetworked instance in this.gameInstanceManagers)
             {
-                if (!instance.isMatchRunning)
-                {
-                    count++;
-                }
             }
             return count;
         }
@@ -41,7 +51,7 @@ public class GameInstanceClusterNetworked {
 
     public GameInstanceClusterNetworked()
     {
-        this.gameInstanceManagers = new List<GameInstanceNetworked>();
+        this.gameInstanceManagers = new List<GameInstanceManagerNetworked>();
     }
 
     void ServerConnected()
@@ -57,37 +67,35 @@ public class GameInstanceClusterNetworked {
     void GIMConnected(NetworkingPlayer player)
     {
         DebugLog.Log("Server: GI Manager Added");
-        //GameInstanceNetworked gin = new GameInstanceNetworked();
-        //gin.NetworkingPlayer = player;
 
-        //this.gameInstances.Add(gin);
-        //DebugLog.Log(string.Format("{0} Game Instances Registered", this.gameInstances.Count));
+        GameInstanceManagerNetworked gim = new GameInstanceManagerNetworked();
+        gim.NetworkingPlayer = player;
+        this.gameInstanceManagers.Add(gim);
     }
 
-    private GameInstanceNetworked FindGameInstanceFromNetworkingPlayer(NetworkingPlayer player)
+    private GameInstanceManagerNetworked FindGameInstanceManagerFromNetworkingPlayer(NetworkingPlayer player)
     {
-        //foreach (GameInstanceNetworked gin in this.gameInstances)
-        //{
-        //    if (gin.NetworkingPlayer == player)
-        //        return gin;
-        //}
+        foreach (GameInstanceManagerNetworked gim in this.gameInstanceManagers)
+        {
+            if (gim.NetworkingPlayer == player)
+                return gim;
+        }
         return null;
     }
 
     void GIMDisconnected(NetworkingPlayer player)
     {
         DebugLog.Log("Server: GI Manger Removed");
-        //GameInstanceNetworked gin = FindGameInstanceFromNetworkingPlayer(player);
-        //if (this.gameInstances.Contains(gin))
-        //{
-        //    DebugLog.Log("gi disconnected");
-        //    this.gameInstances.Remove(gin);
-        //    DebugLog.Log(string.Format("{0} game instances registered", this.gameInstances.Count));
-        //}
-        //else
-        //{
-        //    //debuglog.log("duplicate player disconnect");
-        //}
+        GameInstanceManagerNetworked gim = FindGameInstanceManagerFromNetworkingPlayer(player);
+        if (gim != null)
+        {
+            this.gameInstanceManagers.Remove(gim);
+        }
+        else
+        {
+            DebugLog.Log("GIM not found");
+        }
+        
     }
     public void Connect(ushort gicPort, Networking.TransportationProtocolType protocolType)
     {

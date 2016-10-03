@@ -11,8 +11,7 @@ public class LobbyNetworked : SimpleNetworkedMonoBehavior
     public ushort Port { get; set; }
     public Networking.TransportationProtocolType ProtocolType { get; set; }
     private NetWorker NetWorker { get; set; }
-
-   
+    public Matchmaking Matchmaking { get; set; }
 
     private List<NetworkingPlayer> players;
     private int maxPlayers;
@@ -77,6 +76,7 @@ public class LobbyNetworked : SimpleNetworkedMonoBehavior
         {
             DebugLog.Log("PlayerDisconnected");
             this.players.Remove(player);
+            this.Matchmaking.RemoveAvailablePlayer(player, false);
         }
         else
         {
@@ -112,6 +112,8 @@ public class LobbyNetworked : SimpleNetworkedMonoBehavior
         if (player != null)
         {
             DebugLog.Log("Found player");
+            this.Matchmaking.AddAvailablePlayer(player);
+            DebugLog.Log(string.Format("Matchmaking: {0} players available", this.Matchmaking.NumberAvaialablePlayers));
         } else
         {
             DebugLog.Log(string.Format("Could not find player {0}", networkId));

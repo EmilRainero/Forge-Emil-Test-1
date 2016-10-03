@@ -14,27 +14,53 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     private string gicPort = "16000";
     private string gimPort = "16100";
     private string giPort = "16200";
-    private string clientPort = "16300";
+    //private string clientPort = "16300";
 
     private string started = null;
     private GUIStyle guiStyle = new GUIStyle();
+    private string summaryStatus = "Scalable Server";
 
     void Start()
     {
         DebugLog.SetText(Text);
         guiStyle.fontSize = 16;
+        guiStyle.alignment = TextAnchor.UpperCenter;
+    }
+
+    void ShowSummaryStatus()
+    {
+        if (started == "Server")
+        {
+            summaryStatus = string.Format("Server - Lobby: {0}  MatchmakingAvailable {1}   GI Managers {2}  GI Available {3}", 
+                    lobbyNetworked.NumberPlayers, 
+                    lobbyNetworked.Matchmaking.NumberAvaialablePlayers,
+                    gicNetworked.NumberGameInstanceManagers,
+                    gicNetworked.AvailableGameInstances);
+        }
+        if (started == "GI Manager")
+        {
+            summaryStatus = string.Format("Game Instance Manager  GI {0}", gameInstanceManagerNetworked.AvailableGameInstances);
+        }
+        if (started == "Client")
+        {
+            summaryStatus = string.Format("Client");
+        }
+        GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height - 30, 200, 30), summaryStatus, guiStyle);
     }
 
     void OnGUI()
     {
+        ShowSummaryStatus();
+
         if (started == null)
         {
             //clientPort = GUI.TextField(new Rect(Screen.width - 300, 130, 100, 30), clientPort);
 
+
             if (GUI.Button(new Rect(10, 10, 120, 30), "Start Server"))
             {
                 Debug.Log("Start Lobby  port: " + lobbyPort);
-                started = "Lobby";
+                started = "Server";
                 StartServer(lobbyIpAddress, ushort.Parse(lobbyPort), ushort.Parse(gicPort));
             }
             GUI.Label(new Rect(110, 50, 100, 30), "IP Address", guiStyle);
@@ -86,25 +112,34 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
                     started = null;
                 }
             }
-            
+            if (started == "GI Manager")
+            {
+                if (GUI.Button(new Rect(Screen.width - 200, 10, 190, 30), "Disconnect"))
+                {
+                    gameInstanceManagerNetworked.Disconnect();
+                }
+            }
         }
     }
 
     private ClientNetworked clientNetworked;
     private LobbyNetworked lobbyNetworked;
     private GameInstanceClusterNetworked gicNetworked;
+    GameInstanceManagerNetworked gameInstanceManagerNetworked;
 
     private void StartServer(string lobbyIpAddress, ushort lobbyPort, ushort gicPort)
     {
         lobbyNetworked = new LobbyNetworked();
         lobbyNetworked.StartListener(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
+        lobbyNetworked.Matchmaking = new Matchmaking();
+
         gicNetworked = new GameInstanceClusterNetworked();
         gicNetworked.Connect(gicPort, Networking.TransportationProtocolType.TCP);
     }
 
     private void StartGameInstanceManager(string lobbyIpAddress, ushort gicPort, ushort gimPort)
     {
-        GameInstanceManagerNetworked gameInstanceManagerNetworked = new GameInstanceManagerNetworked();
+        gameInstanceManagerNetworked = new GameInstanceManagerNetworked();
         gameInstanceManagerNetworked.ConnectHost(gimPort, Networking.TransportationProtocolType.TCP);
         gameInstanceManagerNetworked.Connect(lobbyIpAddress, gicPort, Networking.TransportationProtocolType.TCP);
     }
