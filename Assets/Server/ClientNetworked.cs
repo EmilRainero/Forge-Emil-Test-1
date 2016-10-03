@@ -28,7 +28,7 @@ namespace ScalableServer
         public string Host { get; set; }
         public ushort Port { get; set; }
         public Networking.TransportationProtocolType ProtocolType { get; set; }
-        private NetWorker NetWorker { get; set; }
+        public NetWorker NetWorker { get; set; }
 
         public ClientNetworked()
         {

@@ -78,7 +78,7 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
                 if (GUI.Button(new Rect(Screen.width - 200, 10, 190, 30), "Start Match"))
                 {
                     //clientNetworked.RequestMatch();
-                    RPC("RequestStartMatch", NetworkReceivers.Server, "hi there");
+                    RPC("RequestStartMatch", NetworkReceivers.Server, string.Format("NetworkID:{0}", clientNetworked.NetWorker.Uniqueidentifier));
                 }
                 if (GUI.Button(new Rect(Screen.width - 200, 50, 190, 30), "Disconnect"))
                 {
@@ -128,5 +128,6 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     public void RequestStartMatch(string message)
     {
         DebugLog.Log("got RequestStartMatch " + message);
+        lobbyNetworked.PlayerRequestStartMatch(message.Split(':'));
     }
 }

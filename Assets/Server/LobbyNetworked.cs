@@ -104,6 +104,32 @@ public class LobbyNetworked : SimpleNetworkedMonoBehavior
         Networking.Disconnect(this.NetWorker);
     }
 
+    public void PlayerRequestStartMatch(string[] args)
+    {
+        ulong networkId = ulong.Parse(args[1]);
+
+        NetworkingPlayer player = FindPlayer(networkId);
+        if (player != null)
+        {
+            DebugLog.Log("Found player");
+        } else
+        {
+            DebugLog.Log(string.Format("Could not find player {0}", networkId));
+        }
+    }
+
+    private NetworkingPlayer FindPlayer(ulong networkId)
+    {
+        foreach (NetworkingPlayer player in this.players)
+        {
+            if (player.NetworkId == networkId)
+            {
+                return player;
+            }
+        }
+        return null;
+    }
+
     //[BRPC]
     //public void RequestStartMatch(string message)
     //{
