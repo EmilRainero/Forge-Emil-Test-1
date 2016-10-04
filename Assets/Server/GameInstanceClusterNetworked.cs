@@ -27,10 +27,10 @@ public class GameInstanceClusterNetworked {
         {
             int count = 0;
 
-            foreach (GameInstanceManagerNetworked gim in this.gameInstanceManagers)
-            {
-                count += gim.AvailableGameInstances;
-            }
+            //foreach (GameInstanceManagerNetworked gim in this.gameInstanceManagers)
+            //{
+            //    count += gim.AvailableGameInstances;
+            //}
             return count;
         }
     }
@@ -41,9 +41,9 @@ public class GameInstanceClusterNetworked {
         {
             int count = 0;
 
-            foreach (GameInstanceManagerNetworked instance in this.gameInstanceManagers)
-            {
-            }
+            //foreach (GameInstanceManagerNetworked instance in this.gameInstanceManagers)
+            //{
+            //}
             return count;
         }
     }

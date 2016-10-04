@@ -49,12 +49,12 @@ public class GameInstanceManagerNetworked {
 
     void ServerConnected()
     {
-        DebugLog.Log("GI Cluster Manager Connected");
+        DebugLog.Log("GI Manager Connected");
     }
 
     void ServerDisconnected()
     {
-        DebugLog.Log("GI Cluster Manager Disconnected");
+        DebugLog.Log("GI Manager Disconnected");
     }
 
     void GIConnected(NetworkingPlayer player)
@@ -103,8 +103,9 @@ public class GameInstanceManagerNetworked {
         this.Port = port;
         this.ProtocolType = protocolType;
 
-       // Networking.InitializeFirewallCheck(port);
+        // Networking.InitializeFirewallCheck(port);
 
+        DebugLog.Log(string.Format("Gi Manager: Starting {0}", this.Port));
         this.NetWorker = Networking.Host(this.Port, this.ProtocolType, 100);
         Networking.Sockets[this.Port].connected += ServerConnected;
         Networking.Sockets[this.Port].disconnected += ServerDisconnected;

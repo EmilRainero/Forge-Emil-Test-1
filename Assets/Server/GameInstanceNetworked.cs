@@ -22,6 +22,10 @@ public class GameInstanceNetworked {
     public Match Match { get; set; }
     public NetworkingPlayer NetworkingPlayer { get; set; }
 
+    public int NumberPlayers
+    {
+        get { return 0; }
+    }
     public void StartMatch(Match match)
     {
         this.Match = match;

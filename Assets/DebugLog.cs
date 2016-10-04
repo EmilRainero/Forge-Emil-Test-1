@@ -27,7 +27,7 @@ public class DebugLog : MonoBehaviour  {
     }
     public static void Log(string message)
     {
-        Debug.Log("Adding " + message);
+        Debug.Log(message);
         Text.text += message + "\r\n";
     }
 }

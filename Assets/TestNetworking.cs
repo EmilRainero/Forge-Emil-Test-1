@@ -41,6 +41,10 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
         {
             summaryStatus = string.Format("Game Instance Manager  GI {0}", gameInstanceManagerNetworked.AvailableGameInstances);
         }
+        if (started == "GI")
+        {
+            summaryStatus = string.Format("Game Instance  Players {0}", gameInstanceNetworked.NumberPlayers);
+        }
         if (started == "Client")
         {
             summaryStatus = string.Format("Client");
@@ -126,27 +130,28 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     private LobbyNetworked lobbyNetworked;
     private GameInstanceClusterNetworked gicNetworked;
     GameInstanceManagerNetworked gameInstanceManagerNetworked;
+    GameInstanceNetworked gameInstanceNetworked;
 
     private void StartServer(string lobbyIpAddress, ushort lobbyPort, ushort gicPort)
     {
+        
+        gicNetworked = new GameInstanceClusterNetworked();
+        gicNetworked.Connect(gicPort, Networking.TransportationProtocolType.TCP);
         lobbyNetworked = new LobbyNetworked();
         lobbyNetworked.StartListener(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
         lobbyNetworked.Matchmaking = new Matchmaking();
-
-        gicNetworked = new GameInstanceClusterNetworked();
-        gicNetworked.Connect(gicPort, Networking.TransportationProtocolType.TCP);
     }
 
     private void StartGameInstanceManager(string lobbyIpAddress, ushort gicPort, ushort gimPort)
     {
         gameInstanceManagerNetworked = new GameInstanceManagerNetworked();
-        gameInstanceManagerNetworked.ConnectHost(gimPort, Networking.TransportationProtocolType.TCP);
         gameInstanceManagerNetworked.Connect(lobbyIpAddress, gicPort, Networking.TransportationProtocolType.TCP);
+        gameInstanceManagerNetworked.ConnectHost(gimPort, Networking.TransportationProtocolType.TCP);
     }
 
     private void StartGameInstance(string lobbyIpAddress, ushort port)
     {
-        GameInstanceNetworked gameInstanceNetworked = new GameInstanceNetworked();
+        gameInstanceNetworked = new GameInstanceNetworked();
         gameInstanceNetworked.Connect(lobbyIpAddress, port, Networking.TransportationProtocolType.TCP);
     }
 
