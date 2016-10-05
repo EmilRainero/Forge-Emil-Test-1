@@ -20,6 +20,12 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     private GUIStyle guiStyle = new GUIStyle();
     private string summaryStatus = "Scalable Server";
 
+    private ClientNetworked clientNetworked;
+    private LobbyNetworked lobbyNetworked;
+    private GameInstanceClusterNetworked gicNetworked;
+    private GameInstanceManagerNetworked gameInstanceManagerNetworked;
+    private GameInstanceNetworked gameInstanceNetworked;
+
     void Start()
     {
         DebugLog.SetText(Text);
@@ -123,14 +129,17 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
                     gameInstanceManagerNetworked.Disconnect();
                 }
             }
-        }
+            if (started == "Server")
+            {
+                if (GUI.Button(new Rect(Screen.width - 200, 10, 190, 30), "Start Matchmaking"))
+                {
+                    //clientNetworked.RequestMatch();
+                    DebugLog.Log("Start matchmaking");
+                    lobbyNetworked.StartMatchmakingSession();
+                }
+            }
+            }
     }
-
-    private ClientNetworked clientNetworked;
-    private LobbyNetworked lobbyNetworked;
-    private GameInstanceClusterNetworked gicNetworked;
-    GameInstanceManagerNetworked gameInstanceManagerNetworked;
-    GameInstanceNetworked gameInstanceNetworked;
 
     private void StartServer(string lobbyIpAddress, ushort lobbyPort, ushort gicPort)
     {
@@ -168,6 +177,7 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     public void RequestStartMatch(string message)
     {
         DebugLog.Log("got RequestStartMatch " + message);
+        DebugLog.Log(string.Format("player {0}", CurrentRPCSender.NetworkId));
         lobbyNetworked.PlayerRequestStartMatch(message.Split(':'));
     }
 }

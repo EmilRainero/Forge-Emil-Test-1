@@ -65,11 +65,13 @@ namespace ScalableServer
             Networking.Disconnect(this.NetWorker);
         }
 
-        internal void RequestMatch()
+        public void RequestMatch()
         {
-            DebugLog.Log("Request start match");
+            string message = string.Format("NetworkID:{0}", this.NetWorker.Uniqueidentifier);
+            DebugLog.Log(string.Format("Request start match '{0}'", message));
             this._State = ClientState.REQUESTED_MATCH;
-            RPC("RequestStartMatch", NetworkReceivers.Server, "hi there");
+            RPC("RequestStartMatch", this.NetWorker, NetworkReceivers.Server, message);
         }
+
     }
 }

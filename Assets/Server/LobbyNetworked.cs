@@ -132,9 +132,12 @@ public class LobbyNetworked : SimpleNetworkedMonoBehavior
         return null;
     }
 
-    //[BRPC]
-    //public void RequestStartMatch(string message)
-    //{
-    //    DebugLog.Log("got RequestStartMatch " + message);
-    //}
+    public void StartMatchmakingSession()
+    {
+        DebugLog.Log(string.Format("StartMatchmakingSession()  availablePlayes: {0}", this.Matchmaking.NumberAvaialablePlayers));
+        if (this.Matchmaking.NumberAvaialablePlayers >= 2)
+        {
+            DebugLog.Log("enough players");
+        }
+    }
 }
