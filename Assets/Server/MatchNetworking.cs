@@ -51,5 +51,21 @@ namespace ScalableServer
         {
             return this.Teams[team];
         }
+
+        public override string ToString()
+        {
+            string result = string.Empty;
+            result += string.Format("Match:{0}\r\n", this.matchType.ToString());
+            for (int i=0; i<this.NumberTeams; i++)
+            {
+                result += string.Format("  Team:{0}\r\n", i);
+                foreach (NetworkingPlayer player in this.Teams[i])
+                {
+                    result += string.Format("    {0}\r\n", player.NetworkId);
+                }
+            }
+
+            return result;
+        }
     }
 }

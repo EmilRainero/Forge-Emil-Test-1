@@ -71,7 +71,12 @@ public class GameInstanceManagerNetworked {
         gin.NetworkingPlayer = player;
 
         this.gameInstances.Add(gin);
-        DebugLog.Log(string.Format("{0} Game Instances Registered", this.gameInstances.Count));
+        SendAvailableGameInstances();
+    }
+
+    private void SendAvailableGameInstances()
+    {
+        DebugLog.Log(string.Format("{0} game instances registered", this.gameInstances.Count));
     }
 
     private GameInstanceNetworked FindGameInstanceFromNetworkingPlayer(NetworkingPlayer player)
@@ -91,7 +96,7 @@ public class GameInstanceManagerNetworked {
         {
             DebugLog.Log("GI Disconnected");
             this.gameInstances.Remove(gin);
-            DebugLog.Log(string.Format("{0} game instances registered", this.gameInstances.Count));
+            SendAvailableGameInstances();
         }
         else
         {

@@ -132,12 +132,15 @@ public class LobbyNetworked : SimpleNetworkedMonoBehavior
         return null;
     }
 
-    public void StartMatchmakingSession()
+    public MatchNetworking StartMatchmakingSession()
     {
         DebugLog.Log(string.Format("StartMatchmakingSession()  availablePlayes: {0}", this.Matchmaking.NumberAvaialablePlayers));
         if (this.Matchmaking.NumberAvaialablePlayers >= 2)
         {
             DebugLog.Log("enough players");
         }
+        MatchNetworking match = this.Matchmaking.MakeAMatch();
+
+        return match;
     }
 }

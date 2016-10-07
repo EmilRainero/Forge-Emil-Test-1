@@ -37,8 +37,8 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     {
         if (started == "Server")
         {
-            summaryStatus = string.Format("Server - Lobby: {0}  MatchmakingAvailable {1}   GI Managers {2}  GI Available {3}", 
-                    lobbyNetworked.NumberPlayers, 
+            summaryStatus = string.Format("Server - Lobby: {0}  MatchmakingAvailable {1}   GI Managers {2}  GI Available {3}",
+                    lobbyNetworked.NumberPlayers,
                     lobbyNetworked.Matchmaking.NumberAvaialablePlayers,
                     gicNetworked.NumberGameInstanceManagers,
                     gicNetworked.AvailableGameInstances);
@@ -135,10 +135,17 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
                 {
                     //clientNetworked.RequestMatch();
                     DebugLog.Log("Start matchmaking");
-                    lobbyNetworked.StartMatchmakingSession();
+                    MatchNetworking match = lobbyNetworked.StartMatchmakingSession();
+                    DebugLog.Log(match.ToString());
+
                 }
             }
-            }
+        }
+    }
+
+    private void GIMSendAvailableGameInstances()
+    {
+        DebugLog.Log("Test: GIMSendAvailableGameInstances()");
     }
 
     private void StartServer(string lobbyIpAddress, ushort lobbyPort, ushort gicPort)
