@@ -29,10 +29,12 @@ namespace ScalableServer
         public ushort Port { get; set; }
         public Networking.TransportationProtocolType ProtocolType { get; set; }
         public NetWorker NetWorker { get; set; }
+        private IClientNetworkCalls ClientNetworkCalls;
 
-        public ClientNetworked()
+        public ClientNetworked(IClientNetworkCalls clientNetworkCalls)
         {
             this._State = ClientState.INITIAL;
+            this.ClientNetworkCalls = clientNetworkCalls;
         }
 
         void ClientConnected()
@@ -47,18 +49,29 @@ namespace ScalableServer
             this._State = ClientState.INITIAL;
         }
 
-        public void Connect(string host, ushort port, Networking.TransportationProtocolType protocolType)
+        public void ServerDisconnected(string reason)
         {
-            this.Host = host;
-            this.Port = port;
-            this.ProtocolType = protocolType;
-
-            this._State = ClientState.TRYING_TO_CONNECT;
-            DebugLog.Log(string.Format("try to connect to {0}:{1}", host, port));
-            this.NetWorker = Networking.Connect(this.Host, this.Port, this.ProtocolType);
-            Networking.Sockets[this.Port].connected += ClientConnected;
-            Networking.Sockets[this.Port].disconnected += ClientDisconnected;
+            DebugLog.Log("Server Disconnected");
         }
+
+        public NetWorker Connect(string host, ushort port, Networking.TransportationProtocolType protocol)
+        {
+            this.NetWorker = ClientNetworkCalls.NetworkConnect(host, port, protocol, ClientConnected, ClientDisconnected, ServerDisconnected);
+            return this.NetWorker;
+        }
+
+        //public void Connect(string host, ushort port, Networking.TransportationProtocolType protocolType)
+        //{
+        //    this.Host = host;
+        //    this.Port = port;
+        //    this.ProtocolType = protocolType;
+
+        //    this._State = ClientState.TRYING_TO_CONNECT;
+        //    DebugLog.Log(string.Format("try to connect to {0}:{1}", host, port));
+        //    this.NetWorker = Networking.Connect(this.Host, this.Port, this.ProtocolType);
+        //    Networking.Sockets[this.Port].connected += ClientConnected;
+        //    Networking.Sockets[this.Port].disconnected += ClientDisconnected;
+        //}
 
         public void DisconnectClient()
         {
@@ -73,5 +86,9 @@ namespace ScalableServer
             RPC("RequestStartMatch", this.NetWorker, NetworkReceivers.Server, message);
         }
 
+        public void RequestStartGame()
+        {
+            this.ClientNetworkCalls.NetworkRequestStartGame();
+        }
     }
 }

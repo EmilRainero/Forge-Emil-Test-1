@@ -4,12 +4,28 @@ using System.Collections;
 using BeardedManStudios.Network;
 using ScalableServer;
 
-public class TestNetworking : SimpleNetworkedMonoBehavior
+public interface IClientNetworkCalls
+{
+    NetWorker NetworkConnect(string hostIP, ushort port, Networking.TransportationProtocolType protocol,
+        NetWorker.BasicEvent connected, NetWorker.BasicEvent disconnected,
+        NetWorker.StringResponseEvent serverDisconnected);
+    void NetworkRequestStartGame();
+}
+
+public interface IServerNetworkCalls
+{
+    NetWorker NetworkHost(ushort port, Networking.TransportationProtocolType protocol, int maxConnections,
+        NetWorker.BasicEvent connected, NetWorker.BasicEvent disconnected,
+        NetWorker.PlayerConnectionEvent serverConnected, NetWorker.PlayerConnectionEvent serverDisconnected);
+}
+
+public class TestNetworking : SimpleNetworkedMonoBehavior, IClientNetworkCalls, IServerNetworkCalls
 {
     public Text Text;
 
     private string lobbyIpAddress = "127.0.0.1";
     private string gimIpAddress = "127.0.0.1";
+    public Networking.TransportationProtocolType PROTOCOL_TYPE = Networking.TransportationProtocolType.TCP;
     private string lobbyPort = "15937";
     private string gicPort = "16000";
     private string gimPort = "16100";
@@ -25,12 +41,56 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     private GameInstanceClusterNetworked gicNetworked;
     private GameInstanceManagerNetworked gameInstanceManagerNetworked;
     private GameInstanceNetworked gameInstanceNetworked;
+    private NetWorker worker;
 
     void Start()
     {
         DebugLog.SetText(Text);
         guiStyle.fontSize = 16;
         guiStyle.alignment = TextAnchor.UpperCenter;
+    }
+
+    public NetWorker NetworkConnect(string hostIP, ushort port, Networking.TransportationProtocolType protocol
+        , NetWorker.BasicEvent connected, NetWorker.BasicEvent disconnected, NetWorker.StringResponseEvent serverDisconnected)
+    {
+        NetWorker worker = Networking.Connect(hostIP, port, protocol);
+        if (connected != null) Networking.Sockets[port].connected += connected;
+        if (disconnected != null) Networking.Sockets[port].disconnected += disconnected;
+        if (serverDisconnected != null) Networking.Sockets[port].serverDisconnected += serverDisconnected;
+        return worker;
+    }
+
+    public NetWorker NetworkHost(ushort port, Networking.TransportationProtocolType protocol, int maxConnections,
+        NetWorker.BasicEvent connected, NetWorker.BasicEvent disconnected,
+        NetWorker.PlayerConnectionEvent playerConnected, NetWorker.PlayerConnectionEvent playerDisconnected)
+    {
+        DebugLog.Log(string.Format("StartServer  Port: {0}", port));
+        NetWorker worker = Networking.Host(port, protocol, maxConnections);
+        if (connected != null) Networking.Sockets[port].connected += connected;
+        if (disconnected != null) Networking.Sockets[port].disconnected += disconnected;
+        if (playerConnected != null) Networking.Sockets[port].playerConnected += playerConnected;
+        if (playerDisconnected != null) Networking.Sockets[port].playerDisconnected += playerDisconnected;
+        return worker;
+    }
+
+    public void NetworkRequestStartGame()
+    {
+        RPC("RequestStartGame");
+    }
+
+    [BRPC]
+    void RequestStartGame()
+    {
+        if (worker.IsServer)
+        {
+            DebugLog.Log(string.Format("RequestStartGame called {0}", CurrentRPCSender.NetworkId));
+            
+            if (CurrentRPCSender != null)
+            {
+                lobbyNetworked.RemovePlayer(CurrentRPCSender);
+                lobbyNetworked.Matchmaking.AddAvailablePlayer(CurrentRPCSender);
+            }
+        }
     }
 
     void ShowSummaryStatus()
@@ -113,8 +173,8 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
             {
                 if (GUI.Button(new Rect(Screen.width - 200, 10, 190, 30), "Start Match"))
                 {
-                    //clientNetworked.RequestMatch();
-                    RPC("RequestStartMatch", NetworkReceivers.Server, string.Format("NetworkID:{0}", clientNetworked.NetWorker.Uniqueidentifier));
+                    clientNetworked.RequestStartGame();
+                    //RPC("RequestStartMatch", NetworkReceivers.Server, string.Format("NetworkID:{0}", clientNetworked.NetWorker.Uniqueidentifier));
                 }
                 if (GUI.Button(new Rect(Screen.width - 200, 50, 190, 30), "Disconnect"))
                 {
@@ -153,8 +213,9 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
         
         gicNetworked = new GameInstanceClusterNetworked();
         gicNetworked.Connect(gicPort, Networking.TransportationProtocolType.TCP);
-        lobbyNetworked = new LobbyNetworked();
-        lobbyNetworked.StartListener(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
+        lobbyNetworked = new LobbyNetworked(this);
+        worker = lobbyNetworked.StartServer(lobbyPort, Networking.TransportationProtocolType.TCP);
+        //lobbyNetworked.StartListener(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
         lobbyNetworked.Matchmaking = new Matchmaking();
     }
 
@@ -175,9 +236,10 @@ public class TestNetworking : SimpleNetworkedMonoBehavior
     {
         if (clientNetworked == null)
         {
-            clientNetworked = new ClientNetworked();
+            clientNetworked = new ClientNetworked(this);
+            worker = clientNetworked.Connect(lobbyIpAddress, lobbyPort, PROTOCOL_TYPE);
         }
-        clientNetworked.Connect(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
+        //clientNetworked.Connect(lobbyIpAddress, lobbyPort, Networking.TransportationProtocolType.TCP);
     }
 
     [BRPC]
