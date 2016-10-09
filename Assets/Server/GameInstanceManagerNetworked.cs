@@ -20,6 +20,8 @@ namespace ScalableServer
         private NetWorker GICNetWorker { get; set; }
         private List<NetworkingPlayer> players;
         private List<GameInstanceNetworked> gameInstances;
+        private IServerNetworkCalls ServerNetworkCalls;
+        private IClientNetworkCalls ClientNetworkCalls;
 
         public int NumberGameInstances
         {
@@ -47,8 +49,11 @@ namespace ScalableServer
         }
 
 
-        public GameInstanceManagerNetworked()
+        public GameInstanceManagerNetworked(IServerNetworkCalls serverNetworkCalls = null, IClientNetworkCalls clientNetworkCalls = null)
         {
+            this.ServerNetworkCalls = serverNetworkCalls;
+            this.ClientNetworkCalls = clientNetworkCalls;
+
             this.gameInstances = new List<GameInstanceNetworked>();
         }
 
@@ -115,12 +120,13 @@ namespace ScalableServer
 
             // Networking.InitializeFirewallCheck(port);
 
-            DebugLog.Log(string.Format("Gi Manager: Starting {0}", this.Port));
-            this.NetWorker = Networking.Host(this.Port, this.ProtocolType, 100);
-            Networking.Sockets[this.Port].connected += ServerConnected;
-            Networking.Sockets[this.Port].disconnected += ServerDisconnected;
-            Networking.Sockets[this.Port].playerConnected += GIConnected;
-            Networking.Sockets[this.Port].playerDisconnected += GIDisconnected;
+            //DebugLog.Log(string.Format("Gi Manager: Starting {0}", this.Port));
+            //this.NetWorker = Networking.Host(this.Port, this.ProtocolType, 100);
+            //Networking.Sockets[this.Port].connected += ServerConnected;
+            //Networking.Sockets[this.Port].disconnected += ServerDisconnected;
+            //Networking.Sockets[this.Port].playerConnected += GIConnected;
+            //Networking.Sockets[this.Port].playerDisconnected += GIDisconnected;
+            this.NetWorker = this.ServerNetworkCalls.NetworkHost(this.Port, this.ProtocolType, 100, ServerConnected, ServerDisconnected, GIConnected, GIDisconnected);
         }
 
         public void Disconnect()
@@ -130,26 +136,34 @@ namespace ScalableServer
             //Networking.Disconnect(this.NetWorker);
         }
 
-        void ClientConnected()
+        void Client_Connected()
         {
             DebugLog.Log("Connected to GIC");
         }
 
-        void ClientDisconnected()
+        void Client_Disconnected()
         {
             DebugLog.Log("Disconnected from GIC");
         }
 
-        public void Connect(string lobbyIpAddress, ushort gicPort, Networking.TransportationProtocolType protocolType)
+        void Client_ServerDisconnected(string reason)
+        {
+            DebugLog.Log("GIC Disconnected");
+        }
+
+        public NetWorker Connect(string lobbyIpAddress, ushort gicPort, Networking.TransportationProtocolType protocolType)
         {
             this.ServerHost = lobbyIpAddress;
             this.GICPort = gicPort;
             this.ProtocolType = protocolType;
 
-            DebugLog.Log(string.Format("try to connect to GI Cluster {0}:{1}", this.ServerHost, this.GICPort));
-            this.GICNetWorker = Networking.Connect(this.ServerHost, this.GICPort, this.ProtocolType);
-            Networking.Sockets[this.GICPort].connected += ClientConnected;
-            Networking.Sockets[this.GICPort].disconnected += ClientDisconnected;
+            //DebugLog.Log(string.Format("try to connect to GI Cluster {0}:{1}", this.ServerHost, this.GICPort));
+            //this.GICNetWorker = Networking.Connect(this.ServerHost, this.GICPort, this.ProtocolType);
+            //Networking.Sockets[this.GICPort].connected += ClientConnected;
+            //Networking.Sockets[this.GICPort].disconnected += ClientDisconnected;
+            this.GICNetWorker = this.ClientNetworkCalls.NetworkConnect(this.ServerHost, this.GICPort, this.ProtocolType, Client_Connected, Client_Disconnected, Client_ServerDisconnected);
+
+            return this.NetWorker;
         }
 
     }

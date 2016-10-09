@@ -18,7 +18,7 @@ Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Ma
 Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
 Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.219 seconds
+- Completed reload, in  0.224 seconds
 Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.dll (this message is harmless)
 OnLevelWasLoaded was found on NetworkingManager
@@ -31,11 +31,23 @@ Add a delegate to SceneManager.sceneLoaded instead to get notifications after sc
 <RI> Input initialized.
 desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
 <RI> Initialized touch support.
-UnloadTime: 0.734420 ms
+UnloadTime: 0.749432 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 4980 -> priority: 1 
-  Thread -> id: 28a0 -> priority: 1 
-Start Client
+  Thread -> id: 2ac0 -> priority: 1 
+  Thread -> id: 2548 -> priority: 1 
+Start GI Manager
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+StartServer  Port: 16100
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+set playerDisconnected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+GI Manager Connected
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
@@ -47,7 +59,7 @@ streamreceived
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Connected
+Connected to GIC
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
@@ -59,7 +71,404 @@ streamreceived
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-ExecuteRPCStack: about to invoke RequestStartGame
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Initialize engine version: 5.4.1f1 (649f48bbbf0f)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 530 (ID=0x191b)
+    Vendor:   Intel
+    VRAM:     2111 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+TCPProcess ReadBuffer
+ 
+(Filename: C:/builPslavtfermunits/bubly:iC:\Users\emclr\sneDeneratenity\Forgo Emilntime/U1\Ttyst1_Data\Manageid\Asss.geny.cnpp Line: 42)
+
+(this message is ha
+rm
+less)nam
+e: Loading C:\Ue/unrs\emility/build/artifa\Forge Emil cest 1e\Test1_Daerated/common/embtyime/UnityEngidneDebto Unnity Child Dopain
+ Line: 42)
+
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.049 seconds
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\emilr\OneDrive\Unity\Forge Emil Test 1\Test1_Data\Managed\System.dll (this message is harmless)
+OnLevelWasLoaded was found on NetworkingManager
+This message has been deprecated and will be removed in a later version of Unity.
+Add a delegate to SceneManager.sceneLoaded instead to get notifications after scene loading has completed
+ 
+(Filename:  Line: 375)
+
+<RI> Initializing input.
+<RI> Input initialized.
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initialized touch support.
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+UnloadTime: 0.653037 ms
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 1098 -> priority: 1 
+  Thread -> id: 5220 -> priority: 1 
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Start GI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Game Instance try to connect to 127.0.0.1:16100
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+GI Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+1 game instances registered
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Game Instance Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
@@ -67,11 +476,7 @@ OnDisconnected() timeoutDisconnectedInvoker
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-Disconnected
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
-
-Start Client
+Game Instance Disconnected
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
@@ -83,71 +488,83 @@ streamreceived
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.GetNewPlayerUpdates () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.NetworkingStream.Consume (BeardedManStudios.Network.NetWorker socket, BeardedManStudios.Network.NetworkingPlayer sender, BeardedManStudios.Network.BMSByte message) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.TCPProcess.StreamReceived (BeardedManStudios.Network.NetworkingPlayer sender, BeardedManStudios.Network.BMSByte bytes) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.ReadAsync () [0x00000] in <filename unknown>:0 
-UnityEngine.DebugLogHandler:Internal_LogException(Exception, Object)
-UnityEngine.DebugLogHandler:LogException(Exception, Object)
-UnityEngine.Logger:LogException(Exception, Object)
-UnityEngine.Debug:LogException(Exception)
-BeardedManStudios.Network.DefaultClientTCP:ReadAsync()
+OnPlayerDisconnected() playerDisconnectedInvoker
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.Disconnect (BeardedManStudios.Network.NetWorker socket) [0x00000] in <filename unknown>:0 
-  at ScalableServer.ClientNetworked.DisconnectClient () [0x00000] in <filename unknown>:0 
-  at TestNetworking.OnGUI () [0x00000] in <filename unknown>:0 
+GI Disconnected
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.Disconnect (BeardedManStudios.Network.NetWorker socket) [0x00000] in <filename unknown>:0 
-  at ScalableServer.ClientNetworked.DisconnectClient () [0x00000] in <filename unknown>:0 
-  at TestNetworking.OnGUI () [0x00000] in <filename unknown>:0 
+0 game instances registered
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.Disconnect (BeardedManStudios.Network.NetWorker socket) [0x00000] in <filename unknown>:0 
-  at ScalableServer.ClientNetworked.DisconnectClient () [0x00000] in <filename unknown>:0 
-  at TestNetworking.OnGUI () [0x00000] in <filename unknown>:0 
+OnPlayerDisconnected() done
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.Disconnect (BeardedManStudios.Network.NetWorker socket) [0x00000] in <filename unknown>:0 
-  at ScalableServer.ClientNetworked.DisconnectClient () [0x00000] in <filename unknown>:0 
-  at TestNetworking.OnGUI () [0x00000] in <filename unknown>:0 
+OnPlayerDisconnected() playerDisconnectedInvoker
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.Disconnect (BeardedManStudios.Network.NetWorker socket) [0x00000] in <filename unknown>:0 
-  at ScalableServer.ClientNetworked.DisconnectClient () [0x00000] in <filename unknown>:0 
-  at TestNetworking.OnGUI () [0x00000] in <filename unknown>:0 
+OnPlayerDisconnected() done
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 
-NetworkException: The network could not be written to because no connection has been opened
-  at BeardedManStudios.Network.DefaultClientTCP.Write (BeardedManStudios.Network.NetworkingStream stream) [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.DefaultClientTCP.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.NetworkingReset () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Networking.Disconnect () [0x00000] in <filename unknown>:0 
-  at BeardedManStudios.Network.Unity.NetWorkerKiller.OnApplicationQuit () [0x00000] in <filename unknown>:0 
+TCPProcess ReadBuffer
  
-(Filename:  Line: -1)
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+TCPProcess ReadBuffer
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+streamreceived 
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+ExecuteRPCStack: about to invoke UpdateServerTime
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+OnDisconnected() timeoutDisconnectedInvoker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Disconnected from GIC
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+OnDisconnected() timeoutDisconnectedInvoker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+GI Manager Disconnected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+OnDisconnected() timeoutDisconnectedInvoker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+GI Manager Disconnected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+OnDisconnected() timeoutDisconnectedInvoker
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+GI Manager Disconnected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
 

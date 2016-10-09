@@ -89,18 +89,14 @@ namespace ScalableServer
 
         void GIMDisconnected(NetworkingPlayer player)
         {
-            DebugLog.Log("Server: GI Manger Removed");
             GameInstanceManagerNetworked gim = FindGameInstanceManagerFromNetworkingPlayer(player);
             if (gim != null)
             {
+                DebugLog.Log("Server: GI Manger Removed");
                 this.gameInstanceManagers.Remove(gim);
             }
-            else
-            {
-                DebugLog.Log("GIM not found");
-            }
-
         }
+
         public void Connect(ushort gicPort, Networking.TransportationProtocolType protocolType)
         {
             this.GICPort = gicPort;

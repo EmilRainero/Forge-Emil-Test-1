@@ -221,7 +221,7 @@ public class TestNetworking : SimpleNetworkedMonoBehavior, IClientNetworkCalls, 
 
     private void StartGameInstanceManager(string lobbyIpAddress, ushort gicPort, ushort gimPort)
     {
-        gameInstanceManagerNetworked = new GameInstanceManagerNetworked();
+        gameInstanceManagerNetworked = new GameInstanceManagerNetworked(this, this);
         gameInstanceManagerNetworked.Connect(lobbyIpAddress, gicPort, Networking.TransportationProtocolType.TCP);
         gameInstanceManagerNetworked.ConnectHost(gimPort, Networking.TransportationProtocolType.TCP);
     }

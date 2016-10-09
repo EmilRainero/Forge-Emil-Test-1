@@ -85,6 +85,7 @@ namespace ScalableServer
                 }
             }
         }
+
         public void StartListener(string host, ushort port, Networking.TransportationProtocolType protocolType)
         {
             this.Host = host;
