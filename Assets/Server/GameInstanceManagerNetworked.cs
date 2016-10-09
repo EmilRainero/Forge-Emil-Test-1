@@ -22,6 +22,7 @@ namespace ScalableServer
         private List<GameInstanceNetworked> gameInstances;
         private IServerNetworkCalls ServerNetworkCalls;
         private IClientNetworkCalls ClientNetworkCalls;
+        public int NumberGameInstancesCached { get; set; }
 
         public int NumberGameInstances
         {
@@ -87,6 +88,7 @@ namespace ScalableServer
         private void SendAvailableGameInstances()
         {
             DebugLog.Log(string.Format("{0} game instances registered", this.gameInstances.Count));
+            this.ClientNetworkCalls.NetworkSetNumberGameInstances(this.gameInstances.Count);
         }
 
         private GameInstanceNetworked FindGameInstanceFromNetworkingPlayer(NetworkingPlayer player)

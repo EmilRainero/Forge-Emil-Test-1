@@ -10,6 +10,7 @@ public interface IClientNetworkCalls
         NetWorker.BasicEvent connected, NetWorker.BasicEvent disconnected,
         NetWorker.StringResponseEvent serverDisconnected);
     void NetworkRequestStartGame();
+    void NetworkSetNumberGameInstances(int numberGameInstances);
 }
 
 public interface IServerNetworkCalls
@@ -90,6 +91,23 @@ public class TestNetworking : SimpleNetworkedMonoBehavior, IClientNetworkCalls, 
                 lobbyNetworked.RemovePlayer(CurrentRPCSender);
                 lobbyNetworked.Matchmaking.AddAvailablePlayer(CurrentRPCSender);
             }
+        }
+    }
+
+
+    public void NetworkSetNumberGameInstances(int numberGameInstances)
+    {
+        DebugLog.Log("call RPC SetNumberGameInstances()");
+        RPC("SetNumberGameInstances", numberGameInstances);
+    }
+
+    [BRPC]
+    void SetNumberGameInstances(int numberGameInstances)
+    {
+        if (worker.IsServer)
+        {
+            DebugLog.Log(string.Format("received SetNumberGameInstances {0}", numberGameInstances));
+            this.gicNetworked.SetGIMGameInstances(CurrentRPCSender, numberGameInstances);
         }
     }
 

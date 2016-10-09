@@ -31,10 +31,10 @@ namespace ScalableServer
             {
                 int count = 0;
 
-                //foreach (GameInstanceManagerNetworked gim in this.gameInstanceManagers)
-                //{
-                //    count += gim.AvailableGameInstances;
-                //}
+                foreach (GameInstanceManagerNetworked gim in this.gameInstanceManagers)
+                {
+                    count += gim.NumberGameInstancesCached;
+                }
                 return count;
             }
         }
@@ -115,6 +115,16 @@ namespace ScalableServer
         public void Disconnect()
         {
             Networking.Disconnect(this.NetWorker);
+        }
+
+        public void SetGIMGameInstances(NetworkingPlayer player, int numberGameInstances)
+        {
+            GameInstanceManagerNetworked gim = FindGameInstanceManagerFromNetworkingPlayer(player);
+            if (gim != null)
+            {
+                DebugLog.Log(string.Format("SetGIMGameInstances set GIM count to {0}", numberGameInstances));
+                gim.NumberGameInstancesCached = numberGameInstances;
+            }
         }
     }
 }
